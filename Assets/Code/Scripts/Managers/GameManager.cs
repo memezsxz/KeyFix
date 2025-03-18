@@ -1,5 +1,4 @@
 using System;
-using Code.Scripts.Systems;
 using UnityEngine;
 
 namespace Code.Scripts.Managers
@@ -12,24 +11,24 @@ namespace Code.Scripts.Managers
         public static event Action<GameState> OnAfterGameStateChanged;
 
         private GameState State { get; set; }
-        
+
         void Start()
         {
-            _debugController =  GameObject.FindGameObjectWithTag("DebugController").GetComponent<DebugController>();
+            _debugController = GameObject.FindGameObjectWithTag("DebugController").GetComponent<DebugController>();
             ChangeState(GameState.Initial);
         }
 
-       /// <summary>
-       /// Add a debug command to the debugger
-       /// </summary>
-       /// <param name="command">The command to be added</param>
-       /// <code>AddDebugCommand(
-       ///      new DebugCommand(
-       ///      "delete_all_enemies",
-       ///      "deletes all enemies",
-       ///      "",
-       ///      () => { print("deleted all"); })
-       /// );</code>
+        /// <summary>
+        /// Add a debug command to the debugger
+        /// </summary>
+        /// <param name="command">The command to be added</param>
+        /// <code>AddDebugCommand(
+        ///      new DebugCommand(
+        ///      "delete_all_enemies",
+        ///      "deletes all enemies",
+        ///      "",
+        ///      () => { print("deleted all"); })
+        /// );</code>
         private void AddDebugCommand(DebugCommand command)
         {
             if (_debugController != null)
@@ -51,9 +50,9 @@ namespace Code.Scripts.Managers
         public void ChangeState(GameState newState)
         {
             if (State == newState) return;
-            
+
             OnBeforeGameStateChanged?.Invoke(newState);
-            
+
             switch (newState)
             {
                 case GameState.Initial:
@@ -62,9 +61,9 @@ namespace Code.Scripts.Managers
                 default:
                     throw new ArgumentOutOfRangeException(nameof(newState), newState, null);
             }
-        
+
             State = newState;
-            
+
             OnAfterGameStateChanged?.Invoke(newState);
         }
 

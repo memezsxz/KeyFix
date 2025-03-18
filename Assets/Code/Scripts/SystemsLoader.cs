@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Code.Scripts
 {
-   public static class SystemsLoader
+    public static class SystemsLoader
     {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void Execute()
@@ -11,10 +11,9 @@ namespace Code.Scripts
 
             if (!systems)
                 return;
-        
+
             Object.DontDestroyOnLoad(Object.Instantiate(systems));
             Debug.Log("Systems Loaded");
         }
     }
-
 }
