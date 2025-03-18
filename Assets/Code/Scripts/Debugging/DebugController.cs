@@ -45,7 +45,7 @@ class DebugController : MonoBehaviour
     /// Invoked when the user clicks the return key while the debugger is showing
     /// </summary>
     /// <param name="value"></param>
-    private void OnReturn(InputValue value)
+    private void OnReturn(InputAction.CallbackContext value)
     {
         if (showConsole)
         {
