@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7828890616340516226}
   - component: {fileID: 7828890616340516225}
-  - component: {fileID: 835115260979065718}
+  - component: {fileID: 6552644308261257666}
   m_Layer: 0
   m_Name: Debug Controller
   m_TagString: DebugController
@@ -63,7 +63,7 @@ MonoBehaviour:
   m_DefaultActionMap: Debugger
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &835115260979065718
+--- !u!114 &6552644308261257666
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -72,7 +72,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7828890616340516228}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 155113a6ebddb4280b1a0baa1d1d2b65, type: 3}
+  m_Script: {fileID: 11500000, guid: 0e63be46cc4f14daea59abf6a90cc8a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   showConsole: 0
