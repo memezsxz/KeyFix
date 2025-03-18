@@ -15,7 +15,7 @@ class DebugController : MonoBehaviour
         RegisterDefaultCommands();
     }
 
-    private void OnToggleDebug(InputValue value)
+    private void OnToggleDebug()
     {
         showConsole = !showConsole;
     }
