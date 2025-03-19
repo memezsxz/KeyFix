@@ -1,8 +1,7 @@
 public class DebugCommandBase
 {
     public string CommandId { get; }
-
-
+    
     public string CommandDescription { get; }
     public string CommandFormat { get; }
 
