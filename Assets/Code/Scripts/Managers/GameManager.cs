@@ -6,7 +6,6 @@ namespace Code.Scripts.Managers
     public class GameManager : PersistentSingleton<GameManager>
     {
         private DebugController _debugController;
-
         public static event Action<GameState> OnBeforeGameStateChanged;
         public static event Action<GameState> OnAfterGameStateChanged;
 
@@ -15,6 +14,8 @@ namespace Code.Scripts.Managers
         void Start()
         {
             _debugController = GameObject.FindGameObjectWithTag("DebugController").GetComponent<DebugController>();
+            GameManager.Instance.AddDebugCommand(new DebugCommand("gm_test", "testing from the game manager", "",
+                () => Debug.Log("working in game manager")));
             ChangeState(GameState.Initial);
         }
 
@@ -29,16 +30,16 @@ namespace Code.Scripts.Managers
         ///      "",
         ///      () => { print("deleted all"); })
         /// );</code>
-        private void AddDebugCommand(DebugCommand command)
+        public void AddDebugCommand(DebugCommand command)
         {
             if (_debugController != null)
             {
                 _debugController.RegisterCommand(command);
-                Debug.LogWarning($"Command {command.CommandId} added.");
+                // Debug.Log($"Command {command.CommandId} added."); // // for testing only
             }
             else
             {
-                Debug.LogWarning("No debug controller found.");
+                // Debug.LogWarning("No debug controller found."); // for testing only
             }
         }
 
@@ -76,6 +77,9 @@ namespace Code.Scripts.Managers
 
     public enum GameState
     {
+        /// <summary>
+        /// load the data on OnBeforeGameStateChanged command
+        /// </summary>
         Initial
     }
 }
