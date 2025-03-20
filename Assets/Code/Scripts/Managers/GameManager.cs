@@ -15,7 +15,7 @@ namespace Code.Scripts.Managers
         {
             _debugController = GameObject.FindGameObjectWithTag("DebugController").GetComponent<DebugController>();
             GameManager.Instance.AddDebugCommand(new DebugCommand("gm_test", "testing from the game manager", "",
-                () => Debug.Log("working in game manager")));
+                () => Debug.Log("working in game manager"))); // command format hint in case of args
             ChangeState(GameState.Initial);
         }
 
