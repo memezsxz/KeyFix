@@ -5,6 +5,7 @@
 .idea/
 .utmp/
 /[Ll]ibrary/
+!/[Ll]ibrary/PackageCache/
 !/[Ll]ibrary/PackageCache/com.tarodev.autosave@5026d04051/
 !/[Ll]ibrary/PackageCache/com.tarodev.autosave@5026d04051/**
 /[Tt]emp/
