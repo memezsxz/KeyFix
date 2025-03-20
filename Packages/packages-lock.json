@@ -1,5 +1,21 @@
 {
   "dependencies": {
+    "com.tarodev.autosave": {
+      "version": "https://github.com/Matthew-J-Spencer/Tarodev.git?path=Assets/Plugins/AutoSave",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "5026d04051a17eb186661fd5d311c0eb7fe98dde"
+    },
+    "com.unity.cinemachine": {
+      "version": "2.10.3",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.test-framework": "1.1.31"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.collab-proxy": {
       "version": "2.3.1",
       "depth": 0,
