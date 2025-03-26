@@ -5,7 +5,6 @@ namespace Code.Scripts.Managers
 {
     public class GameManager : PersistentSingleton<GameManager>
     {
-        private DebugController _debugController;
         public static event Action<GameState> OnBeforeGameStateChanged;
         public static event Action<GameState> OnAfterGameStateChanged;
 
@@ -13,35 +12,11 @@ namespace Code.Scripts.Managers
 
         void Start()
         {
-            _debugController = GameObject.FindGameObjectWithTag("DebugController").GetComponent<DebugController>();
-            GameManager.Instance.AddDebugCommand(new DebugCommand("gm_test", "testing from the game manager", "",
+            DebugController.Instance?.AddDebugCommand(new DebugCommand("gm_test", "testing from the game manager", "",
                 () => Debug.Log("working in game manager"))); // command format hint in case of args
             ChangeState(GameState.Initial);
         }
-
-        /// <summary>
-        /// Add a debug command to the debugger
-        /// </summary>
-        /// <param name="command">The command to be added</param>
-        /// <code>AddDebugCommand(
-        ///      new DebugCommand(
-        ///      "delete_all_enemies",
-        ///      "deletes all enemies",
-        ///      "",
-        ///      () => { print("deleted all"); })
-        /// );</code>
-        public void AddDebugCommand(DebugCommand command)
-        {
-            if (_debugController != null)
-            {
-                _debugController.RegisterCommand(command);
-                // Debug.Log($"Command {command.CommandId} added."); // // for testing only
-            }
-            else
-            {
-                // Debug.LogWarning("No debug controller found."); // for testing only
-            }
-        }
+        
 
         /// <summary>
         /// Change the state of the game play
