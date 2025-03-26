@@ -1,145 +1,35 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using Code.Scripts.Managers;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
-
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : MonoBehaviour, IDataPersistence
 {
     // TODO Maryam: should add require Animator to the script 
     private static readonly int Vertical = Animator.StringToHash("vertical");
     private static readonly int Horizontal = Animator.StringToHash("horizontal");
 
-    #region rotate then move
+    private CharacterType _charecterType = CharacterType.Robot; // the type of character that is holding the script
 
-    private Rigidbody _rb;
-    private Animator _animator;
-    [SerializeField] private float speed = 5;
-    [SerializeField] [Range(0f, 360f)] private float turnSpeed = 90;
-    private Vector2 _moveInput;
-    private Vector3 _input;
-    
-    private void Start()
+    public void SaveData(SaveData data)
     {
-        _rb = GetComponent<Rigidbody>();
-        _animator = GetComponent<Animator>();
-        DebugController.Instance?.AddDebugCommand(new DebugCommand("disable_w", "disable w key", "", prnt));
+        var psd = SaveManager.Instance.GetCharacterData(CharacterType.Robot);
+        psd.Position = transform.position;
+        psd.Yaw = transform.rotation.eulerAngles.y;
+        psd.HitsRemaining = hits;
+        psd.LivesRemaining = lives;
+        // Debug.Log($"save data {psd.HitsRemaining} & {psd.LivesRemaining} & {data.Meta.SaveName}");
     }
 
-
-    private void OnMove(InputValue context)
+    public void LoadData(SaveData data)
     {
-        _moveInput = context.Get<Vector2>();
-        _animator.SetFloat(Vertical, _moveInput.x);
-        _animator.SetFloat(Horizontal, _moveInput.y);
+        var psd = SaveManager.Instance.GetCharacterData(CharacterType.Robot);
+        transform.position = psd.Position;
+        var newRot = Quaternion.Euler(0, psd.Yaw, 0);
+        transform.rotation = newRot;
+        hits = psd.HitsRemaining;
+        lives = psd.LivesRemaining;
+        // Debug.Log($"load obj {psd.HitsRemaining}");
     }
-    
-    private void Update()
-    {
-        GatherInput();
-        Look();
-    
-    }
-    
-    private void FixedUpdate()
-    {
-        Move();
-    }
-    
-    private void GatherInput()
-    {
-        _input = new Vector3(_moveInput.x, 0, _moveInput.y);
-    }
-    
-    // private void Look()
-    // {
-    //     if (_input == Vector3.zero) return;
-    //
-    //     var rot = Quaternion.LookRotation(_input.ToIso(), Vector3.up);
-    //     transform.rotation = Quaternion.RotateTowards(transform.rotation, rot, turnSpeed * Time.deltaTime);
-    // }
-    //
-    // private void Move()
-    // {
-    //     _rb.MovePosition(transform.position +
-    //                      transform.forward * (_input.normalized.magnitude * speed * Time.deltaTime));
-    // }
-
-    private void Move()
-    {
-        if (_input == Vector3.zero) return;
-
-        var targetRot = Quaternion.LookRotation(_input.ToIso(), Vector3.up);
-
-        float angleDiff = Quaternion.Angle(transform.rotation, targetRot);
-
-        if (angleDiff < 1f) 
-        {
-            _rb.MovePosition(transform.position +
-                             transform.forward * (_input.normalized.magnitude * speed * Time.deltaTime));
-        }
-    }
-    // private void Look()
-    // {
-    //     if (_input == Vector3.zero) return;
-    //
-    //     var rot = Quaternion.LookRotation(_input.ToIso(), Vector3.up);
-    //     transform.rotation = Quaternion.RotateTowards(transform.rotation, rot, turnSpeed * Time.deltaTime);
-    // }
-
-    private void Look()
-    {
-        // If focusing, rotate to look at closest enemy
-        if (CameraManager.Instance != null && CameraManager.Instance.IsFocusing)
-        {
-            GameObject closestEnemy = GetClosestEnemy();
-            if (closestEnemy != null)
-            {
-                Vector3 direction = closestEnemy.transform.position - transform.position;
-                direction.y = 0f; // Flatten to prevent tilting
-
-                if (direction.sqrMagnitude > 0.01f)
-                {
-                    Quaternion targetRot = Quaternion.LookRotation(direction.normalized, Vector3.up);
-                    transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, turnSpeed * Time.deltaTime);
-                }
-
-                return;
-            }
-        }
-
-        // Default movement-based look direction
-        if (_input == Vector3.zero) return;
-
-        var rot = Quaternion.LookRotation(_input.ToIso(), Vector3.up);
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, rot, turnSpeed * Time.deltaTime);
-    }
-
-    private GameObject GetClosestEnemy()
-    {
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-
-        GameObject closest = null;
-        float minDistance = float.MaxValue;
-
-        foreach (var enemy in enemies)
-        {
-            float dist = Vector3.Distance(transform.position, enemy.transform.position);
-            if (dist < minDistance)
-            {
-                minDistance = dist;
-                closest = enemy;
-            }
-        }
-
-        return closest;
-    }
-
-    #endregion
 
     // #region New input system
     //
@@ -184,16 +74,16 @@ public class PlayerMovement : MonoBehaviour
     // }
     //
     // #endregion
-    
-    
+
+
     private void prnt()
     {
         var moveAction = GetComponent<PlayerInput>().actions["Move"];
-    
+
         var upBinding = moveAction.bindings
-            .Select((binding, index) => new { binding, index }) 
+            .Select((binding, index) => new { binding, index })
             .FirstOrDefault(b => b.binding.name == "up" && b.binding.isPartOfComposite);
-    
+
         if (upBinding != null)
         {
             moveAction.ApplyBindingOverride(upBinding.index, new InputBinding { overridePath = " " });
@@ -204,4 +94,133 @@ public class PlayerMovement : MonoBehaviour
             Debug.LogWarning("Couldn't find the 'up' binding to override");
         }
     }
+
+    #region rotate then move
+
+    private Rigidbody _rb;
+    private Animator _animator;
+    [SerializeField] private float speed = 5;
+    [SerializeField] [Range(0f, 360f)] private float turnSpeed = 90;
+    private Vector2 _moveInput;
+    private Vector3 _input;
+
+    // need to be unserialized, this is just for testing
+    [SerializeField] private int hits = 10;
+    [SerializeField] private int lives = 10;
+
+    private void Start()
+    {
+        _rb = GetComponent<Rigidbody>();
+        _animator = GetComponent<Animator>();
+        DebugController.Instance?.AddDebugCommand(new DebugCommand("disable_w", "disable w key", "", prnt));
+    }
+
+
+    private void OnMove(InputValue context)
+    {
+        _moveInput = context.Get<Vector2>();
+        _animator.SetFloat(Vertical, _moveInput.x);
+        _animator.SetFloat(Horizontal, _moveInput.y);
+    }
+
+    private void Update()
+    {
+        GatherInput();
+        Look();
+    }
+
+    private void FixedUpdate()
+    {
+        Move();
+    }
+
+    private void GatherInput()
+    {
+        _input = new Vector3(_moveInput.x, 0, _moveInput.y);
+    }
+
+    // private void Look()
+    // {
+    //     if (_input == Vector3.zero) return;
+    //
+    //     var rot = Quaternion.LookRotation(_input.ToIso(), Vector3.up);
+    //     transform.rotation = Quaternion.RotateTowards(transform.rotation, rot, turnSpeed * Time.deltaTime);
+    // }
+    //
+    // private void Move()
+    // {
+    //     _rb.MovePosition(transform.position +
+    //                      transform.forward * (_input.normalized.magnitude * speed * Time.deltaTime));
+    // }
+
+    private void Move()
+    {
+        if (_input == Vector3.zero) return;
+
+        var targetRot = Quaternion.LookRotation(_input.ToIso(), Vector3.up);
+
+        var angleDiff = Quaternion.Angle(transform.rotation, targetRot);
+
+        if (angleDiff < 1f)
+            _rb.MovePosition(transform.position +
+                             transform.forward * (_input.normalized.magnitude * speed * Time.deltaTime));
+    }
+    // private void Look()
+    // {
+    //     if (_input == Vector3.zero) return;
+    //
+    //     var rot = Quaternion.LookRotation(_input.ToIso(), Vector3.up);
+    //     transform.rotation = Quaternion.RotateTowards(transform.rotation, rot, turnSpeed * Time.deltaTime);
+    // }
+
+    private void Look()
+    {
+        // If focusing, rotate to look at closest enemy
+        if (CameraManager.Instance != null && CameraManager.Instance.IsFocusing)
+        {
+            var closestEnemy = GetClosestEnemy();
+            if (closestEnemy != null)
+            {
+                var direction = closestEnemy.transform.position - transform.position;
+                direction.y = 0f; // Flatten to prevent tilting
+
+                if (direction.sqrMagnitude > 0.01f)
+                {
+                    var targetRot = Quaternion.LookRotation(direction.normalized, Vector3.up);
+                    transform.rotation =
+                        Quaternion.RotateTowards(transform.rotation, targetRot, turnSpeed * Time.deltaTime);
+                }
+
+                return;
+            }
+        }
+
+        // Default movement-based look direction
+        if (_input == Vector3.zero) return;
+
+        var rot = Quaternion.LookRotation(_input.ToIso(), Vector3.up);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, rot, turnSpeed * Time.deltaTime);
+    }
+
+    private GameObject GetClosestEnemy()
+    {
+        var enemies = GameObject.FindGameObjectsWithTag("Enemy");
+
+        GameObject closest = null;
+        var minDistance = float.MaxValue;
+
+        foreach (var enemy in enemies)
+        {
+            var dist = Vector3.Distance(transform.position, enemy.transform.position);
+            if (dist < minDistance)
+            {
+                minDistance = dist;
+                closest = enemy;
+            }
+        }
+
+        return closest;
+    }
+
+    #endregion
 }
