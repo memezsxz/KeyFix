@@ -191,4 +191,28 @@ class DebugController : Singleton<DebugController>
 
         Debug.Log(list);
     }
+    
+    /// <summary>
+    /// Add a debug command to the debugger
+    /// </summary>
+    /// <param name="command">The command to be added</param>
+    /// <code>AddDebugCommand(
+    ///      new DebugCommand(
+    ///      "delete_all_enemies",
+    ///      "deletes all enemies",
+    ///      "",
+    ///      () => { print("deleted all"); })
+    /// );</code>
+    public void AddDebugCommand(DebugCommand command)
+    {
+        if (DebugController.Instance != null)
+        {
+            DebugController.Instance.RegisterCommand(command);
+            // Debug.Log($"Command {command.CommandId} added."); // // for testing only
+        }
+        else
+        {
+            Debug.LogWarning("No debug controller found."); // for testing only
+        }
+    }
 }

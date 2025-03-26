@@ -3,7 +3,7 @@ using System;
 public class DebugCommand : DebugCommandBase
 {
     private readonly Action _command;
-    private readonly Action<string[]> _commandWithArgs;  // For commands with parameters
+    private readonly Action<string[]> _commandWithArgs; // For commands with parameters
     private readonly bool _expectsArguments;
 
     public DebugCommand(string commandId, string commandDescription, string commandFormat, Action command) : base(
@@ -12,7 +12,8 @@ public class DebugCommand : DebugCommandBase
         _command = command;
     }
 
-    public DebugCommand(string commandId, string commandDescription, string commandFormat, Action<string[]> commandWithArgs)
+    public DebugCommand(string commandId, string commandDescription, string commandFormat,
+        Action<string[]> commandWithArgs)
         : base(commandId, commandDescription, commandFormat)
     {
         _commandWithArgs = commandWithArgs;
