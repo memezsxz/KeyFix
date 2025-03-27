@@ -93,7 +93,7 @@ public class SaveManager : PersistentSingleton<SaveManager>
         _sessionStartTime = DateTime.Now;
 
         foreach (var handler in _dataHandlers) handler.SaveData(SaveData);
-
+        
         var json = JsonUtility.ToJson(SaveData);
         using var stream = new FileStream(GetSavePath(SaveSlotName), FileMode.OpenOrCreate, FileAccess.Write);
         // _formatter.Serialize(stream, json);

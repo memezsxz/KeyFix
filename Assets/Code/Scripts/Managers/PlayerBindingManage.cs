@@ -7,6 +7,8 @@ using UnityEngine.InputSystem;
 public class PlayerBindingManage : MonoBehaviour
 {
     [SerializeField] private InputBindingSet bindingSet;
+    
+    public InputBindingSet BindingSet => bindingSet;
 
     private PlayerInput _playerInput;
 

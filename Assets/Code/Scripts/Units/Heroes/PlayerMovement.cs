@@ -10,26 +10,6 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
 
     private CharacterType _charecterType = CharacterType.Robot; // the type of character that is holding the script
 
-    public void SaveData(SaveData data)
-    {
-        var psd = SaveManager.Instance.GetCharacterData(CharacterType.Robot);
-        psd.Position = transform.position;
-        psd.Yaw = transform.rotation.eulerAngles.y;
-        psd.HitsRemaining = hits;
-        psd.LivesRemaining = lives;
-        // Debug.Log($"save data {psd.HitsRemaining} & {psd.LivesRemaining} & {data.Meta.SaveName}");
-    }
-
-    public void LoadData(SaveData data)
-    {
-        var psd = SaveManager.Instance.GetCharacterData(CharacterType.Robot);
-        transform.position = psd.Position;
-        var newRot = Quaternion.Euler(0, psd.Yaw, 0);
-        transform.rotation = newRot;
-        hits = psd.HitsRemaining;
-        lives = psd.LivesRemaining;
-        // Debug.Log($"load obj {psd.HitsRemaining}");
-    }
 
     // #region New input system
     //
@@ -50,7 +30,7 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
     //
     // void Update()
     // {
-    //     HandleRotation();
+    //     HandleRotation(); 
     //     HandleMovement();
     // }
     //
@@ -223,4 +203,25 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
     }
 
     #endregion
+
+    public void SaveData(SaveData data)
+    {
+        var psd = SaveManager.Instance.GetCharacterData(CharacterType.Robot);
+        psd.Position = transform.position;
+        psd.Yaw = transform.rotation.eulerAngles.y;
+        psd.HitsRemaining = hits;
+        psd.LivesRemaining = lives;
+        // Debug.Log($"save data {psd.HitsRemaining} & {psd.LivesRemaining} & {data.Meta.SaveName}");
+    }
+
+    public void LoadData(SaveData data)
+    {
+        var psd = SaveManager.Instance.GetCharacterData(CharacterType.Robot);
+        transform.position = psd.Position;
+        var newRot = Quaternion.Euler(0, psd.Yaw, 0);
+        transform.rotation = newRot;
+        hits = psd.HitsRemaining;
+        lives = psd.LivesRemaining;
+        // Debug.Log($"load obj {psd.HitsRemaining}");
+    }
 }
