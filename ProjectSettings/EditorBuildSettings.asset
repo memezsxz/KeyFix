@@ -8,6 +8,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Level/Scenes/SampleScene.unity
     guid: 47c75320e56294c71bdf0b3f72c19503
+  - enabled: 1
+    path: Assets/Level/Scenes/Fatima_PauseMenu.unity
+    guid: a9b408b42766b6c47a4437e2a1813ce3
+  - enabled: 1
+    path: Assets/Level/Scenes/Fatima_MainMenu.unity
+    guid: 19cb93046b476524c91b5c43d7c260cd
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: fc6dd7abab3184dada9a30ae25367c5a, type: 2}
     com.unity.input.settings: {fileID: 11400000, guid: 3fa17a22585a042bda4b19d806b32ee1, type: 2}
