@@ -2,6 +2,7 @@
   "dependencies": {
     "com.tarodev.autosave": "https://github.com/Matthew-J-Spencer/Tarodev.git?path=Assets/Plugins/AutoSave",
     "com.unity.cinemachine": "2.10.3",
+    "com.unity.cloud.gltfast": "6.11.0",
     "com.unity.collab-proxy": "2.3.1",
     "com.unity.ide.rider": "3.0.35",
     "com.unity.ide.visualstudio": "2.0.22",
