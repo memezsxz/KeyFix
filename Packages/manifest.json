@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.atteneder.gltfast": "https://github.com/atteneder/glTFast.git",
     "com.tarodev.autosave": "https://github.com/Matthew-J-Spencer/Tarodev.git?path=Assets/Plugins/AutoSave",
     "com.unity.cinemachine": "2.10.3",
     "com.unity.collab-proxy": "2.3.1",
