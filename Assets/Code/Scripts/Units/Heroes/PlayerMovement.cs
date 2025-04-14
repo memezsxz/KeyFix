@@ -11,50 +11,82 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
     private CharacterType _charecterType = CharacterType.Robot; // the type of character that is holding the script
 
 
-    // #region New input system
-    //
-    // private void Start()
-    // {
-    //     DebugController.Instance.AddDebugCommand(new DebugCommand("disable_w", "disable w key", "", prnt));
-    // }
-    //
-    // private float moveSpeed = 5f;
-    // private float rotationSpeed = 60f; // Degrees per second (smaller number -> slower)
-    //
-    // private Vector2 movementInput;
-    //
-    // public void OnMove(InputValue context)
-    // {
-    //     movementInput = context.Get<Vector2>();
-    // }
-    //
-    // void Update()
-    // {
-    //     HandleRotation(); 
-    //     HandleMovement();
-    // }
-    //
-    // void HandleRotation()
-    // {
-    //     float horizontal = movementInput.x;
-    //
-    //     if (!(Mathf.Abs(horizontal) > 0.1f)) return;
-    //     float rotationAmount = horizontal * rotationSpeed * Time.deltaTime;
-    //     transform.Rotate(0f, rotationAmount, 0f);
-    // }
-    //
-    // void HandleMovement()
-    // {
-    //     float vertical = movementInput.y;
-    //
-    //     if (!(vertical > 0.1f)) return;
-    //     
-    //     Vector3 move = transform.forward * moveSpeed * Time.deltaTime;
-    //     transform.position += move;
-    // }
-    //
-    // #endregion
+    #region Testing Other Input system
 
+    // public GameManagement GameManagement;
+    // public GameObject LevelSuccessParticles;
+    // public ParticleSystem LevelFailureParticles;
+    private CharacterController controller;
+    private Vector3 playerVelocity;
+    private bool groundedPlayer;
+    private float playerSpeed = 8.0f;
+    private float jumpHeight = 1.0f;
+    private float gravityValue = -9.81f;
+    private InputAction moveAction, jumpAction;
+    public Animator anim;
+    public float allowPlayerRotation = 0.1f;
+    [Range(0, 1f)] public float StartAnimTime = 0.3f;
+    [Range(0, 1f)] public float StopAnimTime = 0.15f;
+
+    private void Start()
+    {
+        controller = gameObject.GetComponent<CharacterController>();
+        anim = this.GetComponent<Animator>();
+
+        var actions = gameObject.GetComponent<PlayerInput>().actions;
+        moveAction = actions.FindAction("Move");
+        jumpAction = actions.FindAction("Jump");
+    }
+
+    void Update()
+    {
+        // Check if grounded
+        groundedPlayer = controller.isGrounded;
+        if (groundedPlayer && playerVelocity.y < 0)
+        {
+            playerVelocity.y = 0f;
+        }
+        
+        // Read input from new Input System
+
+        Vector2 moveValue = moveAction.ReadValue<Vector2>();
+        float inputX = moveValue.x;
+        float inputZ = moveValue.y;
+
+        // Move vector and motion
+
+        Vector3 move = new Vector3(moveValue.x, 0.0f, moveValue.y);
+        controller.Move(move * Time.deltaTime * playerSpeed);
+
+        // Rotate to direction of movement
+        if (move != Vector3.zero)
+        {
+            gameObject.transform.forward = move;
+        }
+
+        // Jumping logic
+        if (jumpAction.IsPressed() && groundedPlayer)
+        {
+            playerVelocity.y += Mathf.Sqrt(jumpHeight * -2.0f * gravityValue);
+        }
+        // Apply gravity
+        playerVelocity.y += gravityValue * Time.deltaTime;
+        controller.Move(playerVelocity * Time.deltaTime);
+
+        // animation
+        float speed = new Vector2(inputX, inputZ).sqrMagnitude;
+
+        if (speed > 0.1f)
+        {
+            anim.SetFloat("Blend", speed, StartAnimTime, Time.deltaTime);
+        }
+        else if (speed < allowPlayerRotation)
+        {
+            anim.SetFloat("Blend", speed, StopAnimTime, Time.deltaTime);
+        }
+    }
+
+    #endregion
 
     private void prnt()
     {
@@ -75,142 +107,13 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
         }
     }
 
-    #region rotate then move
-
-    private Rigidbody _rb;
-    private Animator _animator;
-    [SerializeField] private float speed = 5;
-    [SerializeField] [Range(0f, 360f)] private float turnSpeed = 90;
-    private Vector2 _moveInput;
-    private Vector3 _input;
-
-    // need to be unserialized, this is just for testing
-    [SerializeField] private int hits = 10;
-    [SerializeField] private int lives = 10;
-
-    private void Start()
-    {
-        _rb = GetComponent<Rigidbody>();
-        _animator = GetComponent<Animator>();
-        DebugController.Instance?.AddDebugCommand(new DebugCommand("disable_w", "disable w key", "", prnt));
-    }
-
-
-    private void OnMove(InputValue context)
-    {
-        _moveInput = context.Get<Vector2>();
-        _animator.SetFloat(Vertical, _moveInput.x);
-        _animator.SetFloat(Horizontal, _moveInput.y);
-    }
-
-    private void Update()
-    {
-        GatherInput();
-        Look();
-    }
-
-    private void FixedUpdate()
-    {
-        Move();
-    }
-
-    private void GatherInput()
-    {
-        _input = new Vector3(_moveInput.x, 0, _moveInput.y);
-    }
-
-    // private void Look()
-    // {
-    //     if (_input == Vector3.zero) return;
-    //
-    //     var rot = Quaternion.LookRotation(_input.ToIso(), Vector3.up);
-    //     transform.rotation = Quaternion.RotateTowards(transform.rotation, rot, turnSpeed * Time.deltaTime);
-    // }
-    //
-    // private void Move()
-    // {
-    //     _rb.MovePosition(transform.position +
-    //                      transform.forward * (_input.normalized.magnitude * speed * Time.deltaTime));
-    // }
-
-    private void Move()
-    {
-        if (_input == Vector3.zero) return;
-
-        var targetRot = Quaternion.LookRotation(_input.ToIso(), Vector3.up);
-
-        var angleDiff = Quaternion.Angle(transform.rotation, targetRot);
-
-        if (angleDiff < 1f)
-            _rb.MovePosition(transform.position +
-                             transform.forward * (_input.normalized.magnitude * speed * Time.deltaTime));
-    }
-    // private void Look()
-    // {
-    //     if (_input == Vector3.zero) return;
-    //
-    //     var rot = Quaternion.LookRotation(_input.ToIso(), Vector3.up);
-    //     transform.rotation = Quaternion.RotateTowards(transform.rotation, rot, turnSpeed * Time.deltaTime);
-    // }
-
-    private void Look()
-    {
-        // If focusing, rotate to look at closest enemy
-        if (CameraManager.Instance != null && CameraManager.Instance.IsFocusing)
-        {
-            var closestEnemy = GetClosestEnemy();
-            if (closestEnemy != null)
-            {
-                var direction = closestEnemy.transform.position - transform.position;
-                direction.y = 0f; // Flatten to prevent tilting
-
-                if (direction.sqrMagnitude > 0.01f)
-                {
-                    var targetRot = Quaternion.LookRotation(direction.normalized, Vector3.up);
-                    transform.rotation =
-                        Quaternion.RotateTowards(transform.rotation, targetRot, turnSpeed * Time.deltaTime);
-                }
-
-                return;
-            }
-        }
-
-        // Default movement-based look direction
-        if (_input == Vector3.zero) return;
-
-        var rot = Quaternion.LookRotation(_input.ToIso(), Vector3.up);
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, rot, turnSpeed * Time.deltaTime);
-    }
-
-    private GameObject GetClosestEnemy()
-    {
-        var enemies = GameObject.FindGameObjectsWithTag("Enemy");
-
-        GameObject closest = null;
-        var minDistance = float.MaxValue;
-
-        foreach (var enemy in enemies)
-        {
-            var dist = Vector3.Distance(transform.position, enemy.transform.position);
-            if (dist < minDistance)
-            {
-                minDistance = dist;
-                closest = enemy;
-            }
-        }
-
-        return closest;
-    }
-
-    #endregion
-
     public void SaveData(SaveData data)
     {
         var psd = SaveManager.Instance.GetCharacterData(CharacterType.Robot);
         psd.Position = transform.position;
         psd.Yaw = transform.rotation.eulerAngles.y;
-        psd.HitsRemaining = hits;
-        psd.LivesRemaining = lives;
+        // psd.HitsRemaining = hits;
+        // psd.LivesRemaining = lives;
         // Debug.Log($"save data {psd.HitsRemaining} & {psd.LivesRemaining} & {data.Meta.SaveName}");
     }
 
@@ -220,8 +123,8 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
         transform.position = psd.Position;
         var newRot = Quaternion.Euler(0, psd.Yaw, 0);
         transform.rotation = newRot;
-        hits = psd.HitsRemaining;
-        lives = psd.LivesRemaining;
+        // hits = psd.HitsRemaining;
+        // lives = psd.LivesRemaining;
         // Debug.Log($"load obj {psd.HitsRemaining}");
     }
 }

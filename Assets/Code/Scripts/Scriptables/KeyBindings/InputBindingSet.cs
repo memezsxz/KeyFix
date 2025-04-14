@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-
-
-using UnityEngine;
 using UnityEditor;
+
 [CreateAssetMenu(fileName = "InputBindingSet", menuName = "Input/InputBindingSet")]
 public class InputBindingSet : ScriptableObject
 {
