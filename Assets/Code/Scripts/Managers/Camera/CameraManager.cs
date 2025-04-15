@@ -14,6 +14,8 @@ public class CameraManager : PersistentSingleton<CameraManager>
 
     private List<CinemachineVirtualCameraBase> _cameras;
     [SerializeField] private CinemachineVirtualCameraBase focusCamera;
+    [SerializeField] private GameObject Player;
+    [SerializeField] private GameObject PlayerEye;
     private int _firstCameraIndex = -1;
     private InputAction _lockInputAction;
     private InputAction _changeInputAction;
@@ -23,9 +25,21 @@ public class CameraManager : PersistentSingleton<CameraManager>
 
     private void Start()
     {
-        _cameras = new List<CinemachineVirtualCameraBase>(GetComponentsInChildren<CinemachineVirtualCameraBase>());
+        // this is excluding TopRig, MiddleRig, and BottomRig of FreeLook camera
+        _cameras = new List<CinemachineVirtualCameraBase>(
+            gameObject.GetComponentsInChildren<CinemachineVirtualCameraBase>()
+                .Where(cam =>
+                    !(cam.transform.parent != null &&
+                      cam.transform.parent.GetComponent<Cinemachine.CinemachineFreeLook>() != null))
+        );
+
+        // Debug.LogWarning("cms:" + _cameras.Count);
+
+        _cameras.ForEach(c => Debug.Log(c.name));
         _cameras.Remove(focusCamera);
-        
+        // Debug.LogWarning("cms:" + _cameras.Count);
+
+
         if (_cameras.Count == 0)
         {
             Debug.LogWarning("No virtual cameras found!");
@@ -40,6 +54,12 @@ public class CameraManager : PersistentSingleton<CameraManager>
         _lockInputAction.started += OnFocusStarted;
         _lockInputAction.canceled += OnFocusCanceled;
 
+        _cameras.ForEach(c =>
+        {
+            c.enabled = false;
+            c.LookAt = Player.transform;
+            c.Follow = Player.transform;
+        });
 
         EnableNextCamera();
     }

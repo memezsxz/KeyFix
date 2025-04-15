@@ -32,8 +32,7 @@ public class ProgressData
 {
     public int CurrentScene;
 
-    public string
-        LastCheckpointId = ""; // TODO Maryam: see how will the checkpoint system work. // optional: for respawn
+    public string LastCheckpointId = ""; // TODO Maryam: see how will the checkpoint system work. // optional: for respawn
 
     public List<string> RepairedKeys = new(); // e.g. ["W", "A"]
     public List<string> DeadKeys = new(); // e.g. ["W", "A"]
@@ -46,6 +45,7 @@ public class PlayerStateData
     public float Yaw; // The Y-axis rotation (Euler angle)
     public int LivesRemaining = 10; // lives till the player looses the level and the button is damaged puritanically 
     public int HitsRemaining = 10; // hits till the player is reseted to the last checkpoint
+    public PlayerBindingManage Bindings;
 }
 
 [Serializable]

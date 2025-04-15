@@ -7,7 +7,10 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
     // TODO Maryam: should add require Animator to the script 
     private static readonly int Vertical = Animator.StringToHash("vertical");
     private static readonly int Horizontal = Animator.StringToHash("horizontal");
+    private static readonly int isFalling = Animator.StringToHash("isFalling");
+    private PlayerBindingManage bindingManage;
 
+    [SerializeField]
     private CharacterType _charecterType = CharacterType.Robot; // the type of character that is holding the script
 
 
@@ -24,15 +27,19 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
     private float gravityValue = -9.81f;
     private InputAction moveAction, jumpAction;
     public Animator anim;
-    public float allowPlayerRotation = 0.1f;
+    public float allowPlayerRotation = 1f;
     [Range(0, 1f)] public float StartAnimTime = 0.3f;
     [Range(0, 1f)] public float StopAnimTime = 0.15f;
+    private float lastYPosition;
+
 
     private void Start()
     {
+        lastYPosition = transform.position.y;
         controller = gameObject.GetComponent<CharacterController>();
         anim = this.GetComponent<Animator>();
-
+        // anim.applyRootMotion = false;
+        bindingManage = gameObject.GetComponent<PlayerBindingManage>();
         var actions = gameObject.GetComponent<PlayerInput>().actions;
         moveAction = actions.FindAction("Move");
         jumpAction = actions.FindAction("Jump");
@@ -40,13 +47,15 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
 
     void Update()
     {
+        lastYPosition = transform.position.y;
+
         // Check if grounded
         groundedPlayer = controller.isGrounded;
         if (groundedPlayer && playerVelocity.y < 0)
         {
             playerVelocity.y = 0f;
         }
-        
+
         // Read input from new Input System
 
         Vector2 moveValue = moveAction.ReadValue<Vector2>();
@@ -62,13 +71,33 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
         if (move != Vector3.zero)
         {
             gameObject.transform.forward = move;
+
+            // Quaternion currentRotation = transform.rotation;
+            // Quaternion targetRotation = Quaternion.LookRotation(move);
+            // transform.rotation = Quaternion.Slerp(currentRotation, targetRotation, allowPlayerRotation);
         }
 
+
         // Jumping logic
+        // if (jumpAction.IsPressed() && groundedPlayer)
         if (jumpAction.IsPressed() && groundedPlayer)
         {
             playerVelocity.y += Mathf.Sqrt(jumpHeight * -2.0f * gravityValue);
+            anim.SetBool("isFalling", false); // Reset fall state if jumping
         }
+        else
+        {
+            if (!groundedPlayer && playerVelocity.y < -0.5f)
+            {
+                anim.SetBool("isFalling", true); // Falling down
+            }
+            else if (groundedPlayer)
+            {
+                anim.SetBool("isFalling", false); // Landed or idle
+            }
+        }
+
+
         // Apply gravity
         playerVelocity.y += gravityValue * Time.deltaTime;
         controller.Move(playerVelocity * Time.deltaTime);
@@ -84,18 +113,173 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
         {
             anim.SetFloat("Blend", speed, StopAnimTime, Time.deltaTime);
         }
+
+        // float currentY = transform.position.y;
+        // float deltaY = currentY - lastYPosition;
+        //
+        // if (Mathf.Abs(deltaY) < 0.001f)
+        // {
+        //     anim.SetInteger(YMovement, 0); // Not moving vertically
+        // }
+        // else if (deltaY > 0f)
+        // {
+        // }
+        // else
+        // {
+        //     anim.SetInteger(YMovement, -1); // Moving down (falling)
+        // }
+        //
+        // lastYPosition = currentY;
     }
 
     #endregion
 
-    private void prnt()
+//
+//     #region Testing Other Input system
+//     public float Velocity = 5;
+//     [Space]
+//     private InputAction moveAction, jumpAction;
+//
+//     public float InputX;
+//     public float InputZ;
+//     public Vector3 desiredMoveDirection;
+//     public bool blockRotationPlayer;
+//     public float desiredRotationSpeed = 0.1f;
+//     public Animator anim;
+//     public float Speed;
+//     public float allowPlayerRotation = 0.1f;
+//     public Camera cam;
+//     public CharacterController controller;
+//     public bool isGrounded;
+//
+//     private Vector3 playerVelocity;
+//     private bool groundedPlayer;
+//     private float jumpHeight = 1.0f;
+//
+//     private float gravityValue = -9.81f;
+//
+//     [Header("Animation Smoothing")]
+//     [Range(0, 1f)]
+//     public float HorizontalAnimSmoothTime = 0.2f;
+//     [Range(0, 1f)]
+//     public float VerticalAnimTime = 0.2f;
+//     [Range(0,1f)]
+//     public float StartAnimTime = 0.3f;
+//     [Range(0, 1f)]
+//     public float StopAnimTime = 0.15f;
+//
+//     public float verticalVel;
+//     private Vector3 moveVector;
+//
+// // Use this for initialization
+// 	void Start () {
+// 		anim = this.GetComponent<Animator> ();
+// 		cam = Camera.main;
+// 		controller = this.GetComponent<CharacterController> ();
+// 		var actions = gameObject.GetComponent<PlayerInput>().actions;
+// 		moveAction = actions.FindAction("Move");
+// 		jumpAction = actions.FindAction("Jump");
+// 	}
+// 	
+// 	// Update is called once per frame
+// 	void Update () {
+// 		InputMagnitude ();
+//
+//         isGrounded = controller.isGrounded;
+//         if (isGrounded)
+//         {
+//             verticalVel -= 0;
+//         }
+//         else
+//         {
+//             verticalVel -= 1;
+//         }
+//         
+//         // Jumping logic
+//         if (jumpAction.IsPressed() && groundedPlayer)
+//         {
+//             playerVelocity.y += Mathf.Sqrt(jumpHeight * -2.0f * gravityValue);
+//         }
+//         // Apply gravity
+//         playerVelocity.y += gravityValue * Time.deltaTime;
+//
+//         moveVector = new Vector3(0, verticalVel * .2f * Time.deltaTime, 0);
+//         controller.Move(moveVector);
+//         controller.Move(playerVelocity * Time.deltaTime);
+//     }
+//
+//     void PlayerMoveAndRotation() {
+// 	    Vector2 moveValue = moveAction.ReadValue<Vector2>();
+// 	    InputX = moveValue.x;
+// 	    InputZ = moveValue.y;
+// 	    
+// 		var camera = Camera.main;
+// 		var forward = cam.transform.forward;
+// 		var right = cam.transform.right;
+// 		
+// 		forward.y = 0f;
+// 		right.y = 0f;
+// 		
+// 		forward.Normalize ();
+// 		right.Normalize ();
+// 		
+// 		desiredMoveDirection = forward * InputZ + right * InputX;
+//
+// 		if (blockRotationPlayer == false) {
+// 			transform.rotation = Quaternion.Slerp (transform.rotation, Quaternion.LookRotation (desiredMoveDirection), desiredRotationSpeed);
+//             controller.Move(desiredMoveDirection * Time.deltaTime * Velocity);
+// 		}
+// 	}
+//
+//     public void LookAt(Vector3 pos)
+//     {
+//         transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(pos), desiredRotationSpeed);
+//     }
+//
+//     public void RotateToCamera(Transform t)
+//     {
+//         var camera = Camera.main;
+//         var forward = cam.transform.forward;
+//         var right = cam.transform.right;
+//
+//         desiredMoveDirection = forward;
+//
+//         t.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(desiredMoveDirection), desiredRotationSpeed);
+//     }
+//
+// 	void InputMagnitude() {
+// 		//Calculate Input Vectors
+// 		Vector2 moveValue = moveAction.ReadValue<Vector2>();
+// 		InputX = moveValue.x;
+// 		InputZ = moveValue.y;
+// 		
+// 		//anim.SetFloat ("InputZ", InputZ, VerticalAnimTime, Time.deltaTime * 2f);
+// 		//anim.SetFloat ("InputX", InputX, HorizontalAnimSmoothTime, Time.deltaTime * 2f);
+//
+// 		//Calculate the Input Magnitude
+// 		Speed = new Vector2(InputX, InputZ).sqrMagnitude;
+//
+//         //Physically move player
+//
+// 		if (Speed > allowPlayerRotation) {
+// 			anim.SetFloat ("Blend", Speed, StartAnimTime, Time.deltaTime);
+// 			PlayerMoveAndRotation ();
+// 		} else if (Speed < allowPlayerRotation) {
+// 			anim.SetFloat ("Blend", Speed, StopAnimTime, Time.deltaTime);
+// 		}
+// 	}
+//
+//     #endregion
+
+
+    private void UpdatePlayerMovementBinding()
     {
         var moveAction = GetComponent<PlayerInput>().actions["Move"];
 
         var upBinding = moveAction.bindings
             .Select((binding, index) => new { binding, index })
             .FirstOrDefault(b => b.binding.name == "up" && b.binding.isPartOfComposite);
-
+ 
         if (upBinding != null)
         {
             moveAction.ApplyBindingOverride(upBinding.index, new InputBinding { overridePath = " " });
@@ -109,9 +293,10 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
 
     public void SaveData(SaveData data)
     {
-        var psd = SaveManager.Instance.GetCharacterData(CharacterType.Robot);
+        var psd = SaveManager.Instance.GetCharacterData(_charecterType);
         psd.Position = transform.position;
         psd.Yaw = transform.rotation.eulerAngles.y;
+        psd.Bindings = bindingManage;
         // psd.HitsRemaining = hits;
         // psd.LivesRemaining = lives;
         // Debug.Log($"save data {psd.HitsRemaining} & {psd.LivesRemaining} & {data.Meta.SaveName}");
@@ -119,10 +304,11 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
 
     public void LoadData(SaveData data)
     {
-        var psd = SaveManager.Instance.GetCharacterData(CharacterType.Robot);
+        var psd = SaveManager.Instance.GetCharacterData(_charecterType);
         transform.position = psd.Position;
         var newRot = Quaternion.Euler(0, psd.Yaw, 0);
         transform.rotation = newRot;
+        bindingManage = psd.Bindings;
         // hits = psd.HitsRemaining;
         // lives = psd.LivesRemaining;
         // Debug.Log($"load obj {psd.HitsRemaining}");

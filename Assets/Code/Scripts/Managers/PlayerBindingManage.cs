@@ -6,8 +6,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerBindingManage : MonoBehaviour
 {
-    [SerializeField] private InputBindingSet bindingSet;
     
+    [SerializeField] private InputBindingSet bindingSet;
     public InputBindingSet BindingSet => bindingSet;
 
     private PlayerInput _playerInput;
@@ -18,7 +18,7 @@ public class PlayerBindingManage : MonoBehaviour
         {
             inputBindingConfig.isUnlocked = true;
         } // TODO Maryam: make false for game, later on
-
+        
         _playerInput = GetComponent<PlayerInput>();
     }
 
@@ -103,4 +103,6 @@ public class PlayerBindingManage : MonoBehaviour
             }
         ));
     }
+
+    
 }
