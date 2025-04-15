@@ -16,7 +16,7 @@ namespace Code.Scripts.Managers
                 () => Debug.Log("working in game manager"))); // command format hint in case of args
             ChangeState(GameState.Initial);
         }
-        
+
 
         /// <summary>
         /// Change the state of the game play
