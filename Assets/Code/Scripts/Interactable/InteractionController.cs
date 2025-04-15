@@ -1,0 +1,52 @@
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class InteractionController : MonoBehaviour
+{
+    [SerializeField] TextMeshProUGUI interactText;
+    [SerializeField] float interactionRadius = 10f;
+    [SerializeField] LayerMask interactableLayer;
+
+    IInteractable currentTargetedInteractable;
+
+    void Update()
+    {
+        UpdateCurrentInteractable();
+        UpdateInteractionText();
+        CheckForInteractionInput();
+    }
+
+    void UpdateCurrentInteractable()
+    {
+        Collider[] hits = Physics.OverlapSphere(transform.position, interactionRadius, interactableLayer);
+
+        currentTargetedInteractable = null;
+
+        foreach (var hit in hits)
+        {
+            IInteractable interactable = hit.GetComponent<IInteractable>();
+            if (interactable != null)
+            {
+                currentTargetedInteractable = interactable;
+                break;
+            }
+        }
+    }
+
+    void UpdateInteractionText()
+    {
+        interactText.text = currentTargetedInteractable != null
+            ? currentTargetedInteractable.InteractMessage
+            : string.Empty;
+    }
+
+    void CheckForInteractionInput()
+    {
+        if (Keyboard.current.eKey.wasPressedThisFrame && currentTargetedInteractable != null)
+        {
+            currentTargetedInteractable.Interact();
+        }
+    }
+}
