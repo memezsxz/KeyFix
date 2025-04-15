@@ -46,9 +46,13 @@ public class MainMenuManager : MonoBehaviour
     //panels methods
     public void StartNewGame()
     {
-        //SceneManager.LoadScene("Level1");
+        
+        SceneManager.LoadScene("LoadingScreen");
+        
         sceneFader.FadeToScene("Fatima_PauseMenu");
+        
     }
+
 
     public void ContinueGame()
     {
@@ -61,8 +65,10 @@ public class MainMenuManager : MonoBehaviour
         else
         {
             Debug.Log("No saved game found!");
+            
+
         }
-        
+
 
     }
 
