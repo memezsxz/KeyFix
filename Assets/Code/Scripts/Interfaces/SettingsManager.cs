@@ -18,7 +18,7 @@ public class SettingsManager : MonoBehaviour
     public Slider sfxSlider;
 
     [Header("Graphics")]
-    public TextMeshProUGUI graphicsLabel;
+    public TMP_Dropdown graphicsDropdown;
     private int qualityIndex;
 
     [Header("Resolution")]
@@ -42,10 +42,7 @@ public class SettingsManager : MonoBehaviour
 
         SetupResolutionSelector();
         SetupVolume();
-        SetupGraphics();
-
-        
-
+        SetupGraphicsDropdown();
 
     }
 
@@ -78,64 +75,56 @@ public class SettingsManager : MonoBehaviour
     #endregion
 
     #region Graphics
-    void SetupGraphics()
+    private bool initializingGraphicsDropdown = false;
+
+    void SetupGraphicsDropdown()
     {
+        initializingGraphicsDropdown = true;
+
+        graphicsDropdown.ClearOptions();
+
+        string[] qualityLevels = QualitySettings.names;
+        graphicsDropdown.AddOptions(new List<string>(qualityLevels));
+
         int savedIndex = PlayerPrefs.GetInt(QUALITY_PREF, -1);
-        if (savedIndex < 0 || savedIndex >= QualitySettings.names.Length)
+        Debug.Log("Saved index: " + savedIndex);
+
+        if (savedIndex < 0 || savedIndex >= qualityLevels.Length)
         {
-            qualityIndex = QualitySettings.GetQualityLevel(); // use current
+            Debug.Log("Using current quality level instead.");
+            qualityIndex = QualitySettings.GetQualityLevel();
+            
         }
         else
         {
             qualityIndex = savedIndex;
         }
+
+        graphicsDropdown.onValueChanged.RemoveAllListeners();
+        graphicsDropdown.value = qualityIndex;
+        graphicsDropdown.RefreshShownValue();
+
+        graphicsDropdown.onValueChanged.AddListener(delegate { OnDropdownChanged(); });
+
         QualitySettings.SetQualityLevel(qualityIndex);
-        Invoke(nameof(UpdateGraphicsLabel), 0.1f);
+
+        initializingGraphicsDropdown = false;
     }
 
-    void UpdateGraphicsLabel()
+    public void OnDropdownChanged()
     {
-        if (qualityIndex >= 0 && qualityIndex < QualitySettings.names.Length)
-        {
-            graphicsLabel.text = QualitySettings.names[qualityIndex];
-        }
-        else
-        {
-            graphicsLabel.text = "Unknown";
-        }
-    }
+        if (initializingGraphicsDropdown)
+            return;
 
-    public void pre()
-    {
-        qualityIndex--;
-        if (qualityIndex < 0)
-        {
-            qualityIndex = 0;
-        }
-
-        SetQuality();
-    }
-
-    public void next()
-    {
-        qualityIndex++;
-        if (qualityIndex >= QualitySettings.names.Length)
-        {
-            qualityIndex = QualitySettings.names.Length - 1;
-        }
-
+        qualityIndex = graphicsDropdown.value;
         SetQuality();
     }
 
     public void SetQuality()
     {
-        qualityIndex = Mathf.Clamp(qualityIndex, 0, QualitySettings.names.Length - 1);
-
         QualitySettings.SetQualityLevel(qualityIndex);
         PlayerPrefs.SetInt(QUALITY_PREF, qualityIndex);
-
         Debug.Log("Graphics set to: " + QualitySettings.names[qualityIndex]);
-        UpdateGraphicsLabel();
     }
     #endregion
 
@@ -196,7 +185,14 @@ public class SettingsManager : MonoBehaviour
         PlayerPrefs.DeleteKey(SFX_PREF);
         PlayerPrefs.DeleteKey(QUALITY_PREF);
         PlayerPrefs.DeleteKey(RES_PREF);
+
+
+        int defaultQuality = 2; // You can change this to 1 or 0 based on what you want
+        QualitySettings.SetQualityLevel(defaultQuality);
+        PlayerPrefs.SetInt(QUALITY_PREF, defaultQuality);
+
         Start();
+
     }
     #endregion
 }
