@@ -22,7 +22,7 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
     private CharacterController controller;
     private Vector3 playerVelocity;
     private bool groundedPlayer;
-    private float playerSpeed = 8.0f;
+    private float playerSpeed = 5f;
     private float jumpHeight = 1.0f;
     private float gravityValue = -9.81f;
     private InputAction moveAction, jumpAction;
