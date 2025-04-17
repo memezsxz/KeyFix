@@ -13,9 +13,9 @@ using UnityEngine;
 public class SaveManager : Singleton<SaveManager>
 {
     #region Fields & Properties
-    
-    [Header("Save Slot")] public string SaveSlotName = "Save1";
 
+    [Header("Save Slot")] public string SaveSlotName = "Save1";
+    public bool IsNewGame { get; private set; } = false;
     private List<IDataPersistence> _dataHandlers;
     public static readonly string LAST_GAME_PREF = "LastGame";
 
@@ -33,6 +33,7 @@ public class SaveManager : Singleton<SaveManager>
     public string Format => "json";
 
     private bool _encrypt = false;
+
     #endregion
 
     #region Unity Lifecycle
@@ -42,13 +43,17 @@ public class SaveManager : Singleton<SaveManager>
         _sessionStartTime = DateTime.Now;
 
         // Load last save slot from PlayerPrefs
+        IsNewGame = PlayerPrefs.GetString(LAST_GAME_PREF) == null;
+
         SaveSlotName = PlayerPrefs.GetString(LAST_GAME_PREF, "Slot1");
-        Debug.Log("Using save slot: " + SaveSlotName);
+        // Debug.Log("Using save slot: " + SaveSlotName);
 
         FindAllDataHandlers();
 
         // Optional: Auto-load
-        // LoadGame(SaveSlotName);
+        LoadGame(SaveSlotName);
+
+        DebugController.Instance.AddDebugCommand(new DebugCommand("save_game", "saved the game", "", () => SaveGame()));
     }
 
     #endregion
@@ -66,6 +71,8 @@ public class SaveManager : Singleton<SaveManager>
 
         foreach (var handler in _dataHandlers)
             handler.SaveData(ref _saveData);
+        
+        IsNewGame = !File.Exists(GetSavePath(_saveData.Meta.SaveName));
 
         WriteToFile();
     }
@@ -83,28 +90,27 @@ public class SaveManager : Singleton<SaveManager>
 
         if (!File.Exists(path))
         {
+            IsNewGame = true;
             SaveData = CreateDefaultSave();
             SaveData.Meta.SaveName = slotName;
             SaveGame();
+            // Debug.Log("New game saved");
         }
         else
         {
+            IsNewGame = false;
             using var stream = new FileStream(path, FileMode.Open);
             var data = (string)_formatter.Deserialize(stream);
 
             SaveData = _encrypt
                 ? JsonUtility.FromJson<SaveData>(EncryptDecrypt(data))
                 : JsonUtility.FromJson<SaveData>(data);
+            // Debug.Log("old game saved");
+
         }
 
         foreach (var handler in _dataHandlers)
             handler.LoadData(ref _saveData);
-        //
-        // Screen.SetResolution(
-        //     SaveData.Meta.ScreenWidth,
-        //     SaveData.Meta.ScreenHeight,
-        //     SaveData.Graphics.Fullscreen
-        // );
     }
 
     /// <summary>
@@ -121,6 +127,7 @@ public class SaveManager : Singleton<SaveManager>
     {
         LoadGame(SaveSlotName);
     }
+
     /// <summary>
     /// Creates a new SaveData object with default values.
     /// </summary>
@@ -134,16 +141,21 @@ public class SaveManager : Singleton<SaveManager>
             }
         };
     }
-    
+
     #endregion
 
     #region Settings Public API
 
     public void SaveSettings()
     {
-        FindObjectsOfType<MonoBehaviour>().OfType<IDataPersistence>().OfType<SoundManager>().ToList().ForEach(gm => gm.SaveData(ref _saveData));
-        FindObjectsOfType<MonoBehaviour>().OfType<IDataPersistence>().OfType<GraphicsManager>().ToList().ForEach(gm => gm.SaveData(ref _saveData));
+        FindObjectsOfType<MonoBehaviour>().OfType<IDataPersistence>().OfType<SoundManager>().ToList()
+            .ForEach(gm => gm.SaveData(ref _saveData));
+        FindObjectsOfType<MonoBehaviour>().OfType<IDataPersistence>().OfType<GraphicsManager>().ToList()
+            .ForEach(gm => gm.SaveData(ref _saveData));
         WriteToFile();
+
+        print(
+            $"Saved game settings: sound {_saveData.Sounds.SoundVolume}, music {_saveData.Sounds.MusicVolume}, quality {_saveData.Graphics.QualityName}, resolution {_saveData.Graphics.ResolutionWidth}x{_saveData.Graphics.ResolutionHeight}");
     }
 
     public void ResetSettings()
@@ -153,7 +165,9 @@ public class SaveManager : Singleton<SaveManager>
         _saveData.Sounds = new SoundData();
         SaveSettings();
     }
+
     #endregion
+
     #region Meta & Slot Helpers
 
     /// <summary>
@@ -190,7 +204,7 @@ public class SaveManager : Singleton<SaveManager>
     #endregion
 
     #region File System
-
+ 
     public bool HasSave(string slotName) =>
         File.Exists(GetSavePath(slotName));
 
@@ -209,6 +223,7 @@ public class SaveManager : Singleton<SaveManager>
         foreach (char c in text) result.Append((char)(c ^ 129)); // XOR obfuscation
         return result.ToString();
     }
+
     /// <summary>
     /// Writes the save data to file 
     /// </summary>
@@ -219,6 +234,7 @@ public class SaveManager : Singleton<SaveManager>
         using var stream = new FileStream(GetSavePath(SaveSlotName), FileMode.OpenOrCreate, FileAccess.Write);
         _formatter.Serialize(stream, _encrypt ? EncryptDecrypt(json) : json);
     }
+
     #endregion
 
     #region Character Save Support

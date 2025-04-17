@@ -7,7 +7,7 @@ public class StartScreenManager : MonoBehaviour
 {
     public GameObject pressScreenCanvas; // Canvas with logo and press space text
     public GameObject mainMenuCanvas;
-    public AudioSource spaceSFX; // Assign this in Inspector
+    public AudioClip ButtonClickedClip; // Assign this in Inspector
 
 
     private bool hasPressedSpace = false;
@@ -30,8 +30,7 @@ public class StartScreenManager : MonoBehaviour
             hasPressedSpace = true;
             pressScreenCanvas.SetActive(false);
 
-            if (spaceSFX != null)
-                spaceSFX.Play();
+        SoundManager.Instance.PlaySound(ButtonClickedClip);
 
             if (mainMenuCanvas != null)
                 mainMenuCanvas.SetActive(true);

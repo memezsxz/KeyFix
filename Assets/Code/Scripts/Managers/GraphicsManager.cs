@@ -13,52 +13,70 @@ public class GraphicsManager : Singleton<GraphicsManager>, IDataPersistence
     public int QualityIndex { get; private set; }
     public void SaveData(ref SaveData data)
     {
-        data.Graphics.QualityName = QualitySettings.GetQualityLevel().ToString();
-        data.Graphics.ResolutionHeight = Screen.currentResolution.height;
+        data.Graphics.QualityName = QualitySettings.names[QualitySettings.GetQualityLevel()];
         data.Graphics.ResolutionWidth = Screen.currentResolution.width;
+        data.Graphics.ResolutionHeight = Screen.currentResolution.height;
         data.Graphics.Fullscreen = Screen.fullScreen;
 
         PlayerPrefs.SetString(SaveManager.LAST_GAME_PREF, data.Meta.SaveName);
         PlayerPrefs.Save();
         
-        print("Saved: " + PlayerPrefs.GetString("LastGame"));
-        Debug.Log("saved quality: " + data.Graphics.QualityName);
-        Debug.Log("saved res: " + Screen.currentResolution.width + " x " + Screen.currentResolution.height);
+        // Debug.Log("saved quality: " + data.Graphics.QualityName);
+        // Debug.Log("saved res: " + Screen.currentResolution.width + " x " + Screen.currentResolution.height);
     }
 
     public void LoadData(ref SaveData data)
     {
         // quality
-        string qualityName = SaveManager.Instance.SaveData.Graphics.QualityName;
-        int qualityIndex = System.Array.IndexOf(QualitySettings.names, qualityName);
+        // string qualityName = SaveManager.Instance.SaveData.Graphics.QualityName;
+        // int qualityIndex = System.Array.IndexOf(QualitySettings.names, qualityName);
+        //
+        // if (qualityIndex < 0) qualityIndex = QualitySettings.names.Length - 1;
+        //
+        // QualitySettings.SetQualityLevel(qualityIndex);
+        // QualityIndex = qualityIndex;
+        //
+        // // resolution
+        // Resolution targetResolution = new Resolution()
+        // {
+        //     height = data.Graphics.ResolutionHeight,
+        //     width = data.Graphics.ResolutionWidth
+        // };
+        //
+        // int resolutionIndex = Array.FindIndex(Screen.resolutions, r =>
+        //     r.width == targetResolution.width && r.height == targetResolution.height);
+        //
+        // if (resolutionIndex < 0) resolutionIndex = Screen.resolutions.Length - 1;
+        //
+        // ResolutionIndex = resolutionIndex;
+        // Screen.SetResolution(
+        //     Screen.resolutions[resolutionIndex].width,
+        //     Screen.resolutions[resolutionIndex].height,
+        //     data.Graphics.Fullscreen
+        // );
 
-        if (qualityIndex < 0)
-            qualityIndex = QualitySettings.names.Length - 1;
-
+        // Quality
+        string qualityName = data.Graphics.QualityName;
+        int qualityIndex = Array.IndexOf(QualitySettings.names, qualityName);
+        qualityIndex = qualityIndex < 0 ? QualitySettings.names.Length - 1 : qualityIndex;
         QualitySettings.SetQualityLevel(qualityIndex);
         QualityIndex = qualityIndex;
 
-        // resolution
-        Resolution targetResolution = new Resolution()
-        {
-            height = data.Graphics.ResolutionHeight,
-            width = data.Graphics.ResolutionWidth
-        };
+        // Resolution
+        var saveData = data;
+        int index = Array.FindIndex(Screen.resolutions, r =>
+            r.width == saveData.Graphics.ResolutionWidth &&
+            r.height == saveData.Graphics.ResolutionHeight);
 
-        int resolutionIndex = Array.FindIndex(Screen.resolutions, r =>
-            r.width == targetResolution.width && r.height == targetResolution.height);
+        index = index < 0 ? Screen.resolutions.Length - 1 : index;
+        // Debug.Log("ires index is : " + (index < 0 ? " not found" : "found"));
 
-        if (resolutionIndex < 0) resolutionIndex = Screen.resolutions.Length - 1;
+        Resolution res = Screen.resolutions[index];
+        Screen.SetResolution(res.width, res.height, data.Graphics.Fullscreen);
+        ResolutionIndex = index;
 
-        ResolutionIndex = resolutionIndex;
-        Screen.SetResolution(
-            Screen.resolutions[resolutionIndex].width,
-            Screen.resolutions[resolutionIndex].height,
-            data.Graphics.Fullscreen
-        );
-
-        Debug.Log("loaded quality: " + data.Graphics.QualityName);
-        Debug.Log("loaded res: " + Screen.resolutions[resolutionIndex].width + " x " +
-                  Screen.resolutions[resolutionIndex].height);
+        // Debug.Log("loaded quality: " + data.Graphics.QualityName);
+        // Debug.Log("loaded res: " + Screen.resolutions[ResolutionIndex].width + " x " +
+        //           Screen.resolutions[ResolutionIndex].height);
     }
 }

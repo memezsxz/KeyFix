@@ -72,7 +72,7 @@ public class SaveManagerEditor : Editor
         if (GUILayout.Button("New Game"))
         {
             saveManager.NewGame(_customSlotName);
-            // Debug.Log("New game data created.");
+            Debug.Log("New game data created.");
             RefreshSaveSlotList();
         }
 

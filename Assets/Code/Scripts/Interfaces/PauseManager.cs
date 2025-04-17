@@ -18,8 +18,8 @@ public class PauseManager : MonoBehaviour
     public GameObject loadingScreen;
 
     [Header("Audio")]
-    public AudioSource music;
-    public AudioMixer audioMixer;
+    public AudioClip backgroundMusic;
+    public AudioClip buttonSound;
 
 
     private bool isPaused = false;
@@ -27,7 +27,7 @@ public class PauseManager : MonoBehaviour
 
     private void Start()
     {
-        music.ignoreListenerPause = true;
+        // music.ignoreListenerPause = true;
     }
 
     void Update()
@@ -51,8 +51,7 @@ public class PauseManager : MonoBehaviour
         Time.timeScale = 1f; // Resume game time
         isPaused = false;
 
-        if (music.isPlaying)
-            music.Stop();
+        if (SoundManager.Instance.IsMusicPlaying) SoundManager.Instance.StopMusic();
     }
 
     public void PauseGame()
@@ -61,14 +60,7 @@ public class PauseManager : MonoBehaviour
         Time.timeScale = 0f; // Freeze game time
         isPaused = true;
 
-        float savedVolume = PlayerPrefs.GetFloat("MusicVolume", 0.3f);
-        float db = Mathf.Log10(Mathf.Clamp(savedVolume, 0.0001f, 1f)) * 20;
-
-        // Apply to AudioMixer before playing
-        audioMixer.SetFloat("MusicVolume", db);
-
-        if (!music.isPlaying)
-            music.Play();
+        if (!SoundManager.Instance.IsMusicPlaying) SoundManager.Instance.PlayMusic(backgroundMusic);
     }
 
     public void ExitToMainMenu()
@@ -80,7 +72,6 @@ public class PauseManager : MonoBehaviour
         loadingScript.sceneToLoad = "Fatima_MainMenu";
         loadingScreen.SetActive(true);
         loadingScript.BeginLoading();
-
     }
 
     public void RestartLevel()
@@ -98,8 +89,8 @@ public class PauseManager : MonoBehaviour
 
     public void SaveGame()
     {
-        Debug.Log("Game saved!"); // Replace with your save logic later
- 
+        SaveManager.Instance.SaveGame();
+        Debug.Log("Game saved!"); 
     }
 
 
@@ -117,10 +108,4 @@ public class PauseManager : MonoBehaviour
         pauseMenuGroup.interactable = true;
         pauseMenuGroup.blocksRaycasts = true;
     }
-
-}
-
-public static class GameStateTracker
-{
-    public static bool returningFromGame = false;
 }

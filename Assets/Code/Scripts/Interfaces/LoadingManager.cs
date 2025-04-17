@@ -11,9 +11,7 @@ public class LoadingManager : MonoBehaviour
     public float minLoadTime = 3f;
 
     private float loadingProgress = 0f;
-
- 
-
+    
     public void BeginLoading()
     {
         StartCoroutine(LoadAsyncWithDelay());

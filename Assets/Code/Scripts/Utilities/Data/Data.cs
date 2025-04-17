@@ -24,6 +24,7 @@ public class SoundData
     public float MusicVolume = 0.2f;
 }
 
+[Serializable]
 public class GraphicData
 {
     public int ResolutionWidth;
