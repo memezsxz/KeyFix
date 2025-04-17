@@ -13,7 +13,7 @@ using UnityEngine;
 public class SaveManager : Singleton<SaveManager>
 {
     #region Fields & Properties
-
+    
     [Header("Save Slot")] public string SaveSlotName = "Save1";
 
     private List<IDataPersistence> _dataHandlers;
@@ -32,6 +32,7 @@ public class SaveManager : Singleton<SaveManager>
 
     public string Format => "json";
 
+    private bool _encrypt = false;
     #endregion
 
     #region Unity Lifecycle
@@ -66,12 +67,9 @@ public class SaveManager : Singleton<SaveManager>
         foreach (var handler in _dataHandlers)
             handler.SaveData(ref _saveData);
 
-        string json = JsonUtility.ToJson(SaveData);
-
-        using var stream = new FileStream(GetSavePath(SaveSlotName), FileMode.OpenOrCreate, FileAccess.Write);
-        _formatter.Serialize(stream, json);
-        // _formatter.Serialize(stream, EncryptDecrypt(json));
+        WriteToFile();
     }
+
 
     /// <summary>
     /// Loads game data from disk, or creates a new save if file doesn't exist.
@@ -93,8 +91,10 @@ public class SaveManager : Singleton<SaveManager>
         {
             using var stream = new FileStream(path, FileMode.Open);
             var data = (string)_formatter.Deserialize(stream);
-            SaveData = JsonUtility.FromJson<SaveData>(data);
-            // SaveData = JsonUtility.FromJson<SaveData>(EncryptDecrypt(data));
+
+            SaveData = _encrypt
+                ? JsonUtility.FromJson<SaveData>(EncryptDecrypt(data))
+                : JsonUtility.FromJson<SaveData>(data);
         }
 
         foreach (var handler in _dataHandlers)
@@ -117,6 +117,10 @@ public class SaveManager : Singleton<SaveManager>
             File.Delete(path);
     }
 
+    public void RollBack()
+    {
+        LoadGame(SaveSlotName);
+    }
     /// <summary>
     /// Creates a new SaveData object with default values.
     /// </summary>
@@ -130,9 +134,26 @@ public class SaveManager : Singleton<SaveManager>
             }
         };
     }
-
+    
     #endregion
 
+    #region Settings Public API
+
+    public void SaveSettings()
+    {
+        FindObjectsOfType<MonoBehaviour>().OfType<IDataPersistence>().OfType<SoundManager>().ToList().ForEach(gm => gm.SaveData(ref _saveData));
+        FindObjectsOfType<MonoBehaviour>().OfType<IDataPersistence>().OfType<GraphicsManager>().ToList().ForEach(gm => gm.SaveData(ref _saveData));
+        WriteToFile();
+    }
+
+    public void ResetSettings()
+    {
+        // UnityEngine.Device.Screen.
+        _saveData.Graphics = new GraphicData();
+        _saveData.Sounds = new SoundData();
+        SaveSettings();
+    }
+    #endregion
     #region Meta & Slot Helpers
 
     /// <summary>
@@ -188,7 +209,16 @@ public class SaveManager : Singleton<SaveManager>
         foreach (char c in text) result.Append((char)(c ^ 129)); // XOR obfuscation
         return result.ToString();
     }
+    /// <summary>
+    /// Writes the save data to file 
+    /// </summary>
+    private void WriteToFile()
+    {
+        string json = JsonUtility.ToJson(SaveData);
 
+        using var stream = new FileStream(GetSavePath(SaveSlotName), FileMode.OpenOrCreate, FileAccess.Write);
+        _formatter.Serialize(stream, _encrypt ? EncryptDecrypt(json) : json);
+    }
     #endregion
 
     #region Character Save Support

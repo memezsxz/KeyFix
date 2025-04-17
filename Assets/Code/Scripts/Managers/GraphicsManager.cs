@@ -9,6 +9,8 @@ using UnityEngine;
 /// </summary>
 public class GraphicsManager : Singleton<GraphicsManager>, IDataPersistence
 {
+    public int ResolutionIndex { get; private set; }
+    public int QualityIndex { get; private set; }
     public void SaveData(ref SaveData data)
     {
         data.Graphics.QualityName = QualitySettings.GetQualityLevel().ToString();
@@ -19,9 +21,9 @@ public class GraphicsManager : Singleton<GraphicsManager>, IDataPersistence
         PlayerPrefs.SetString(SaveManager.LAST_GAME_PREF, data.Meta.SaveName);
         PlayerPrefs.Save();
         
-        // print("Saved: " + PlayerPrefs.GetString("LastGame"));
-        // Debug.Log("saved quality: " + data.Graphics.QualityName);
-        // Debug.Log("saved res: " + Screen.currentResolution.width + " x " + Screen.currentResolution.height);
+        print("Saved: " + PlayerPrefs.GetString("LastGame"));
+        Debug.Log("saved quality: " + data.Graphics.QualityName);
+        Debug.Log("saved res: " + Screen.currentResolution.width + " x " + Screen.currentResolution.height);
     }
 
     public void LoadData(ref SaveData data)
@@ -34,6 +36,7 @@ public class GraphicsManager : Singleton<GraphicsManager>, IDataPersistence
             qualityIndex = QualitySettings.names.Length - 1;
 
         QualitySettings.SetQualityLevel(qualityIndex);
+        QualityIndex = qualityIndex;
 
         // resolution
         Resolution targetResolution = new Resolution()
@@ -47,14 +50,15 @@ public class GraphicsManager : Singleton<GraphicsManager>, IDataPersistence
 
         if (resolutionIndex < 0) resolutionIndex = Screen.resolutions.Length - 1;
 
+        ResolutionIndex = resolutionIndex;
         Screen.SetResolution(
             Screen.resolutions[resolutionIndex].width,
             Screen.resolutions[resolutionIndex].height,
             data.Graphics.Fullscreen
         );
 
-        // Debug.Log("loaded quality: " + data.Graphics.QualityName);
-        // Debug.Log("loaded res: " + Screen.resolutions[resolutionIndex].width + " x " +
-        //           Screen.resolutions[resolutionIndex].height);
+        Debug.Log("loaded quality: " + data.Graphics.QualityName);
+        Debug.Log("loaded res: " + Screen.resolutions[resolutionIndex].width + " x " +
+                  Screen.resolutions[resolutionIndex].height);
     }
 }

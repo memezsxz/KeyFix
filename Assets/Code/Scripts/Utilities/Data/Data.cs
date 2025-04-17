@@ -20,8 +20,8 @@ public GraphicData Graphics = new();
 [Serializable]
 public class SoundData
 {
-    public float SoundVolume = 1.0f;
-    public float MusicVolume = 1.0f;
+    public float SoundVolume = 0.2f;
+    public float MusicVolume = 0.2f;
 }
 
 public class GraphicData

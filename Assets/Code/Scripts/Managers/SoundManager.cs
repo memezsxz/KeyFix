@@ -104,6 +104,10 @@ public class SoundManager : Singleton<SoundManager>, IDataPersistence
             musicAudioSource.Play();
     }
 
+    public void StopMusic()
+    {
+        musicAudioSource.Stop();
+    }
     #endregion
 
     #region Volume Control
