@@ -12,7 +12,9 @@ public class LoadingManager : MonoBehaviour
 
     private float loadingProgress = 0f;
 
-    void Start()
+ 
+
+    public void BeginLoading()
     {
         StartCoroutine(LoadAsyncWithDelay());
     }

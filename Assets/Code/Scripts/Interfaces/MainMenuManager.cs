@@ -26,10 +26,14 @@ public class MainMenuManager : MonoBehaviour
     public GameObject creditsPanel;
     public GameObject exitPanel;
     public CanvasGroup mainMenuGroup;
+    public GameObject loadingScreen;
+    public GameObject mainScene;
 
 
     //script refrenc
     public SceneFader sceneFader;
+    public LoadingManager loadingScript;
+
 
     private void Start()
     {
@@ -46,11 +50,12 @@ public class MainMenuManager : MonoBehaviour
     //panels methods
     public void StartNewGame()
     {
-        
-        SceneManager.LoadScene("LoadingScreen");
-        
-        sceneFader.FadeToScene("Fatima_PauseMenu");
-        
+        loadingScript.sceneToLoad = "Fatima_PauseMenu";
+        loadingScreen.SetActive(true);
+        loadingScript.BeginLoading();
+        CloseAllPanels();
+        mainScene.SetActive(false);
+
     }
 
 
@@ -84,6 +89,7 @@ public class MainMenuManager : MonoBehaviour
 
     public void OpenInstructions()
     {
+        
         Debug.Log("Open Instructions");
         PlayClickSound();
         instructionsPanel.SetActive(true);

@@ -7,11 +7,15 @@ using UnityEngine.SceneManagement;
 public class PauseManager : MonoBehaviour
 {
 
+    //scripts reference
+    public LoadingManager loadingScript;
+
     //panel refrences
     public GameObject pauseMenuUI;
     public GameObject helpPanel;
     public GameObject settingsPanel;
     public CanvasGroup pauseMenuGroup;
+    public GameObject loadingScreen;
 
     [Header("Audio")]
     public AudioSource music;
@@ -25,6 +29,7 @@ public class PauseManager : MonoBehaviour
     {
         music.ignoreListenerPause = true;
     }
+
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -70,7 +75,12 @@ public class PauseManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         GameStateTracker.returningFromGame = true;
-        SceneManager.LoadScene("Fatima_MainMenu"); // Replace with your actual main menu scene name
+        //SceneManager.LoadScene("Fatima_MainMenu"); // Replace with your actual main menu scene name
+        pauseMenuUI.SetActive(false);
+        loadingScript.sceneToLoad = "Fatima_MainMenu";
+        loadingScreen.SetActive(true);
+        loadingScript.BeginLoading();
+
     }
 
     public void RestartLevel()
@@ -85,9 +95,11 @@ public class PauseManager : MonoBehaviour
         pauseMenuGroup.interactable = false;
         pauseMenuGroup.blocksRaycasts = false;
     }
+
     public void SaveGame()
     {
         Debug.Log("Game saved!"); // Replace with your save logic later
+ 
     }
 
 

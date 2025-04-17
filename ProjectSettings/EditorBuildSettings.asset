@@ -11,12 +11,18 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Level/Scenes/Fatima_MainMenu.unity
     guid: 19cb93046b476524c91b5c43d7c260cd
-  - enabled: 1
-    path: Assets/Level/Scenes/LoadingScreen.unity
+  - enabled: 0
+    path: Assets/Level/Scenes/Interfaces_Scens/1.unity
     guid: c69b594d0af9ab0438d154d3de565159
+  - enabled: 1
+    path: Assets/Level/Scenes/LevelTitle.unity
+    guid: 815e5ece084a90445809a37b2bd9c3e1
   - enabled: 1
     path: Assets/Level/Scenes/Fatima_PauseMenu.unity
     guid: a9b408b42766b6c47a4437e2a1813ce3
+  - enabled: 1
+    path: Assets/Level/Scenes/LoadingScreen 1.unity
+    guid: 6df0dc6ed4f5e0a43a51e028264a7d7d
   - enabled: 1
     path: Assets/Level/Scenes/ESC.unity
     guid: 5a0529d346a60444488d4f7a7f5f2660

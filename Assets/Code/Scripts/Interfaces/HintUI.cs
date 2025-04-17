@@ -9,17 +9,17 @@ public class HintUI : MonoBehaviour
     public string message = "";
     public float duration = 3f;
 
-    // Show hint for a duration (optional)
+    // Show hint for a duration
     public void ShowHint()
     {
-        gameObject.SetActive(true);
+        gameObject.SetActive(true); // display the hint object
         hintText.text = message;
         CancelInvoke(); // Prevent overlap
-        Invoke(nameof(HideHint), duration);
+        Invoke(nameof(HideHint), duration); //hide the hint after the duration reach
     }
 
 
-    // Manually hide if needed
+    // Hind the hint object
     public void HideHint()
     {
         gameObject.SetActive(false);
