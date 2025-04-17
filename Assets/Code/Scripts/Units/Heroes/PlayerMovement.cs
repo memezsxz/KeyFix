@@ -291,24 +291,24 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
         }
     }
 
-    public void SaveData(SaveData data)
+    public void SaveData(ref SaveData data)
     {
         var psd = SaveManager.Instance.GetCharacterData(_charecterType);
         psd.Position = transform.position;
         psd.Yaw = transform.rotation.eulerAngles.y;
-        psd.Bindings = bindingManage;
+        // psd.Bindings = bindingManage;
         // psd.HitsRemaining = hits;
         // psd.LivesRemaining = lives;
         // Debug.Log($"save data {psd.HitsRemaining} & {psd.LivesRemaining} & {data.Meta.SaveName}");
     }
 
-    public void LoadData(SaveData data)
+    public void LoadData(ref SaveData data)
     {
         var psd = SaveManager.Instance.GetCharacterData(_charecterType);
         transform.position = psd.Position;
         var newRot = Quaternion.Euler(0, psd.Yaw, 0);
         transform.rotation = newRot;
-        bindingManage = psd.Bindings;
+        // bindingManage = psd.Bindings;
         // hits = psd.HitsRemaining;
         // lives = psd.LivesRemaining;
         // Debug.Log($"load obj {psd.HitsRemaining}");

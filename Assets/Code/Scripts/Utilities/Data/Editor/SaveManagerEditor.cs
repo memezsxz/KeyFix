@@ -13,8 +13,12 @@ public class SaveManagerEditor : Editor
     private string[] _availableSaveSlots = Array.Empty<string>();
     private string _customSlotName = "NewSaveSlot";
     private int _selectedSlotIndex;
+    private bool _initialized = false;
 
-    public string SaveSlotName => _availableSaveSlots[SelectedSlotIndex];
+    public string SaveSlotName =>
+        (_availableSaveSlots != null && SelectedSlotIndex >= 0 && SelectedSlotIndex < _availableSaveSlots.Length)
+            ? _availableSaveSlots[SelectedSlotIndex]
+            : "DefaultSaveSlot";
 
     private void OnEnable()
     {
@@ -37,11 +41,22 @@ public class SaveManagerEditor : Editor
 
         if (_availableSaveSlots.Length > 0)
         {
-            _selectedSlotIndex = EditorGUILayout.Popup("Existing Save Slots", _selectedSlotIndex, _availableSaveSlots);
+            // Only initialize once
+            if (!_initialized)
+            {
+                string lastGame = PlayerPrefs.GetString(SaveManager.LAST_GAME_PREF);
+                int index = Array.IndexOf(_availableSaveSlots, lastGame);
 
-            if (_selectedSlotIndex < _availableSaveSlots.Length)
-                // Set SaveManager's slot name to selected one
-                saveManager.SaveSlotName = _availableSaveSlots[_selectedSlotIndex];
+                if (!string.IsNullOrWhiteSpace(lastGame) && index >= 0)
+                {
+                    _selectedSlotIndex = index;
+                }
+
+                _initialized = true;
+            }
+
+            _selectedSlotIndex = EditorGUILayout.Popup("Existing Save Slots", _selectedSlotIndex, _availableSaveSlots);
+            saveManager.SaveSlotName = _availableSaveSlots[_selectedSlotIndex];
         }
         else
         {

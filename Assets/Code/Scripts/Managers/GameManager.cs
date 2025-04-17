@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Code.Scripts.Managers
 {
-    public class GameManager : PersistentSingleton<GameManager>
+    public class GameManager : Singleton<GameManager>
     {
         public static event Action<GameState> OnBeforeGameStateChanged;
         public static event Action<GameState> OnAfterGameStateChanged;
