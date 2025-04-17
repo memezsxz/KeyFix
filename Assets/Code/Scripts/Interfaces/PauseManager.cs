@@ -29,6 +29,7 @@ public class PauseManager : MonoBehaviour
     {
         music.ignoreListenerPause = true;
     }
+
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -94,9 +95,11 @@ public class PauseManager : MonoBehaviour
         pauseMenuGroup.interactable = false;
         pauseMenuGroup.blocksRaycasts = false;
     }
+
     public void SaveGame()
     {
         Debug.Log("Game saved!"); // Replace with your save logic later
+ 
     }
 
 

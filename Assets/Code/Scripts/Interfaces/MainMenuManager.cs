@@ -89,6 +89,7 @@ public class MainMenuManager : MonoBehaviour
 
     public void OpenInstructions()
     {
+        
         Debug.Log("Open Instructions");
         PlayClickSound();
         instructionsPanel.SetActive(true);
