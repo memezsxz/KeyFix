@@ -11,6 +11,6 @@ using UnityEngine;
                 return;
 
             Object.DontDestroyOnLoad(Object.Instantiate(systems));
-            Debug.Log("Systems Loaded");
+            // Debug.Log("Systems Loaded");
         }
     }

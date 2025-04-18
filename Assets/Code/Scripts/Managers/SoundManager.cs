@@ -84,9 +84,9 @@ public class SoundManager : Singleton<SoundManager>, IDataPersistence
     /// <param name="volume">Optional override volume (0–1), otherwise uses current SFX volume.</param>
     public void PlaySound(AudioClip clip, float volume = -1f)
     {
-        if (clip == null || Mathf.Approximately(SoundVolume,0)) return;
+        if (clip == null) return;
 
-        float finalVolume = (volume < 0f || volume > 1f) ? SoundVolume : volume;
+        float finalVolume = (volume < 0.001f || volume > 1f) ? SoundVolume : volume;
         sfxAudioSource.PlayOneShot(clip, finalVolume);
     }
 
@@ -95,15 +95,16 @@ public class SoundManager : Singleton<SoundManager>, IDataPersistence
     /// <param name="volume">Optional override volume (0–1), otherwise uses current music volume.</param>
     public void PlayMusic(AudioClip clip, float volume = -1f)
     {
-        if (clip == null || Mathf.Approximately(MusicVolume,0)) return;
+        if (clip == null) return;
 
         musicAudioSource.clip = clip;
-        musicAudioSource.volume = (volume < 0f || volume > 1f) ? MusicVolume : volume;
+        musicAudioSource.volume = (volume < 0.001f || volume > 1f) ? MusicVolume : volume;
 
         if (!musicAudioSource.isPlaying)
             musicAudioSource.Play();
     }
 
+    /// <summary>Stops the music clip currently playing</summary>
     public void StopMusic()
     {
         musicAudioSource.Stop();

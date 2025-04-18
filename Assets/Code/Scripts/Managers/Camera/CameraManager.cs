@@ -7,7 +7,7 @@ using Cinemachine;
 using UnityEngine.InputSystem;
 
 
-public class CameraManager : PersistentSingleton<CameraManager>
+public class CameraManager : Singleton<CameraManager>
 {
     // Camera manager needs to adapt to change between multiple cameras for cut scenes
     // we can do that using camera zones -colliders-
@@ -35,7 +35,7 @@ public class CameraManager : PersistentSingleton<CameraManager>
 
         // Debug.LogWarning("cms:" + _cameras.Count);
 
-        _cameras.ForEach(c => Debug.Log(c.name));
+        // _cameras.ForEach(c => Debug.Log(c.name));
         _cameras.Remove(focusCamera);
         // Debug.LogWarning("cms:" + _cameras.Count);
 
@@ -54,6 +54,7 @@ public class CameraManager : PersistentSingleton<CameraManager>
         _lockInputAction.started += OnFocusStarted;
         _lockInputAction.canceled += OnFocusCanceled;
 
+        Player = GameObject.FindGameObjectWithTag("Player");
         _cameras.ForEach(c =>
         {
             c.enabled = false;
@@ -81,7 +82,7 @@ public class CameraManager : PersistentSingleton<CameraManager>
             _lockInputAction.canceled -= OnFocusCanceled;
         }
     }
-
+    
     private void EnableNextCamera()
     {
         DisableAllCameras();

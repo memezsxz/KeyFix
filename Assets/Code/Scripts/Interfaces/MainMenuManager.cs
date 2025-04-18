@@ -46,7 +46,7 @@ public class MainMenuManager : MonoBehaviour
     //panels methods
     public void StartNewGame()
     {
-        loadingScript.sceneToLoad = "Fatima_PauseMenu";
+        loadingScript.sceneToLoad = "maryam city test";
         loadingScreen.SetActive(true);
         loadingScript.BeginLoading();
         SaveManager.Instance.SaveGame();
@@ -61,6 +61,7 @@ public class MainMenuManager : MonoBehaviour
         {
             PlayClickSound();
             Debug.Log("will be going to the last saved level: " + SaveManager.Instance.SaveData.Progress.CurrentScene);
+            SceneManager.LoadScene("maryam city test");
             // will be done with use of the game manager and scene manager
             // int sceneToLoad = PlayerPrefs.GetInt("LastLevel");
             // SceneManager.LoadScene(sceneToLoad);

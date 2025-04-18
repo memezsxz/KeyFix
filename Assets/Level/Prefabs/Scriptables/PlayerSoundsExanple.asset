@@ -13,15 +13,12 @@ MonoBehaviour:
   m_Name: PlayerSoundsExanple
   m_EditorClassIdentifier: 
   sounds:
-  - name: 
-    volume: 0.564
-    sounds:
-    - {fileID: 8300000, guid: 2a2363269063f4542a3760fbb9831130, type: 3}
-    - {fileID: 8300000, guid: a6473f5264a14804e992a7a4a29cd744, type: 3}
-    - {fileID: 8300000, guid: bfc5803fa8fa8924bbeaa34f4f689bb1, type: 3}
-  - name: 
-    volume: 0
-    sounds: []
-  - name: 
-    volume: 0
-    sounds: []
+  - name: button
+    sound: {fileID: 8300000, guid: 2a2363269063f4542a3760fbb9831130, type: 3}
+    volume: -0.001
+  - name: hover
+    sound: {fileID: 8300000, guid: a6473f5264a14804e992a7a4a29cd744, type: 3}
+    volume: -0.001
+  - name: click
+    sound: {fileID: 8300000, guid: bfc5803fa8fa8924bbeaa34f4f689bb1, type: 3}
+    volume: -0.001

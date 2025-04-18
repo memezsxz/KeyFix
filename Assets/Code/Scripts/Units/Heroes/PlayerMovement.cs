@@ -35,6 +35,8 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
 
     private void Start()
     {
+        var d =  SaveManager.Instance.SaveData;
+        LoadData(ref d);
         lastYPosition = transform.position.y;
         controller = gameObject.GetComponent<CharacterController>();
         anim = this.GetComponent<Animator>();
@@ -87,7 +89,7 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
         }
         else
         {
-            if (!groundedPlayer && playerVelocity.y < -0.5f)
+            if (!groundedPlayer && playerVelocity.y < -0.2f)
             {
                 anim.SetBool("isFalling", true); // Falling down
             }

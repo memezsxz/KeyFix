@@ -3,23 +3,32 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(SoundsSOHolder))]
+[RequireComponent(typeof(SoundsHolder))]
 public class ImplementationExample : MonoBehaviour
 {
-    private SoundsSOHolder soundsSOHolder;
+    private SoundsHolder _soundsHolder;
 
     private void Start()
     {
-        soundsSOHolder = GetComponent<SoundsSOHolder>();
+        _soundsHolder = GetComponent<SoundsHolder>();
         DebugController.Instance.AddDebugCommand(new DebugCommand(
             "playSound",
-            "playes the sound with the provided index in the soundholder",
+            "Playes the sound with the provided index in the soundholder",
             "PlaySound <int>",
             (args) =>
             {
                 int index = int.Parse((string)args[0]);
-
-           SoundManager.Instance.PlaySound(soundsSOHolder.GetRandomSound(index));      ;
+                _soundsHolder.PlaySound(index);      ;
             }));
+    }
+
+    private void OnDisable()
+    {
+        _soundsHolder.PlaySound(0);
+    }
+
+    private void OnEnable()
+    {
+        _soundsHolder.PlaySound("click");
     }
 }

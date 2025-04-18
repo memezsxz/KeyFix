@@ -24,8 +24,11 @@ EditorBuildSettings:
     path: Assets/Level/Scenes/LoadingScreen 1.unity
     guid: 6df0dc6ed4f5e0a43a51e028264a7d7d
   - enabled: 1
-    path: Assets/Level/Scenes/ESC.unity
+    path: Assets/Level/Scenes/ESC_Room.unity
     guid: 5a0529d346a60444488d4f7a7f5f2660
+  - enabled: 1
+    path: Assets/Level/Scenes/maryam city test.unity
+    guid: 4edf1e370e9274c2e9282fc3ce606f8f
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: fc6dd7abab3184dada9a30ae25367c5a, type: 2}
     com.unity.input.settings: {fileID: 11400000, guid: 3fa17a22585a042bda4b19d806b32ee1, type: 2}
