@@ -6,10 +6,11 @@ using UnityEngine.Serialization;
 [Serializable]
 public class SaveData
 {
-public SoundData Sounds = new();
+    public SoundData Sounds = new();
     public ProgressData Progress = new();
     public MetaData Meta = new();
-public GraphicData Graphics = new();
+    public GraphicData Graphics = new();
+
     public List<CharacterStateEntry> CharacterStates = new()
     {
         new CharacterStateEntry { Type = CharacterType.Robot, State = new PlayerStateData() }
@@ -36,8 +37,8 @@ public class GraphicData
 [Serializable]
 public class ProgressData
 {
-    public int CurrentScene;
-
+    public bool IsNewGame = true;
+    public LevelManager.Scenes CurrentScene;
     public string LastCheckpointId = ""; // TODO Maryam: see how will the checkpoint system work. // optional: for respawn
 
     public List<string> RepairedKeys = new(); // e.g. ["W", "A"]

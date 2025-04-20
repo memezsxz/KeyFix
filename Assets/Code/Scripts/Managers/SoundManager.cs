@@ -81,25 +81,30 @@ public class SoundManager : Singleton<SoundManager>, IDataPersistence
 
     /// <summary>Plays a sound effect clip through the SFX audio source.</summary>
     /// <param name="clip">The AudioClip to play.</param>
-    /// <param name="volume">Optional override volume (0–1), otherwise uses current SFX volume.</param>
-    public void PlaySound(AudioClip clip, float volume = -1f)
+    /// <param name="volumeMultiplier">Optional scale volume (0.001–1), otherwise uses current SFX volume.</param>
+    public void PlaySound(AudioClip clip, float volumeMultiplier = -1f)
     {
         if (clip == null) return;
+        
+        float finalVolume = (volumeMultiplier < 0.001f || volumeMultiplier > 1f) ? MusicVolume : volumeMultiplier;
 
-        float finalVolume = (volume < 0.001f || volume > 1f) ? SoundVolume : volume;
-        sfxAudioSource.PlayOneShot(clip, finalVolume);
+        volumeMultiplier = Mathf.Clamp01(finalVolume);
+
+        sfxAudioSource.PlayOneShot(clip, volumeMultiplier);
     }
 
     /// <summary>Plays a music clip through the music audio source.</summary>
     /// <param name="clip">The AudioClip to play.</param>
-    /// <param name="volume">Optional override volume (0–1), otherwise uses current music volume.</param>
-    public void PlayMusic(AudioClip clip, float volume = -1f)
+    /// <param name="volumeMultiplier">Optional scale volume (0.001–1), otherwise uses current music volume.</param>
+    public void PlayMusic(AudioClip clip, float volumeMultiplier = -1f)
     {
         if (clip == null) return;
 
         musicAudioSource.clip = clip;
-        musicAudioSource.volume = (volume < 0.001f || volume > 1f) ? MusicVolume : volume;
+        float finalVolume = (volumeMultiplier < 0.001f || volumeMultiplier > 1f) ? MusicVolume : volumeMultiplier;
 
+        volumeMultiplier = Mathf.Clamp01(finalVolume);
+        
         if (!musicAudioSource.isPlaying)
             musicAudioSource.Play();
     }

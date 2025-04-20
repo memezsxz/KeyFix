@@ -148,14 +148,14 @@ public class SaveManager : Singleton<SaveManager>
 
     public void SaveSettings()
     {
-        FindObjectsOfType<MonoBehaviour>().OfType<IDataPersistence>().OfType<SoundManager>().ToList()
-            .ForEach(gm => gm.SaveData(ref _saveData));
-        FindObjectsOfType<MonoBehaviour>().OfType<IDataPersistence>().OfType<GraphicsManager>().ToList()
-            .ForEach(gm => gm.SaveData(ref _saveData));
+        SoundManager.Instance.SaveData(ref _saveData);
+        GraphicsManager.Instance.SaveData(ref _saveData);
         WriteToFile();
 
-        print(
-            $"Saved game settings: sound {_saveData.Sounds.SoundVolume}, music {_saveData.Sounds.MusicVolume}, quality {_saveData.Graphics.QualityName}, resolution {_saveData.Graphics.ResolutionWidth}x{_saveData.Graphics.ResolutionHeight}");
+        // print($"Saved game settings: sound {_saveData.Sounds.SoundVolume}, music {_saveData.Sounds.MusicVolume}, quality {_saveData.Graphics.QualityName}, resolution {_saveData.Graphics.ResolutionWidth}x{_saveData.Graphics.ResolutionHeight}");
+       
+        SoundManager.Instance.LoadData(ref _saveData);
+        GraphicsManager.Instance.LoadData(ref _saveData);
     }
 
     public void ResetSettings()
