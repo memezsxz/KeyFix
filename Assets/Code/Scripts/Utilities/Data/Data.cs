@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Code.Scripts.Managers;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -38,7 +39,7 @@ public class GraphicData
 public class ProgressData
 {
     public bool IsNewGame = true;
-    public LevelManager.Scenes CurrentScene;
+    public GameManager.Scenes CurrentScene;
     public string LastCheckpointId = ""; // TODO Maryam: see how will the checkpoint system work. // optional: for respawn
 
     public List<string> RepairedKeys = new(); // e.g. ["W", "A"]
