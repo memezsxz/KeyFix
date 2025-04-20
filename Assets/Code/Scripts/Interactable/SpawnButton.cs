@@ -1,28 +1,40 @@
 using UnityEngine;
 
-    public class SpawnButton : MonoBehaviour, IInteractable
+public class SpawnButton : MonoBehaviour, IInteractable
+{
+    [SerializeField] GameObject spawnPrefab;
+    [SerializeField] HintUI hintUI;
+
+    public string InteractMessage => hintUI.message;
+
+    public void Interact()
     {
-        public string InteractMessage => objectInteractMessage;
+        Spawn();
+    }
 
-        [SerializeField]
-        GameObject spawnPrefab;
+    void Spawn()
+    {
+        var spawnedObject = Instantiate(spawnPrefab, transform.position + Vector3.up * 2f, Quaternion.identity);
 
-        [SerializeField]
-        string objectInteractMessage;
+        float randomSize = Random.Range(0.1f, 1f);
+        spawnedObject.transform.localScale = Vector3.one * randomSize;
 
-        void Spawn()
+        var randomColour = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f));
+        spawnedObject.GetComponent<MeshRenderer>().material.color = randomColour;
+    }
+
+    public void ShowHint(bool show)
+    {
+        if (hintUI == null) return;
+
+        if (show)
         {
-            var spawnedObject = Instantiate(spawnPrefab, position: transform.position + Vector3.up, Quaternion.identity);
-
-            var randomSize = Random.Range(0.1f, 1f);
-            spawnedObject.transform.localScale = Vector3.one * randomSize;
-
-            var randomColour = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f));
-            spawnedObject.GetComponent<MeshRenderer>().material.color = randomColour;
+            hintUI.ShowHint();
         }
-
-        public void Interact()
+        else
         {
-            Spawn();
+            hintUI.HideHint();
         }
     }
+
+}
