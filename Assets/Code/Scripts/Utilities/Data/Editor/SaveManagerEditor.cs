@@ -11,14 +11,14 @@ public class SaveManagerEditor : Editor
 {
     [HideInInspector] public int SelectedSlotIndex;
     private string[] _availableSaveSlots = Array.Empty<string>();
-    private string _customSlotName = "NewSaveSlot";
+    private string _customSlotName = "Game1";
     private int _selectedSlotIndex;
     private bool _initialized = false;
 
     public string SaveSlotName =>
         (_availableSaveSlots != null && SelectedSlotIndex >= 0 && SelectedSlotIndex < _availableSaveSlots.Length)
             ? _availableSaveSlots[SelectedSlotIndex]
-            : "DefaultSaveSlot";
+            : "Game1";
 
     private void OnEnable()
     {

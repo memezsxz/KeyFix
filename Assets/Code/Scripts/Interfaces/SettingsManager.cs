@@ -38,12 +38,9 @@ public class SettingsManager : MonoBehaviour
 
     public void Start()
     {
-      
-
         SetupResolutionSelector();
         SetupVolume();
         SetupGraphicsDropdown();
-
     }
 
     private void OnEnable()

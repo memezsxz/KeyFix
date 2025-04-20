@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/Level/Scenes/SampleScene.unity
     guid: ee9d74e0e8188475c87ab2c6598ae1ca
   - enabled: 1
-    path: Assets/Level/Scenes/Fatima_MainMenu.unity
+    path: Assets/Level/Scenes/Main_Menu.unity
     guid: 19cb93046b476524c91b5c43d7c260cd
   - enabled: 0
     path: Assets/Level/Scenes/Interfaces_Scens/1.unity
@@ -20,6 +20,36 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Level/Scenes/Fatima_PauseMenu.unity
     guid: a9b408b42766b6c47a4437e2a1813ce3
+  - enabled: 1
+    path: Assets/Level/Scenes/A_Key.unity
+    guid: cc433a66b33384a9db06b236a0a40fed
+  - enabled: 1
+    path: Assets/Level/Scenes/Arrow_Keys.unity
+    guid: b4bb8fc9f7fbd484b8a943fdcb1ab8c4
+  - enabled: 1
+    path: Assets/Level/Scenes/ESC_Key.unity
+    guid: 3008ca30455504f6ab968377dad236ee
+  - enabled: 1
+    path: Assets/Level/Scenes/G_Key.unity
+    guid: 13b17d50f4659425fb1aefbfdaab62ed
+  - enabled: 1
+    path: Assets/Level/Scenes/Hallways.unity
+    guid: 2c14cc09c413e4b4a8f53867de49509d
+  - enabled: 1
+    path: Assets/Level/Scenes/HintsScene.unity
+    guid: 2c32e43e4b81e9c41a119ea29c34ca1b
+  - enabled: 1
+    path: Assets/Level/Scenes/IncidentScene.unity
+    guid: e4cde8c1f3c223847856bdb36c97a6c0
+  - enabled: 1
+    path: Assets/Level/Scenes/ObjectInteractionTestLevel.unity
+    guid: fb1fa6db3a4dbb3478f66a136451ede2
+  - enabled: 1
+    path: Assets/Level/Scenes/P_Key.unity
+    guid: 9cda990d4c7734675b38c1cdbccf18a6
+  - enabled: 1
+    path: Assets/Level/Scenes/Space_Key.unity
+    guid: 4d33688e8d98941598a6ff6cf33bca2c
   - enabled: 1
     path: Assets/Level/Scenes/LoadingScreen 1.unity
     guid: 6df0dc6ed4f5e0a43a51e028264a7d7d

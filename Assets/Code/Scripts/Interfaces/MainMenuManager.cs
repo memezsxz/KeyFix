@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Code.Scripts.Managers;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
@@ -46,7 +47,7 @@ public class MainMenuManager : MonoBehaviour
     //panels methods
     public void StartNewGame()
     {
-        loadingScript.sceneToLoad = "maryam city test";
+        loadingScript.sceneToLoad = GameManager.Scenes.HALLWAYS;
         loadingScreen.SetActive(true);
         loadingScript.BeginLoading();
         SaveManager.Instance.SaveGame();
@@ -59,9 +60,14 @@ public class MainMenuManager : MonoBehaviour
     {
         if (!SaveManager.Instance.IsNewGame)
         {
+            loadingScript.sceneToLoad = SaveManager.Instance.SaveData.Progress.CurrentScene;
+            loadingScript.stateToLoadIn = GameManager.GameState.Playing;
+            loadingScreen.SetActive(true);
+            loadingScript.BeginLoading();
+
             PlayClickSound();
-            Debug.Log("will be going to the last saved level: " + SaveManager.Instance.SaveData.Progress.CurrentScene);
-            SceneManager.LoadScene("maryam city test");
+            // Debug.Log("will be going to the last saved level: " + SaveManager.Instance.SaveData.Progress.CurrentScene);
+            // SceneManager.LoadScene("maryam city test");
             // will be done with use of the game manager and scene manager
             // int sceneToLoad = PlayerPrefs.GetInt("LastLevel");
             // SceneManager.LoadScene(sceneToLoad);

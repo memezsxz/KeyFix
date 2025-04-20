@@ -163,7 +163,12 @@ public class SaveManager : Singleton<SaveManager>
         // UnityEngine.Device.Screen.
         _saveData.Graphics = new GraphicData();
         _saveData.Sounds = new SoundData();
-        SaveSettings();
+
+        WriteToFile();
+        
+        SoundManager.Instance.LoadData(ref _saveData);
+        GraphicsManager.Instance.LoadData(ref _saveData);
+
     }
 
     #endregion

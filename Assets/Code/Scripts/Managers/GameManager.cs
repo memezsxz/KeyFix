@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace Code.Scripts.Managers
 {
@@ -9,6 +10,8 @@ namespace Code.Scripts.Managers
     {
         private Scenes _currentScene;
 
+        [SerializeField] public GameObject pauseMenuPrefab;
+        private GameObject pauseMenuInstance;
         public static event Action<GameState> OnBeforeGameStateChanged;
         public static event Action<GameState> OnAfterGameStateChanged;
 
@@ -16,15 +19,15 @@ namespace Code.Scripts.Managers
 
         private static readonly Dictionary<GameManager.Scenes, string> SceneNameMap = new()
         {
-            { GameManager.Scenes.HALLWAYS, "Hallways_Scene" },
-            { GameManager.Scenes.ESC_KEY, "ESC_Key_Scene" },
-            { GameManager.Scenes.W_KEY, "W_Key_Scene" },
-            { GameManager.Scenes.A_KEY, "A_Key_Scene" },
-            { GameManager.Scenes.SPACE_KEY, "Space_Key_Scene" },
-            { GameManager.Scenes.G_KEY, "G_Key_Scene" },
-            { GameManager.Scenes.ARROW_KEYS, "Arrow_Keys_Scene" },
-            { GameManager.Scenes.P_KEY, "P_Key_Scene" },
-            { GameManager.Scenes.Main_Menu, "Main_Menu_Scene" }
+            { GameManager.Scenes.HALLWAYS, "Hallways" },
+            { GameManager.Scenes.ESC_KEY, "ESC_Key" },
+            { GameManager.Scenes.W_KEY, "W_Key" },
+            { GameManager.Scenes.A_KEY, "A_Key" },
+            { GameManager.Scenes.SPACE_KEY, "Space_Key" },
+            { GameManager.Scenes.G_KEY, "G_Key" },
+            { GameManager.Scenes.ARROW_KEYS, "Arrow_Keys" },
+            { GameManager.Scenes.P_KEY, "P_Key" },
+            { GameManager.Scenes.Main_Menu, "Main_Menu" }
         };
 
         private GameState State { get; set; }
@@ -52,6 +55,12 @@ namespace Code.Scripts.Managers
             {
                 case GameState.Initial:
                     HandelInitialState();
+                    break;
+                case GameState.Paused:
+                    break;
+                case GameState.Playing:
+                    break;
+                case GameState.CutScene:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(newState), newState, null);
@@ -116,6 +125,14 @@ namespace Code.Scripts.Managers
         }
 
 
+        public AsyncOperation LoadLevelAsync(Scenes scene, GameState newState = GameState.Initial)
+        {
+            AsyncOperation op = SceneManager.LoadSceneAsync(SceneNameMap[scene]);
+            _currentScene = scene;
+            ChangeState(newState);
+            return op;
+        }
+
         public void SaveData(ref SaveData data)
         {
             data.Progress.CurrentScene = _currentScene;
@@ -124,5 +141,6 @@ namespace Code.Scripts.Managers
         public void LoadData(ref SaveData data)
         {
         }
+        
     }
 }

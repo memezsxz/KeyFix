@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Code.Scripts.Managers;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
@@ -69,7 +70,7 @@ public class PauseManager : MonoBehaviour
         GameStateTracker.returningFromGame = true;
         //SceneManager.LoadScene("Fatima_MainMenu"); // Replace with your actual main menu scene name
         pauseMenuUI.SetActive(false);
-        loadingScript.sceneToLoad = "Fatima_MainMenu";
+        loadingScript.sceneToLoad = GameManager.Scenes.Main_Menu;
         loadingScreen.SetActive(true);
         loadingScript.BeginLoading();
     }

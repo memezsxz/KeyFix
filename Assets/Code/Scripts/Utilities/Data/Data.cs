@@ -22,8 +22,8 @@ public class SaveData
 [Serializable]
 public class SoundData
 {
-    public float SoundVolume = 0.2f;
-    public float MusicVolume = 0.2f;
+    public float SoundVolume = 1f;
+    public float MusicVolume = 1f;
 }
 
 [Serializable]
@@ -39,9 +39,8 @@ public class GraphicData
 public class ProgressData
 {
     public bool IsNewGame = true;
-    public GameManager.Scenes CurrentScene;
-    public string LastCheckpointId = ""; // TODO Maryam: see how will the checkpoint system work. // optional: for respawn
-
+    public GameManager.Scenes CurrentScene = GameManager.Scenes.ESC_KEY;
+    public string LastCheckpointId = ""; // TODO Maryam: see how will the checkpoint system work.
     public List<string> RepairedKeys = new(); // e.g. ["W", "A"]
     public Dictionary<string, string> BindingOverrides = new(); // e.g. {"left", "<Keyboard>/a"}
 }
