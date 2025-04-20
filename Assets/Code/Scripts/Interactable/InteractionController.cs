@@ -37,10 +37,18 @@ public class InteractionController : MonoBehaviour
 
     void UpdateInteractionText()
     {
-        interactText.text = currentTargetedInteractable != null
-            ? currentTargetedInteractable.InteractMessage
-            : string.Empty;
+        // Hide all hints first
+        foreach (var btn in FindObjectsOfType<SpawnButton>())
+        {
+            btn.ShowHint(false);
+        }
+
+        if (currentTargetedInteractable is SpawnButton sb)
+        {
+            sb.ShowHint(true);
+        }
     }
+
 
     void CheckForInteractionInput()
     {
