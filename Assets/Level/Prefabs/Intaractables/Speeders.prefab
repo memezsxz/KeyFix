@@ -188,6 +188,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   model: {fileID: 7443324821472466062}
   endposition: {fileID: 7443324821053659249}
+  activeMaterial: {fileID: 2100000, guid: 6a22f7b50e8e54171ab6843aabe45aaf, type: 2}
+  inactiveMaterial: {fileID: 2100000, guid: b9b9bd4dfd1934dfba905d96d03cfc3d, type: 2}
+  meshRenderer: {fileID: 8948202466457702967}
 --- !u!1 &7443324821472466062
 GameObject:
   m_ObjectHideFlags: 0
