@@ -3,9 +3,8 @@ using UnityEngine;
 public class SpawnButton : InteractableBase
 {
     [SerializeField] GameObject spawnPrefab;
-    [SerializeField] HintUI hintUI;
 
-    public string InteractMessage => hintUI.message;
+    // public  string InteractMessage => hintUI.message;
 
     public override void Interact()
     {

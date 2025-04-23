@@ -11,7 +11,7 @@ public class Speeders : MonoBehaviour
     [SerializeField] private Material activeMaterial;
     [SerializeField] private Material inactiveMaterial;
     [SerializeField] private MeshRenderer meshRenderer;
-    public event Action OnPushEnd;
+    // public event Action OnPushEnd;
 
     private Vector3 endpoint;
 

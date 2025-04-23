@@ -1,11 +1,14 @@
-
 using UnityEngine;
 
 public abstract class InteractableBase : MonoBehaviour
 {
     [SerializeField] protected HintUI hintUI;
 
-    public string InteractMessage { get;  protected set; }
+    public string InteractMessage
+    {
+        get => hintUI == null ? "" : hintUI.message;
+        protected set => hintUI.message = value;
+    }
 
     public abstract void Interact();
 
