@@ -3,9 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PowerLever : MonoBehaviour, IInteractable
+public class PowerLever : InteractableBase
 {
-    [SerializeField] HintUI hintUI;
     private static readonly int IsPowerOn = Animator.StringToHash("is_power_on");
     Animator animator;
     private LeverState leverState = LeverState.down;
@@ -13,21 +12,18 @@ public class PowerLever : MonoBehaviour, IInteractable
     private enum LeverState
     {
         freeze = -1,
-        down = 0,
-        up = 1
+        up = 0,
+        down = 1
     }
 
     private void Start()
     {
         animator = GetComponent<Animator>();
+        InteractMessage = "E";
     }
 
-    public string InteractMessage
-    {
-        get { return "e"; }
-    }
-    
-    public void Interact()
+
+    public override void Interact()
     {
         ToggleState();
     }
@@ -53,19 +49,5 @@ public class PowerLever : MonoBehaviour, IInteractable
     private void SetAnimatorState()
     {
         animator.SetInteger(IsPowerOn, (int)leverState);
-    }
-
-    public void ShowHint(bool show)
-    {
-        if (hintUI == null) return;
-
-        if (show)
-        {
-            hintUI.ShowHint();
-        }
-        else
-        {
-            hintUI.HideHint();
-        }
     }
 }

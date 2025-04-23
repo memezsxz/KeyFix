@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class HintUI : MonoBehaviour
 {
+    
     public TextMeshProUGUI hintText;
     public string message = "";
     public float duration = 3f;
