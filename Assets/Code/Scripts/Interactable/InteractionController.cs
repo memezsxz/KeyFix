@@ -29,6 +29,7 @@ public class InteractionController : MonoBehaviour
             IInteractable interactable = hit.GetComponent<IInteractable>();
             if (interactable != null)
             {
+                print("found interactable");
                 currentTargetedInteractable = interactable;
                 break;
             }
@@ -38,12 +39,12 @@ public class InteractionController : MonoBehaviour
     void UpdateInteractionText()
     {
         // Hide all hints first
-        foreach (var btn in FindObjectsOfType<SpawnButton>())
+        foreach (var btn in FindObjectsOfType<PowerLever>())
         {
             btn.ShowHint(false);
         }
 
-        if (currentTargetedInteractable is SpawnButton sb)
+        if (currentTargetedInteractable is PowerLever sb)
         {
             sb.ShowHint(true);
         }

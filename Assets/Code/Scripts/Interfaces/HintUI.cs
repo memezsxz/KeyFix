@@ -28,6 +28,4 @@ public class HintUI : MonoBehaviour
     {
         transform.forward = Camera.main.transform.forward;
     }
-
-
 }

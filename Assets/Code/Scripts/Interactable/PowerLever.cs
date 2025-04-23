@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class PowerLever : MonoBehaviour, IInteractable
 {
+    [SerializeField] HintUI hintUI;
     private static readonly int IsPowerOn = Animator.StringToHash("is_power_on");
     Animator animator;
     private LeverState leverState = LeverState.down;
@@ -15,7 +16,7 @@ public class PowerLever : MonoBehaviour, IInteractable
         down = 0,
         up = 1
     }
-    
+
     private void Start()
     {
         animator = GetComponent<Animator>();
@@ -25,28 +26,14 @@ public class PowerLever : MonoBehaviour, IInteractable
     {
         get { return "e"; }
     }
-
-    private void OnTriggerStay(Collider other)
-    {
-        if (!other.CompareTag("Player")) return;
-        print("collition");
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            ToggleState();
-            // SetAnimatorState();
-        }
-    }
-
+    
     public void Interact()
     {
-        print("PowerLever Interact");
+        ToggleState();
     }
-    
+
     private void ToggleState()
     {
-        // leverState = LeverState.freeze;
-        // SetAnimatorState();
-
         if (leverState == LeverState.down)
         {
             leverState = LeverState.freeze;
@@ -59,6 +46,7 @@ public class PowerLever : MonoBehaviour, IInteractable
             SetAnimatorState();
             leverState = LeverState.down;
         }
+
         SetAnimatorState();
     }
 
@@ -67,4 +55,17 @@ public class PowerLever : MonoBehaviour, IInteractable
         animator.SetInteger(IsPowerOn, (int)leverState);
     }
 
+    public void ShowHint(bool show)
+    {
+        if (hintUI == null) return;
+
+        if (show)
+        {
+            hintUI.ShowHint();
+        }
+        else
+        {
+            hintUI.HideHint();
+        }
+    }
 }
