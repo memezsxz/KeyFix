@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Code.Scripts.Managers;
@@ -10,6 +11,7 @@ using static Code.Scripts.Managers.GameManager;
 public class GameOverManager : MonoBehaviour
 {
 
+    [SerializeField] AudioClip gameOverSound;
     public LoadingManager loadingScript;
     public GameObject loadingScreen;
     public GameObject GameOverScene;
@@ -17,6 +19,11 @@ public class GameOverManager : MonoBehaviour
     public void Retry()
     {
         GameManager.Instance.RestartLevel();
+    }
+
+    private void OnEnable()
+    {
+        SoundManager.Instance.PlayMusic(gameOverSound);
     }
 
     public void GoToMainMenu()

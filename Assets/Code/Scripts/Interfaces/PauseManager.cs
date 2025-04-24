@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Code.Scripts.Managers;
@@ -23,7 +24,7 @@ public class PauseManager : MonoBehaviour
     public AudioClip buttonSound;
 
 
-    private bool isPaused = false;
+    // private bool isPaused = false;
 
 
     private void Start()
@@ -35,7 +36,7 @@ public class PauseManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (isPaused)
+            if (GameManager.Instance.State == GameManager.GameState.Paused)
             {
                 ResumeGame();
             }
@@ -48,22 +49,26 @@ public class PauseManager : MonoBehaviour
 
     public void ResumeGame()
     {
-        pauseMenuUI.SetActive(false);
-        Time.timeScale = 1f; // Resume game time
-        isPaused = false;
+        GameManager.Instance.ChangeState(GameManager.GameState.Playing);
 
-        if (SoundManager.Instance.IsMusicPlaying) SoundManager.Instance.StopMusic();
+        // pauseMenuUI.SetActive(false);
+        // Time.timeScale = 1f; // Resume game time
+        // // isPaused = false;
+        //
+        // if (SoundManager.Instance.IsMusicPlaying) SoundManager.Instance.StopMusic();
     }
 
     public void PauseGame()
     {
-        pauseMenuUI.SetActive(true);
-        Time.timeScale = 0f; // Freeze game time
-        isPaused = true;
+        GameManager.Instance.ChangeState(GameManager.GameState.Paused);
+
+        // pauseMenuUI.SetActive(true);
+        // Time.timeScale = 0f; // Freeze game time
+        // isPaused = true;
 
         if (!SoundManager.Instance.IsMusicPlaying) SoundManager.Instance.PlayMusic(backgroundMusic);
-    }
 
+    }
     public void ExitToMainMenu()
     {
         Time.timeScale = 1f;

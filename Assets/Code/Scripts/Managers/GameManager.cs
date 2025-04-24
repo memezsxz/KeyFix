@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,12 +11,12 @@ namespace Code.Scripts.Managers
     {
         private Scenes _currentScene;
 
-        [SerializeField] public GameObject pauseMenuPrefab;
-        private GameObject pauseMenuInstance;
         public static event Action<GameState> OnBeforeGameStateChanged;
         public static event Action<GameState> OnAfterGameStateChanged;
 
-        public bool IntroScenePlayed = false;
+        private bool IntroScenePlayed = false;
+        [SerializeField] GameObject gameOverCanvas;
+        [SerializeField] GameObject pauseMenuCanvas;
 
         private static readonly Dictionary<GameManager.Scenes, string> SceneNameMap = new()
         {
@@ -30,7 +31,7 @@ namespace Code.Scripts.Managers
             { GameManager.Scenes.Main_Menu, "Main_Menu" }
         };
 
-        private GameState State { get; set; }
+        public GameState State { get; private set; }
 
         void Start()
         {
@@ -57,10 +58,15 @@ namespace Code.Scripts.Managers
                     HandelInitialState();
                     break;
                 case GameState.Paused:
+                    HandlePause();
                     break;
                 case GameState.Playing:
+                    HandleResume();
                     break;
                 case GameState.CutScene:
+                    break;
+                case GameState.GameOver:
+                    StartCoroutine( HandleGameOver());
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(newState), newState, null);
@@ -74,6 +80,8 @@ namespace Code.Scripts.Managers
         // TODO Maryam: Make sure all scripts unsubscribe to events when they are done with them, to avoid memory leaks // in the OnDestroy method or when the state is never coming back to 
         private void HandelInitialState()
         {
+            // inisialize the player in the right spot
+            
         }
 
 
@@ -86,6 +94,7 @@ namespace Code.Scripts.Managers
             CutScene,
             Playing,
             Paused,
+            GameOver,
         }
 
         public void RestartLevel()
@@ -141,6 +150,32 @@ namespace Code.Scripts.Managers
         public void LoadData(ref SaveData data)
         {
         }
+
+        private IEnumerator HandleGameOver()
+        {
+            if (SoundManager.Instance.IsMusicPlaying) SoundManager.Instance.StopMusic();
+            if (SoundManager.Instance.IsSoundPlaying) SoundManager.Instance.StopSound();
+
+            yield return new WaitForSeconds(0.3f);
+            gameOverCanvas.SetActive(true);
+        }
+        private void HandlePause()
+        {
+            if (SoundManager.Instance.IsMusicPlaying) SoundManager.Instance.StopMusic();
+            if (SoundManager.Instance.IsSoundPlaying) SoundManager.Instance.StopSound();
+            Time.timeScale = 0f; // Resume game time
+
+            pauseMenuCanvas.SetActive(true);
+        }
         
+        private void HandleResume()
+        {
+            if (SoundManager.Instance.IsMusicPlaying) SoundManager.Instance.StopMusic();
+            if (SoundManager.Instance.IsSoundPlaying) SoundManager.Instance.StopSound();
+            
+            pauseMenuCanvas.SetActive(false);
+            Time.timeScale = 1f; // Resume game time
+        }
+
     }
 }

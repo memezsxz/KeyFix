@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Code.Scripts.Managers;
 using TMPro;
 using UnityEngine;
 
@@ -19,7 +20,6 @@ public class LevelTimer : MonoBehaviour
     private float nextTickTime = 0f;
 
     [Header("Scene Reference")] public GameObject scene;
-    public GameObject gameOverScene;
     private bool gameOverTriggered = false;
 
     public void Start()
@@ -64,7 +64,7 @@ public class LevelTimer : MonoBehaviour
             gameOverTriggered = true;
             StopAllEffects();
 
-            StartCoroutine(HandleGameOver());
+            GameManager.Instance.ChangeState(GameManager.GameState.GameOver);
         }
     }
 
@@ -87,14 +87,9 @@ public class LevelTimer : MonoBehaviour
             SoundManager.Instance.StopSound();
         if (SoundManager.Instance.IsMusicPlaying)
             SoundManager.Instance.StopMusic();
-
+        
         if (zapEffect.activeSelf)
             zapEffect.SetActive(false);
     }
-
-    IEnumerator HandleGameOver()
-    {
-        yield return new WaitForSeconds(0.3f);
-        gameOverScene.SetActive(true);
-    }
+    
 }
