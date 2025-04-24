@@ -92,7 +92,7 @@ public class LevelTimer : MonoBehaviour
     IEnumerator HandleGameOver()
     {
       
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.3f);
         gameOverScene.SetActive(true);
     }
 }
