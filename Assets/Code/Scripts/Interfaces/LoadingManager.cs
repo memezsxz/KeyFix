@@ -1,18 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
+using Code.Scripts.Managers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class LoadingManager : MonoBehaviour
 {
-    public string sceneToLoad;
+    public GameManager.Scenes sceneToLoad;
+    public GameManager.GameState stateToLoadIn = GameManager.GameState.Initial;
     public Slider progressBar;
     public float minLoadTime = 3f;
 
     private float loadingProgress = 0f;
 
-    void Start()
+    public void BeginLoading()
     {
         StartCoroutine(LoadAsyncWithDelay());
     }
@@ -20,7 +22,7 @@ public class LoadingManager : MonoBehaviour
     IEnumerator LoadAsyncWithDelay()
     {
         float timer = 0f;
-        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneToLoad);
+        AsyncOperation operation = GameManager.Instance.LoadLevelAsync(sceneToLoad, stateToLoadIn);
         operation.allowSceneActivation = false;
 
         while (!operation.isDone)
@@ -47,6 +49,7 @@ public class LoadingManager : MonoBehaviour
 
                     yield return null;
                 }
+
 
                 operation.allowSceneActivation = true;
             }

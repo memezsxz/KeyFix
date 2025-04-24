@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -5,11 +6,16 @@ using UnityEngine.InputSystem;
 
 public class InteractionController : MonoBehaviour
 {
-    [SerializeField] TextMeshProUGUI interactText;
-    [SerializeField] float interactionRadius = 10f;
-    [SerializeField] LayerMask interactableLayer;
+    // [SerializeField] TextMeshProUGUI interactText;
+    [SerializeField] float interactionRadius = 1f;
+    LayerMask interactableLayer;
 
-    IInteractable currentTargetedInteractable;
+    InteractableBase currentTargetedInteractable;
+
+    private void Start()
+    {
+        interactableLayer = LayerMask.GetMask("Interactable");
+    }
 
     void Update()
     {
@@ -26,9 +32,10 @@ public class InteractionController : MonoBehaviour
 
         foreach (var hit in hits)
         {
-            IInteractable interactable = hit.GetComponent<IInteractable>();
+            InteractableBase interactable = hit.GetComponent<InteractableBase>();
             if (interactable != null)
             {
+                print("found interactable");
                 currentTargetedInteractable = interactable;
                 break;
             }
@@ -37,10 +44,18 @@ public class InteractionController : MonoBehaviour
 
     void UpdateInteractionText()
     {
-        interactText.text = currentTargetedInteractable != null
-            ? currentTargetedInteractable.InteractMessage
-            : string.Empty;
+        // Hide all hints first
+        foreach (var btn in FindObjectsOfType<InteractableBase>())
+        {
+            btn.ShowHint(false);
+        }
+
+        if (currentTargetedInteractable is InteractableBase sb)
+        {
+            sb.ShowHint(true);
+        }
     }
+
 
     void CheckForInteractionInput()
     {

@@ -6,46 +6,50 @@ using UnityEngine.UI;
 
 public class SceneFader : MonoBehaviour
 {
-    public Image fadeImage;
-    public float fadeDuration = 1f;
+    private Image fadeImage;
 
-    void Start()
+    private void Awake()
     {
-        // Start by fading in from black
-        StartCoroutine(FadeFromBlack());
+        fadeImage = GetComponent<Image>();
     }
 
-    public void FadeToScene(string sceneName)
-    {
-        StartCoroutine(FadeOutAndLoadScene(sceneName));
+    public IEnumerator FadeInCoroutine(float duration) {
+
+        Color startColor = new Color(fadeImage.color.r, fadeImage.color.g, fadeImage.color.b, 1);
+        Color targetColor = new Color(fadeImage.color.r, fadeImage.color.g, fadeImage.color.b, 0);
+
+        yield return FadeCoroutine(startColor, targetColor, duration);
+
+        gameObject.SetActive(false);
+
     }
 
-    IEnumerator FadeFromBlack()
+
+
+    public IEnumerator FadeOutCoroutine(float duration)
     {
-        yield return Fade(1f, 0f); // From alpha 1 to 0
+
+        Color startColor = new Color(fadeImage.color.r, fadeImage.color.g, fadeImage.color.b, 0);
+        Color targetColor = new Color(fadeImage.color.r, fadeImage.color.g, fadeImage.color.b, 1);
+
+
+        gameObject.SetActive(true);
+        yield return FadeCoroutine(startColor, targetColor, duration);
+
+
     }
 
-    IEnumerator FadeOutAndLoadScene(string sceneName)
-    {
-        yield return Fade(0f, 1f); // From alpha 0 to 1
-        SceneManager.LoadScene(sceneName);
-    }
+    private IEnumerator FadeCoroutine(Color statrColor, Color targetColor, float duration) {
+        float elapsedTime = 0;
+        float elapsedPersentage = 0;
 
-    IEnumerator Fade(float startAlpha, float endAlpha)
-    {
-        float elapsed = 0f;
-        Color color = fadeImage.color;
+        while (elapsedPersentage < 1) {
+            elapsedPersentage = elapsedTime / duration;
+            fadeImage.color = Color.Lerp(statrColor, targetColor, elapsedPersentage);
 
-        while (elapsed < fadeDuration)
-        {
-            float t = elapsed / fadeDuration;
-            color.a = Mathf.Lerp(startAlpha, endAlpha, t);
-            fadeImage.color = color;
-            elapsed += Time.deltaTime;
             yield return null;
-        }
 
-        color.a = endAlpha;
-        fadeImage.color = color;
+            elapsedTime += Time.deltaTime;
+        }
     }
 }

@@ -1,12 +1,34 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace Code.Scripts.Managers
 {
-    public class GameManager : PersistentSingleton<GameManager>
+    public class GameManager : Singleton<GameManager>, IDataPersistence
     {
+        private Scenes _currentScene;
+
+        [SerializeField] public GameObject pauseMenuPrefab;
+        private GameObject pauseMenuInstance;
         public static event Action<GameState> OnBeforeGameStateChanged;
         public static event Action<GameState> OnAfterGameStateChanged;
+
+        public bool IntroScenePlayed = false;
+
+        private static readonly Dictionary<GameManager.Scenes, string> SceneNameMap = new()
+        {
+            { GameManager.Scenes.HALLWAYS, "Hallways" },
+            { GameManager.Scenes.ESC_KEY, "ESC_Key" },
+            { GameManager.Scenes.W_KEY, "W_Key" },
+            { GameManager.Scenes.A_KEY, "A_Key" },
+            { GameManager.Scenes.SPACE_KEY, "Space_Key" },
+            { GameManager.Scenes.G_KEY, "G_Key" },
+            { GameManager.Scenes.ARROW_KEYS, "Arrow_Keys" },
+            { GameManager.Scenes.P_KEY, "P_Key" },
+            { GameManager.Scenes.Main_Menu, "Main_Menu" }
+        };
 
         private GameState State { get; set; }
 
@@ -34,6 +56,12 @@ namespace Code.Scripts.Managers
                 case GameState.Initial:
                     HandelInitialState();
                     break;
+                case GameState.Paused:
+                    break;
+                case GameState.Playing:
+                    break;
+                case GameState.CutScene:
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(newState), newState, null);
             }
@@ -47,14 +75,72 @@ namespace Code.Scripts.Managers
         private void HandelInitialState()
         {
         }
-    }
 
 
-    public enum GameState
-    {
-        /// <summary>
-        /// load the data on OnBeforeGameStateChanged command
-        /// </summary>
-        Initial
+        public enum GameState
+        {
+            /// <summary>
+            /// load the data on OnBeforeGameStateChanged command
+            /// </summary>
+            Initial,
+            CutScene,
+            Playing,
+            Paused,
+        }
+
+        public void RestartLevel()
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            ChangeState(GameState.Playing);
+        }
+
+        public void LoadLastSavedLevel()
+        {
+            _currentScene = SaveManager.Instance.SaveData.Progress.CurrentScene;
+            SceneManager.LoadScene(SceneNameMap[_currentScene]);
+            ChangeState(GameState.Playing);
+        }
+
+        public void LoadLevel(Scenes scene, GameState newState = GameState.Initial)
+        {
+            SceneManager.LoadScene(SceneNameMap[scene]);
+            _currentScene = scene;
+            ChangeState(newState); // should check what state this should change to  
+        }
+
+
+        [Serializable]
+        public enum Scenes
+        {
+            HALLWAYS,
+            ESC_KEY,
+            W_KEY,
+            A_KEY,
+            SPACE_KEY,
+            G_KEY,
+            ARROW_KEYS,
+            P_KEY,
+            Main_Menu,
+            // any other scenes that we might want
+        }
+
+
+        public AsyncOperation LoadLevelAsync(Scenes scene, GameState newState = GameState.Initial)
+        {
+            AsyncOperation op = SceneManager.LoadSceneAsync(SceneNameMap[scene]);
+            _currentScene = scene;
+            ChangeState(newState);
+            return op;
+        }
+
+        public void SaveData(ref SaveData data)
+        {
+            data.Progress.CurrentScene = _currentScene;
+        }
+
+        public void LoadData(ref SaveData data)
+        {
+        }
+        
     }
 }
