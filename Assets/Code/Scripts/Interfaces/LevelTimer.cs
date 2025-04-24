@@ -5,31 +5,35 @@ using UnityEngine;
 
 public class LevelTimer : MonoBehaviour
 {
-    //timmer refrence
-    public float countdownTime = 20f;
+    [Header("Timer Reference")] public float countdownTime = 20f;
     public TextMeshProUGUI timerText;
     public GameObject zapEffect; // assign your zap GameObject
-    public AudioSource zapSound;
+    public AudioClip zapSound;
 
-    //zaps reference
-    private float currentTime;
+    [Header("Zaps Reference")] private float currentTime;
     private float zapInterval = 4f;
     private float nextZapTime = 0f;
 
-    //tick sound referenc
-    public AudioSource tickSound; 
+    [Header("Tick Sound Reference")] 
+    public AudioClip tickSound;
     private float nextTickTime = 0f;
 
-    //scene reference
-    public GameObject scene;
+    [Header("Scene Reference")] public GameObject scene;
     public GameObject gameOverScene;
     private bool gameOverTriggered = false;
 
-    public void Room_A_Start() {
+    public void Start()
+    {
+        Room_A_Start();
+    }
+
+    public void Room_A_Start()
+    {
         scene.SetActive(true);
         currentTime = countdownTime;
         zapEffect.SetActive(false);
         nextZapTime = currentTime - zapInterval;
+        nextTickTime = Mathf.Floor(currentTime) - 1f;
     }
 
     void Update()
@@ -48,13 +52,13 @@ public class LevelTimer : MonoBehaviour
                 nextZapTime -= zapInterval;
             }
 
-            if (currentTime <= nextTickTime)
+            if (currentTime <= nextTickTime && currentTime > 0f)
             {
-                tickSound.Play();
-                nextTickTime = Mathf.Floor(currentTime) - 1;
+               if (!SoundManager.Instance.IsMusicPlaying) SoundManager.Instance.PlayMusic(tickSound);
+                nextTickTime = Mathf.Floor(currentTime) - 1f;
             }
         }
-        else if(!gameOverTriggered)
+        else if (!gameOverTriggered)
         {
             timerText.text = "00:00";
             gameOverTriggered = true;
@@ -62,13 +66,12 @@ public class LevelTimer : MonoBehaviour
 
             StartCoroutine(HandleGameOver());
         }
-
     }
 
     void ShowZap()
     {
         zapEffect.SetActive(true);
-        if (zapSound != null) zapSound.Play();
+        if (zapSound != null) SoundManager.Instance.PlaySound(zapSound);
 
         Invoke("HideZap", 1f); // show zap briefly
     }
@@ -78,20 +81,19 @@ public class LevelTimer : MonoBehaviour
         zapEffect.SetActive(false);
     }
 
-
     void StopAllEffects()
     {
-        if (tickSound.isPlaying)
-            tickSound.Stop();
+        if (SoundManager.Instance.IsSoundPlaying)
+            SoundManager.Instance.StopSound();
+        if (SoundManager.Instance.IsMusicPlaying)
+            SoundManager.Instance.StopMusic();
 
         if (zapEffect.activeSelf)
             zapEffect.SetActive(false);
     }
 
-
     IEnumerator HandleGameOver()
     {
-      
         yield return new WaitForSeconds(0.3f);
         gameOverScene.SetActive(true);
     }
