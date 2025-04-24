@@ -1,13 +1,12 @@
 using UnityEngine;
 
-public class SpawnButton : MonoBehaviour, IInteractable
+public class SpawnButton : InteractableBase
 {
     [SerializeField] GameObject spawnPrefab;
-    [SerializeField] HintUI hintUI;
 
-    public string InteractMessage => hintUI.message;
+    // public  string InteractMessage => hintUI.message;
 
-    public void Interact()
+    public override void Interact()
     {
         Spawn();
     }
@@ -22,19 +21,4 @@ public class SpawnButton : MonoBehaviour, IInteractable
         var randomColour = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f));
         spawnedObject.GetComponent<MeshRenderer>().material.color = randomColour;
     }
-
-    public void ShowHint(bool show)
-    {
-        if (hintUI == null) return;
-
-        if (show)
-        {
-            hintUI.ShowHint();
-        }
-        else
-        {
-            hintUI.HideHint();
-        }
-    }
-
 }
