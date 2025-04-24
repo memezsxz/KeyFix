@@ -30,9 +30,6 @@ public class LevelCompleteController : MonoBehaviour
         StartCoroutine(ShowLevelComplete());
     }
 
-
-
-
     //delay the animation scale of the image.
     IEnumerator PlayAnimation()
     {
@@ -43,15 +40,12 @@ public class LevelCompleteController : MonoBehaviour
 
     }
 
-
-    
     //to delay the sound playing time
     IEnumerator PlayAfterDelay()
     {
         yield return new WaitForSeconds(delay);
         victoryAudio.Play();
     }
-
 
     //fade in and out
     IEnumerator ShowLevelComplete()
@@ -62,7 +56,6 @@ public class LevelCompleteController : MonoBehaviour
 
         SceneManager.LoadScene(nextSceneName);
     }
-
 
     IEnumerator Fade(float from, float to, float duration)
     {
