@@ -21,6 +21,7 @@ public class CameraEnemyLock : MonoBehaviour
     private void OnEnable()
     {
         BuildTargetGroup();
+        playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
     }
 
     public void BuildTargetGroup()

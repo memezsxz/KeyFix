@@ -1,7 +1,13 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(CharacterController))]
+[RequireComponent(typeof(SpeedersInteraction))]
+[RequireComponent(typeof(Animator))]
 public class PlayerMovement : MonoBehaviour, IDataPersistence
 {
     // TODO Maryam: should add require Animator to the script 
@@ -9,6 +15,7 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
     private static readonly int Horizontal = Animator.StringToHash("horizontal");
     private static readonly int isFalling = Animator.StringToHash("isFalling");
     private PlayerBindingManage bindingManage;
+    private SpeedersInteraction mover;
 
     [SerializeField]
     private CharacterType _charecterType = CharacterType.Robot; // the type of character that is holding the script
@@ -22,7 +29,7 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
     private CharacterController controller;
     private Vector3 playerVelocity;
     private bool groundedPlayer;
-    private float playerSpeed = 8.0f;
+    private float playerSpeed = 5f;
     private float jumpHeight = 1.0f;
     private float gravityValue = -9.81f;
     private InputAction moveAction, jumpAction;
@@ -35,6 +42,8 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
 
     private void Start()
     {
+        var d = SaveManager.Instance.SaveData;
+        LoadData(ref d);
         lastYPosition = transform.position.y;
         controller = gameObject.GetComponent<CharacterController>();
         anim = this.GetComponent<Animator>();
@@ -43,6 +52,7 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
         var actions = gameObject.GetComponent<PlayerInput>().actions;
         moveAction = actions.FindAction("Move");
         jumpAction = actions.FindAction("Jump");
+        mover = GetComponent<SpeedersInteraction>();
     }
 
     void Update()
@@ -57,6 +67,7 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
         }
 
         // Read input from new Input System
+        if (mover.IsBeingPushed) return; // Block input during movement
 
         Vector2 moveValue = moveAction.ReadValue<Vector2>();
         float inputX = moveValue.x;
@@ -87,7 +98,7 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
         }
         else
         {
-            if (!groundedPlayer && playerVelocity.y < -0.5f)
+            if (!groundedPlayer && playerVelocity.y < -0.2f)
             {
                 anim.SetBool("isFalling", true); // Falling down
             }
@@ -279,7 +290,7 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
         var upBinding = moveAction.bindings
             .Select((binding, index) => new { binding, index })
             .FirstOrDefault(b => b.binding.name == "up" && b.binding.isPartOfComposite);
- 
+
         if (upBinding != null)
         {
             moveAction.ApplyBindingOverride(upBinding.index, new InputBinding { overridePath = " " });
@@ -291,24 +302,25 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
         }
     }
 
-    public void SaveData(SaveData data)
+
+    public void SaveData(ref SaveData data)
     {
         var psd = SaveManager.Instance.GetCharacterData(_charecterType);
         psd.Position = transform.position;
         psd.Yaw = transform.rotation.eulerAngles.y;
-        psd.Bindings = bindingManage;
+        // psd.Bindings = bindingManage;
         // psd.HitsRemaining = hits;
         // psd.LivesRemaining = lives;
         // Debug.Log($"save data {psd.HitsRemaining} & {psd.LivesRemaining} & {data.Meta.SaveName}");
     }
 
-    public void LoadData(SaveData data)
+    public void LoadData(ref SaveData data)
     {
         var psd = SaveManager.Instance.GetCharacterData(_charecterType);
         transform.position = psd.Position;
         var newRot = Quaternion.Euler(0, psd.Yaw, 0);
         transform.rotation = newRot;
-        bindingManage = psd.Bindings;
+        // bindingManage = psd.Bindings;
         // hits = psd.HitsRemaining;
         // lives = psd.LivesRemaining;
         // Debug.Log($"load obj {psd.HitsRemaining}");

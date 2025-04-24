@@ -522,6 +522,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PauseObject
       objectReference: {fileID: 0}
+    - target: {fileID: 1014584963891733155, guid: 4bb1ebb71f119164ba80f3dadfd4773c, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1014584964511289949, guid: 4bb1ebb71f119164ba80f3dadfd4773c, type: 3}
       propertyPath: s
       value: 
@@ -530,6 +534,14 @@ PrefabInstance:
       propertyPath: intro
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 1014584964511289949, guid: 4bb1ebb71f119164ba80f3dadfd4773c, type: 3}
+      propertyPath: buttonSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2a2363269063f4542a3760fbb9831130, type: 3}
+    - target: {fileID: 1014584964511289949, guid: 4bb1ebb71f119164ba80f3dadfd4773c, type: 3}
+      propertyPath: backgroundMusic
+      value: 
+      objectReference: {fileID: 8300000, guid: 7ac1670904bb1624b87dc52bc71f00bc, type: 3}
     - target: {fileID: 2075498360168738311, guid: 4bb1ebb71f119164ba80f3dadfd4773c, type: 3}
       propertyPath: m_IsActive
       value: 0

@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class HintUI : MonoBehaviour
 {
+    
     public TextMeshProUGUI hintText;
     public string message = "";
     public float duration = 3f;
@@ -28,6 +29,4 @@ public class HintUI : MonoBehaviour
     {
         transform.forward = Camera.main.transform.forward;
     }
-
-
 }
