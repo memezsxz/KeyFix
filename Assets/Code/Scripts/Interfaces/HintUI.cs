@@ -13,9 +13,8 @@ public class HintUI : MonoBehaviour
     public void ShowHint()
     {
         gameObject.SetActive(true); // display the hint object
-        hintText.text = message;
-        CancelInvoke(); // Prevent overlap
-        Invoke(nameof(HideHint), duration); //hide the hint after the duration reach
+        if (hintText != null)
+            hintText.text = message;
     }
 
 
@@ -23,6 +22,11 @@ public class HintUI : MonoBehaviour
     public void HideHint()
     {
         gameObject.SetActive(false);
+    }
+
+    void LateUpdate()
+    {
+        transform.forward = Camera.main.transform.forward;
     }
 
 
