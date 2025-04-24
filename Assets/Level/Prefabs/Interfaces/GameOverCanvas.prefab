@@ -121,7 +121,6 @@ MonoBehaviour:
   loadingScript: {fileID: 3382727844342631456}
   loadingScreen: {fileID: 3382727843775221409}
   GameOverScene: {fileID: 8782911523252357602}
-  victoryAudio: {fileID: 8782911522853162318}
   scene: {fileID: 8782911522853162309}
   canvasGroup: {fileID: 8782911522853162319}
 --- !u!225 &8782911522853162319
@@ -263,7 +262,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8782911523252357601}
-  m_RootOrder: 3
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -474,7 +473,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8782911523252357601}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -608,10 +607,10 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 8782911522996273173}
   - {fileID: 8782911523211305543}
   - {fileID: 8782911524486635741}
   - {fileID: 8782911523913845381}
-  - {fileID: 8782911522996273173}
   m_Father: {fileID: 8782911522853162305}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -827,7 +826,7 @@ RectTransform:
   m_Children:
   - {fileID: 8782911523294516399}
   m_Father: {fileID: 8782911523252357601}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -977,7 +976,7 @@ RectTransform:
   m_Children:
   - {fileID: 8782911523123727383}
   m_Father: {fileID: 8782911523252357601}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
