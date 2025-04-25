@@ -32,9 +32,9 @@ public class PauseManager : MonoBehaviour
     {
         if (GameManager.Instance.CurrentScene == GameManager.Scenes.Main_Menu) return;
 
-        if (GameManager.Instance.State != GameManager.GameState.Playing &&
-            GameManager.Instance.State != GameManager.GameState.Paused)
-            return;
+        // if (GameManager.Instance.State != GameManager.GameState.Playing &&
+        //     GameManager.Instance.State != GameManager.GameState.Paused)
+        //     return;
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {

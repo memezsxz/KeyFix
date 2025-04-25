@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Code.Scripts.Managers;
 using UnityEngine;
 
 public class PowerLever : InteractableBase
@@ -12,8 +13,8 @@ public class PowerLever : InteractableBase
     private enum LeverState
     {
         freeze = -1,
-        up = 0,
-        down = 1
+        down = 0,
+        up = 1
     }
 
     private void Start()
@@ -44,6 +45,17 @@ public class PowerLever : InteractableBase
         }
 
         SetAnimatorState();
+
+        if (leverState == LeverState.down)
+        {
+            Invoke(nameof(TriggerVictory), 2f);
+        }
+    }
+
+
+    private void TriggerVictory()
+    {
+        GameManager.Instance.ChangeState(GameManager.GameState.Victory);
     }
 
     private void SetAnimatorState()

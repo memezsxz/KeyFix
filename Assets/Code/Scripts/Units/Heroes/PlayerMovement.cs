@@ -112,7 +112,7 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
         }
         else
         {
-            if (!groundedPlayer && playerVelocity.y < -0.4f)
+            if (!groundedPlayer && playerVelocity.y < -1f)
             {
                 anim.SetBool(isFalling, true); // Falling down
             }

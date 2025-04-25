@@ -10,7 +10,7 @@ AnimatorStateTransition:
   m_Conditions:
   - m_ConditionMode: 6
     m_ConditionEvent: is_power_on
-    m_EventTreshold: 0
+    m_EventTreshold: 1
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 8700766251016501327}
   m_Solo: 0
@@ -36,10 +36,10 @@ AnimatorStateMachine:
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: 3956242437243220001}
-    m_Position: {x: 200, y: 230, z: 0}
+    m_Position: {x: 150, y: 180, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 8700766251016501327}
-    m_Position: {x: 20, y: -40, z: 0}
+    m_Position: {x: 30, y: -50, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 3883581211094293776}
     m_Position: {x: 260, y: -50, z: 0}
@@ -51,8 +51,8 @@ AnimatorStateMachine:
   m_StateMachineTransitions: {}
   m_StateMachineBehaviours: []
   m_AnyStatePosition: {x: 160, y: 110, z: 0}
-  m_EntryPosition: {x: 280, y: 320, z: 0}
-  m_ExitPosition: {x: 430, y: 240, z: 0}
+  m_EntryPosition: {x: 170, y: 320, z: 0}
+  m_ExitPosition: {x: 410, y: 320, z: 0}
   m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}
   m_DefaultState: {fileID: 3956242437243220001}
 --- !u!91 &9100000
@@ -119,7 +119,7 @@ AnimatorStateTransition:
   m_Conditions:
   - m_ConditionMode: 6
     m_ConditionEvent: is_power_on
-    m_EventTreshold: 1
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 3883581211094293776}
   m_Solo: 0
