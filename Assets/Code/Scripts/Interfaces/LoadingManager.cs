@@ -50,7 +50,9 @@ public class LoadingManager : MonoBehaviour
                     yield return null;
                 }
 
+                GameManager.Instance.ChangeState(stateToLoadIn);
 
+                GameManager.Instance.HandelSceneLoaded();
                 operation.allowSceneActivation = true;
             }
 
