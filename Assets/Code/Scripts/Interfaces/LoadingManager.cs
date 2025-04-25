@@ -52,7 +52,7 @@ public class LoadingManager : MonoBehaviour
 
                 GameManager.Instance.ChangeState(stateToLoadIn);
 
-                GameManager.Instance.HandelSceneLoaded();
+                GameManager.Instance.HandleSceneLoaded();
                 operation.allowSceneActivation = true;
             }
 
