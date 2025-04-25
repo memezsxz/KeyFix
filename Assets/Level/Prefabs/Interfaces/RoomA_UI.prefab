@@ -282,13 +282,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c13419a03b2236f4d87cc8ca74d0f525, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  countdownTime: 5
+  countdownTime: 30
   timerText: {fileID: 2498245671180619637}
   zapEffect: {fileID: 2498245672612697274}
   zapSound: {fileID: 8300000, guid: 50aab01853d6dba42aee5c7c83bb08e0, type: 3}
   tickSound: {fileID: 8300000, guid: 7abf42c44df77f843b35123622e962bf, type: 3}
   scene: {fileID: 2498245671217275957}
-  gameOverScene: {fileID: 0}
 --- !u!1 &2498245671407915102
 GameObject:
   m_ObjectHideFlags: 0
@@ -426,7 +425,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.20125782, g: 0.20125782, b: 0.20125782, a: 1}
+  m_Color: {r: 0.20125782, g: 0.20125782, b: 0.20125782, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
