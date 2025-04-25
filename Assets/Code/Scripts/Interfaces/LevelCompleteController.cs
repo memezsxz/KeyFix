@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Code.Scripts.Managers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -14,7 +15,7 @@ public class LevelCompleteController : MonoBehaviour
     public Animator animator;
     public Transform animatedObject;
 
-    public AudioSource victoryAudio;
+    public AudioClip victoryAudio;
     private float delay = 0.7f;
     public GameObject scene;
 
@@ -22,8 +23,6 @@ public class LevelCompleteController : MonoBehaviour
 
     //useed to show the complete level scene 
     public void ShowCompleteScene() {
-
-        
         scene.SetActive(true);
         StartCoroutine(PlayAfterDelay());
         StartCoroutine(PlayAnimation());
@@ -44,29 +43,16 @@ public class LevelCompleteController : MonoBehaviour
     IEnumerator PlayAfterDelay()
     {
         yield return new WaitForSeconds(delay);
-        victoryAudio.Play();
+        SoundManager.Instance.PlaySound(victoryAudio);
     }
 
     //fade in and out
     IEnumerator ShowLevelComplete()
     {
-        yield return Fade(0, 1, fadeInDuration); // Fade In
+        yield return GameManager.Instance.FadeCanvasGroup(canvasGroup, 0, 1, fadeInDuration); // Fade In
         yield return new WaitForSeconds(displayDuration);
-        yield return Fade(1, 0, fadeOutDuration); // Fade Out
+        yield return GameManager.Instance.FadeCanvasGroup(canvasGroup,1, 0, fadeOutDuration); // Fade Out
 
-        SceneManager.LoadScene(nextSceneName);
-    }
-
-    IEnumerator Fade(float from, float to, float duration)
-    {
-        float time = 0f;
-        while (time < duration)
-        {
-            float t = time / duration;
-            canvasGroup.alpha = Mathf.Lerp(from, to, t);
-            time += Time.deltaTime;
-            yield return null;
-        }
-        canvasGroup.alpha = to;
+        GameManager.Instance.HandleSceneLoad(GameManager.Scenes.HALLWAYS);
     }
 }

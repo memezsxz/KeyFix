@@ -24,6 +24,8 @@ namespace Code.Scripts.Managers
         [SerializeField] GameObject pauseMenuCanvas;
         [SerializeField] private GameObject loadingScreen;
         [SerializeField] private LoadingManager loadingScript;
+        [SerializeField] private LevelCompleteController victoryController;
+        [SerializeField] private GameObject victoryCanvas;
 
         private static readonly Dictionary<GameManager.Scenes, string> SceneNameMap = new()
         {
@@ -49,6 +51,7 @@ namespace Code.Scripts.Managers
             Playing,
             Paused,
             GameOver,
+            Victory,
         }
 
         [Serializable]
@@ -95,6 +98,15 @@ namespace Code.Scripts.Managers
 
         public void ChangeState(GameState newState)
         {
+            // Invalid transitions
+            if ((State == GameState.Victory && newState == GameState.GameOver) ||
+                (State == GameState.GameOver && newState == GameState.Victory))
+            {
+                Debug.LogWarning($"Cannot change from {State} to {newState}");
+                return;
+            }
+
+
             if (State == newState) return;
 
             OnBeforeGameStateChanged?.Invoke(newState);
@@ -115,6 +127,9 @@ namespace Code.Scripts.Managers
                 case GameState.GameOver:
                     if (CurrentScene != Scenes.Main_Menu) StartCoroutine(HandleGameOver());
                     break;
+                case GameState.Victory:
+                    if (CurrentScene != Scenes.Main_Menu) HandleVictory();
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(newState), newState, null);
             }
@@ -130,7 +145,7 @@ namespace Code.Scripts.Managers
         }
 
         #endregion
-        
+
         #region Scene & Level Management
 
         public void RestartLevel()
@@ -187,20 +202,6 @@ namespace Code.Scripts.Managers
             yield return StartCoroutine(FadeCanvasGroup(canvasGroup, 0, 1, fadeInDuration));
         }
 
-        private IEnumerator FadeCanvasGroup(CanvasGroup group, float from, float to, float duration)
-        {
-            float time = 0f;
-            while (time < duration)
-            {
-                float t = time / duration;
-                group.alpha = Mathf.Lerp(from, to, t);
-                time += Time.deltaTime;
-                yield return null;
-            }
-
-            group.alpha = to;
-        }
-
         #endregion
 
         #region Pause & Resume
@@ -223,6 +224,16 @@ namespace Code.Scripts.Managers
 
         #endregion
 
+        #region Vectory
+
+        private void HandleVictory()
+        {
+            StopAllSound();
+            victoryController.ShowCompleteScene();
+        }
+
+        #endregion
+
         #region Save System
 
         public void SaveData(ref SaveData data)
@@ -238,6 +249,20 @@ namespace Code.Scripts.Managers
 
         #region Utility
 
+        public IEnumerator FadeCanvasGroup(CanvasGroup group, float from, float to, float duration)
+        {
+            float time = 0f;
+            while (time < duration)
+            {
+                float t = time / duration;
+                group.alpha = Mathf.Lerp(from, to, t);
+                time += Time.deltaTime;
+                yield return null;
+            }
+
+            group.alpha = to;
+        }
+
         private void DisableAllCanvases()
         {
             var allCanvases = GameObject.FindObjectsOfType<Canvas>(true);
@@ -249,8 +274,8 @@ namespace Code.Scripts.Managers
                     canvas.gameObject.SetActive(false);
                 }
             }
-
         }
+
         public void StopAllSound()
         {
             if (SoundManager.Instance.IsMusicPlaying) SoundManager.Instance.StopMusic();
