@@ -66,6 +66,7 @@ public class MainMenuManager : MonoBehaviour
             loadingScript.BeginLoading();
 
             PlayClickSound();
+            mainScene.SetActive(false);
             // Debug.Log("will be going to the last saved level: " + SaveManager.Instance.SaveData.Progress.CurrentScene);
             // SceneManager.LoadScene("maryam city test");
             // will be done with use of the game manager and scene manager
