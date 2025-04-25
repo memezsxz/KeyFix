@@ -747,9 +747,9 @@ MonoBehaviour:
   - {fileID: 1024348419}
   - {fileID: 954797807}
   - {fileID: 1600302201}
-  colorInHex: '#FF75CA'
+  colorInHex: '#a12341'
   matchMessageText: {fileID: 1765508457}
-  matchThreshold: 0.17
+  matchThreshold: 0.369
   doneSound: {fileID: 1765508459}
   ArrowRoomInteface: {fileID: 161556412}
 --- !u!1 &204578021
