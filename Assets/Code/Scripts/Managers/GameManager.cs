@@ -18,7 +18,7 @@ namespace Code.Scripts.Managers
         public static event Action<GameState> OnBeforeGameStateChanged;
         public static event Action<GameState> OnAfterGameStateChanged;
 
-        private bool IntroScenePlayed = false;
+        // private bool IntroScenePlayed = false;
 
         [SerializeField] GameObject gameOverCanvas;
         [SerializeField] GameObject pauseMenuCanvas;

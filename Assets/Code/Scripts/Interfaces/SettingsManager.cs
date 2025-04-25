@@ -25,7 +25,7 @@ public class SettingsManager : MonoBehaviour
     public TextMeshProUGUI txt_resolution;
     private Resolution[] resolutionsList;
     public TMP_Dropdown resolutionDropDown;
-    private int currentResolutionIndex = 0;
+    // private int currentResolutionIndex = 0;
 
     private List<Resolution> resolutions;
     //private HorizontalSelector resolutionScript;
