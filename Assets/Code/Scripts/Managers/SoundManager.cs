@@ -114,6 +114,12 @@ public class SoundManager : Singleton<SoundManager>, IDataPersistence
     {
         musicAudioSource.Stop();
     }
+    
+    /// <summary>Stops the music clip currently playing</summary>
+    public void StopSound()
+    {
+        sfxAudioSource.Stop();
+    }
     #endregion
 
     #region Volume Control
