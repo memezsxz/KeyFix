@@ -202,5 +202,15 @@ namespace Code.Scripts.Managers
             if (SoundManager.Instance.IsMusicPlaying) SoundManager.Instance.StopMusic();
             if (SoundManager.Instance.IsSoundPlaying) SoundManager.Instance.StopSound();
         }
+
+        public void TogglePlayerMovement(bool value)
+        {
+            var player = GameObject.FindGameObjectWithTag("Player");
+
+            if (player != null)
+            {
+                player.GetComponent<PlayerMovement>().ToggleMovement(value);
+            }
+        }
     }
 }
