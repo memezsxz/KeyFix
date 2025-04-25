@@ -8,19 +8,15 @@ using UnityEngine.SceneManagement;
 
 public class PauseManager : MonoBehaviour
 {
-
     //scripts reference
-    public LoadingManager loadingScript;
 
     //panel refrences
     public GameObject pauseMenuUI;
     public GameObject helpPanel;
     public GameObject settingsPanel;
     public CanvasGroup pauseMenuGroup;
-    public GameObject loadingScreen;
 
-    [Header("Audio")]
-    public AudioClip backgroundMusic;
+    [Header("Audio")] public AudioClip backgroundMusic;
     public AudioClip buttonSound;
 
 
@@ -34,6 +30,8 @@ public class PauseManager : MonoBehaviour
 
     void Update()
     {
+        if (GameManager.Instance.CurrentScene == GameManager.Scenes.Main_Menu) return;
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (GameManager.Instance.State == GameManager.GameState.Paused)
@@ -67,23 +65,41 @@ public class PauseManager : MonoBehaviour
         // isPaused = true;
 
         if (!SoundManager.Instance.IsMusicPlaying) SoundManager.Instance.PlayMusic(backgroundMusic);
-
     }
+
+    // public void ExitToMainMenu()
+    // {
+    //     Time.timeScale = 1f;
+    //     GameStateTracker.returningFromGame = true;
+    //     //SceneManager.LoadScene("Fatima_MainMenu"); // Replace with your actual main menu scene name
+    //     pauseMenuUI.SetActive(false);
+    //
+    //
+    //     // loadingScript.sceneToLoad = GameManager.Scenes.Main_Menu;
+    //     // loadingScreen.SetActive(true);
+    //     // loadingScript.BeginLoading();
+    // }
+    //
+    // public void RestartLevel()
+    // {
+    //     Time.timeScale = 1f;
+    //     SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    // }
+
     public void ExitToMainMenu()
     {
         Time.timeScale = 1f;
         GameStateTracker.returningFromGame = true;
-        //SceneManager.LoadScene("Fatima_MainMenu"); // Replace with your actual main menu scene name
+
         pauseMenuUI.SetActive(false);
-        loadingScript.sceneToLoad = GameManager.Scenes.Main_Menu;
-        loadingScreen.SetActive(true);
-        loadingScript.BeginLoading();
+
+        GameManager.Instance.HandleSceneLoad(GameManager.Scenes.Main_Menu);
     }
 
     public void RestartLevel()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        GameManager.Instance.HandleSceneLoad(GameManager.Instance.CurrentScene);
     }
 
     public void ToggleHelpPanel()
@@ -96,7 +112,7 @@ public class PauseManager : MonoBehaviour
     public void SaveGame()
     {
         SaveManager.Instance.SaveGame();
-        Debug.Log("Game saved!"); 
+        Debug.Log("Game saved!");
     }
 
 

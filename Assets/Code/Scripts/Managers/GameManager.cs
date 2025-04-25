@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -9,7 +10,7 @@ namespace Code.Scripts.Managers
 {
     public class GameManager : Singleton<GameManager>, IDataPersistence
     {
-        private Scenes _currentScene;
+        public Scenes CurrentScene { get; private set; }
 
         public static event Action<GameState> OnBeforeGameStateChanged;
         public static event Action<GameState> OnAfterGameStateChanged;
@@ -17,6 +18,10 @@ namespace Code.Scripts.Managers
         private bool IntroScenePlayed = false;
         [SerializeField] GameObject gameOverCanvas;
         [SerializeField] GameObject pauseMenuCanvas;
+
+
+        [SerializeField] private GameObject loadingScreen;
+        [SerializeField] private LoadingManager loadingScript;
 
         private static readonly Dictionary<GameManager.Scenes, string> SceneNameMap = new()
         {
@@ -38,6 +43,17 @@ namespace Code.Scripts.Managers
             DebugController.Instance?.AddDebugCommand(new DebugCommand("gm_test", "testing from the game manager", "",
                 () => Debug.Log("working in game manager"))); // command format hint in case of args
             ChangeState(GameState.Initial);
+            var sceneName = SceneManager.GetActiveScene().name;
+            var match = SceneNameMap.FirstOrDefault(pair => pair.Value == sceneName);
+
+            if (!EqualityComparer<GameManager.Scenes>.Default.Equals(match.Key, default))
+            {
+                CurrentScene = match.Key;
+            }
+            else
+            {
+                Debug.LogWarning($"Scene name '{sceneName}' not found in SceneNameMap.");
+            }
         }
 
 
@@ -58,15 +74,15 @@ namespace Code.Scripts.Managers
                     HandelInitialState();
                     break;
                 case GameState.Paused:
-                    HandlePause();
+                    if (CurrentScene != Scenes.Main_Menu) HandlePause();
                     break;
                 case GameState.Playing:
-                    HandleResume();
+                    if (CurrentScene != Scenes.Main_Menu) HandleResume();
                     break;
                 case GameState.CutScene:
                     break;
                 case GameState.GameOver:
-                    StartCoroutine( HandleGameOver());
+                    if (CurrentScene != Scenes.Main_Menu) StartCoroutine(HandleGameOver());
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(newState), newState, null);
@@ -81,7 +97,6 @@ namespace Code.Scripts.Managers
         private void HandelInitialState()
         {
             // inisialize the player in the right spot
-            
         }
 
 
@@ -105,16 +120,7 @@ namespace Code.Scripts.Managers
 
         public void LoadLastSavedLevel()
         {
-            _currentScene = SaveManager.Instance.SaveData.Progress.CurrentScene;
-            SceneManager.LoadScene(SceneNameMap[_currentScene]);
-            ChangeState(GameState.Playing);
-        }
-
-        public void LoadLevel(Scenes scene, GameState newState = GameState.Initial)
-        {
-            SceneManager.LoadScene(SceneNameMap[scene]);
-            _currentScene = scene;
-            ChangeState(newState); // should check what state this should change to  
+            HandleSceneLoad(SaveManager.Instance.SaveData.Progress.CurrentScene);
         }
 
 
@@ -137,14 +143,14 @@ namespace Code.Scripts.Managers
         public AsyncOperation LoadLevelAsync(Scenes scene, GameState newState = GameState.Initial)
         {
             AsyncOperation op = SceneManager.LoadSceneAsync(SceneNameMap[scene]);
-            _currentScene = scene;
-            ChangeState(newState);
+            CurrentScene = scene;
+            // ChangeState(newState);
             return op;
         }
 
         public void SaveData(ref SaveData data)
         {
-            data.Progress.CurrentScene = _currentScene;
+            data.Progress.CurrentScene = CurrentScene;
         }
 
         public void LoadData(ref SaveData data)
@@ -153,29 +159,48 @@ namespace Code.Scripts.Managers
 
         private IEnumerator HandleGameOver()
         {
-            if (SoundManager.Instance.IsMusicPlaying) SoundManager.Instance.StopMusic();
-            if (SoundManager.Instance.IsSoundPlaying) SoundManager.Instance.StopSound();
-
+            StopAllSound();
             yield return new WaitForSeconds(0.3f);
             gameOverCanvas.SetActive(true);
         }
+
         private void HandlePause()
         {
-            if (SoundManager.Instance.IsMusicPlaying) SoundManager.Instance.StopMusic();
-            if (SoundManager.Instance.IsSoundPlaying) SoundManager.Instance.StopSound();
+            StopAllSound();
             Time.timeScale = 0f; // Resume game time
 
             pauseMenuCanvas.SetActive(true);
         }
-        
+
         private void HandleResume()
         {
             if (SoundManager.Instance.IsMusicPlaying) SoundManager.Instance.StopMusic();
             if (SoundManager.Instance.IsSoundPlaying) SoundManager.Instance.StopSound();
-            
+
             pauseMenuCanvas.SetActive(false);
             Time.timeScale = 1f; // Resume game time
         }
 
+
+        public void HandleSceneLoad(GameManager.Scenes newScene, GameState newState = GameState.Playing)
+        {
+            if (newScene == Scenes.Main_Menu && CurrentScene == Scenes.Main_Menu) newScene = Scenes.HALLWAYS;
+            loadingScript.sceneToLoad = newScene;
+            loadingScript.stateToLoadIn = newState;
+            loadingScreen.SetActive(true);
+            loadingScript.BeginLoading();
+            StopAllSound();
+        }
+
+        public void HandelSceneLoaded()
+        {
+            loadingScreen.SetActive(false);
+        }
+
+        public void StopAllSound()
+        {
+            if (SoundManager.Instance.IsMusicPlaying) SoundManager.Instance.StopMusic();
+            if (SoundManager.Instance.IsSoundPlaying) SoundManager.Instance.StopSound();
+        }
     }
 }
