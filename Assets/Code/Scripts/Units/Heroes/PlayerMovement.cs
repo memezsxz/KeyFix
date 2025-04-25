@@ -108,17 +108,17 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
         if (jumpAction.IsPressed() && groundedPlayer)
         {
             playerVelocity.y += Mathf.Sqrt(jumpHeight * -2.0f * gravityValue);
-            anim.SetBool("isFalling", false); // Reset fall state if jumping
+            anim.SetBool(isFalling, false); // Reset fall state if jumping
         }
         else
         {
-            if (!groundedPlayer && playerVelocity.y < -0.2f)
+            if (!groundedPlayer && playerVelocity.y < -0.4f)
             {
-                anim.SetBool("isFalling", true); // Falling down
+                anim.SetBool(isFalling, true); // Falling down
             }
             else if (groundedPlayer)
             {
-                anim.SetBool("isFalling", false); // Landed or idle
+                anim.SetBool(isFalling, false); // Landed or idle
             }
         }
 
