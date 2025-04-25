@@ -24,13 +24,13 @@ public class MainMenuManager : MonoBehaviour
     public GameObject creditsPanel;
     public GameObject exitPanel;
     public CanvasGroup mainMenuGroup;
-    public GameObject loadingScreen;
+    // public GameObject loadingScreen;
     public GameObject mainScene;
 
 
     //script refrenc
-    public SceneFader sceneFader;
-    public LoadingManager loadingScript;
+    // public SceneFader sceneFader;
+    // public LoadingManager loadingScript;
     public SettingsManager settingsScript;
 
 
@@ -47,9 +47,7 @@ public class MainMenuManager : MonoBehaviour
     //panels methods
     public void StartNewGame()
     {
-        loadingScript.sceneToLoad = GameManager.Scenes.HALLWAYS;
-        loadingScreen.SetActive(true);
-        loadingScript.BeginLoading();
+        GameManager.Instance.HandleSceneLoad(GameManager.Scenes.HALLWAYS);
         SaveManager.Instance.SaveGame();
         CloseAllPanels();
         mainScene.SetActive(false);
@@ -60,10 +58,12 @@ public class MainMenuManager : MonoBehaviour
     {
         if (!SaveManager.Instance.IsNewGame)
         {
-            loadingScript.sceneToLoad = SaveManager.Instance.SaveData.Progress.CurrentScene;
-            loadingScript.stateToLoadIn = GameManager.GameState.Playing;
-            loadingScreen.SetActive(true);
-            loadingScript.BeginLoading();
+            GameManager.Instance.LoadLastSavedLevel();
+            // GameManager.Instance.HandleSceneLoad(SaveManager.Instance.SaveData.Progress.CurrentScene);
+            // loadingScript.sceneToLoad = SaveManager.Instance.SaveData.Progress.CurrentScene;
+            // loadingScript.stateToLoadIn = GameManager.GameState.Playing;
+            // loadingScreen.SetActive(true);
+            // loadingScript.BeginLoading();
 
             PlayClickSound();
             mainScene.SetActive(false);

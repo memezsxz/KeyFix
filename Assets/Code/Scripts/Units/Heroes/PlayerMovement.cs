@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(SpeedersInteraction))]
+[RequireComponent(typeof(ScalerInteraction))]
 [RequireComponent(typeof(Animator))]
 public class PlayerMovement : MonoBehaviour, IDataPersistence
 {
@@ -16,6 +17,8 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
     private static readonly int isFalling = Animator.StringToHash("isFalling");
     private PlayerBindingManage bindingManage;
     private SpeedersInteraction mover;
+    private ScalerInteraction scaler;
+    private bool canMove = true;
 
     [SerializeField]
     private CharacterType _charecterType = CharacterType.Robot; // the type of character that is holding the script
@@ -53,6 +56,7 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
         moveAction = actions.FindAction("Move");
         jumpAction = actions.FindAction("Jump");
         mover = GetComponent<SpeedersInteraction>();
+        scaler = GetComponent<ScalerInteraction>();
     }
 
     void Update()
@@ -65,7 +69,16 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
         {
             playerVelocity.y = 0f;
         }
+        if (!canMove)
+        {
+            // Apply gravity only, no input
+            playerVelocity.y += gravityValue * Time.deltaTime;
+            controller.Move(playerVelocity * Time.deltaTime);
 
+            anim.SetFloat("Blend", 0f, StopAnimTime, Time.deltaTime);
+            return;
+        }
+        
         // Read input from new Input System
         if (mover.IsBeingPushed) return; // Block input during movement
 
@@ -73,13 +86,14 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
         float inputX = moveValue.x;
         float inputZ = moveValue.y;
 
+
         // Move vector and motion
 
         Vector3 move = new Vector3(moveValue.x, 0.0f, moveValue.y);
         controller.Move(move * Time.deltaTime * playerSpeed);
 
         // Rotate to direction of movement
-        if (move != Vector3.zero)
+        if ( move != Vector3.zero)
         {
             gameObject.transform.forward = move;
 
@@ -94,17 +108,17 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
         if (jumpAction.IsPressed() && groundedPlayer)
         {
             playerVelocity.y += Mathf.Sqrt(jumpHeight * -2.0f * gravityValue);
-            anim.SetBool("isFalling", false); // Reset fall state if jumping
+            anim.SetBool(isFalling, false); // Reset fall state if jumping
         }
         else
         {
-            if (!groundedPlayer && playerVelocity.y < -0.2f)
+            if (!groundedPlayer && playerVelocity.y < -0.4f)
             {
-                anim.SetBool("isFalling", true); // Falling down
+                anim.SetBool(isFalling, true); // Falling down
             }
             else if (groundedPlayer)
             {
-                anim.SetBool("isFalling", false); // Landed or idle
+                anim.SetBool(isFalling, false); // Landed or idle
             }
         }
 
@@ -283,6 +297,10 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
 //     #endregion
 
 
+    public void ToggleMovement(bool value)
+    {
+        canMove = value;
+    }
     private void UpdatePlayerMovementBinding()
     {
         var moveAction = GetComponent<PlayerInput>().actions["Move"];
