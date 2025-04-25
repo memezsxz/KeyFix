@@ -509,14 +509,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: RoomA_UI
       objectReference: {fileID: 0}
-    - target: {fileID: 2498245670697331285, guid: fce5c2da6af504db0b57233f74bf290f, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2498245671217275960, guid: fce5c2da6af504db0b57233f74bf290f, type: 3}
-      propertyPath: countdownTime
-      value: 30
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fce5c2da6af504db0b57233f74bf290f, type: 3}
 --- !u!4 &565589206 stripped
