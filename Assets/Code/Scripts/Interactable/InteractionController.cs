@@ -35,7 +35,7 @@ public class InteractionController : MonoBehaviour
             InteractableBase interactable = hit.GetComponent<InteractableBase>();
             if (interactable != null)
             {
-                print("found interactable");
+                // print("found interactable");
                 currentTargetedInteractable = interactable;
                 break;
             }
