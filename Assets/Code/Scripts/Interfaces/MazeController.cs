@@ -15,26 +15,15 @@ public class MazeController : Singleton<MazeController>
 
     private void Start()
     {
-        entries.ForEach(e =>
-        {
-            entries[currentIndex].board.ToggleCanvas(false);
-            e.board.gameObject.SetActive(false);
-            e.walls.SetActive(false);
-        });
+        entries.ForEach(e => { SetEntryActive(e, false); });
 
-        entries[currentIndex].board.gameObject.SetActive(true);
-        entries[currentIndex].board.enabled = true;
-        entries[currentIndex].board.ToggleCanvas(true);
-        entries[currentIndex].walls.SetActive(true);
+        SetEntryActive(entries[currentIndex], true);
     }
 
 
     public void BoardIsDone()
     {
-        entries[currentIndex].board.gameObject.SetActive(false);
-        entries[currentIndex].board.ToggleCanvas(false);
-        entries[currentIndex].board.enabled = false;
-        entries[currentIndex].walls.SetActive(false);
+        SetEntryActive(entries[currentIndex], false);
 
         currentIndex++;
 
@@ -45,11 +34,23 @@ public class MazeController : Singleton<MazeController>
             return;
         }
 
-        entries[currentIndex].board.gameObject.SetActive(true);
-        entries[currentIndex].board.ToggleCanvas(true);
-        entries[currentIndex].board.enabled = true;
-        entries[currentIndex].walls.SetActive(true);
+        SetEntryActive(entries[currentIndex], true);
         GameManager.Instance.TogglePlayerMovement(true);
+    }
+
+    private void SetEntryActive(WallEntry entry, bool isActive)
+    {
+        if (entry.board != null)
+        {
+            entry.board.gameObject.SetActive(isActive);
+            entry.board.enabled = isActive;
+            entry.board.ToggleCanvas(isActive);
+        }
+
+        if (entry.walls != null)
+        {
+            entry.walls.SetActive(isActive);
+        }
     }
 }
 
