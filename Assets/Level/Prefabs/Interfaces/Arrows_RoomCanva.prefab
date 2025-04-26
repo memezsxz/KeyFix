@@ -3211,14 +3211,13 @@ GameObject:
   - component: {fileID: 9204110836740607749}
   - component: {fileID: 9204110836740607748}
   - component: {fileID: 9204110836740607751}
-  - component: {fileID: 9204110836740607867}
   m_Layer: 5
   m_Name: Arrows_RoomCanva
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &9204110836740607866
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3303,33 +3302,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &9204110836740607867
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9204110836740607750}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7bf9d8db574ffb4abb13e1fa3227976, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lights: []
-  bulbImage: {fileID: 9204110836958202821}
-  bulbEffect: {fileID: 9204110835835511248}
-  redSlider: {fileID: 9204110837110805823}
-  greenSlider: {fileID: 9204110835538192924}
-  blueSlider: {fileID: 9204110836474109685}
-  TargetColorImages:
-  - {fileID: 9204110836544584121}
-  - {fileID: 9204110836048381123}
-  currentColorImage: {fileID: 9204110836459071061}
-  matchMessageText: {fileID: 9204110835136720339}
-  matchThreshold: 0.369
-  doneSound: {fileID: 8300000, guid: 0742e25d160d9df4183a910a4ff96566, type: 3}
-  ArrowRoomInteface: {fileID: 9204110836740607750}
-  targetColor: {r: 0.22824572, g: 0.6313726, b: 0.13725491, a: 0.003921569}
 --- !u!1 &9204110836933955524
 GameObject:
   m_ObjectHideFlags: 0

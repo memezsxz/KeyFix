@@ -1,48 +1,40 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using GLTFast.Schema;
 using TMPro;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
-using Image = UnityEngine.UI.Image;
 
 public class BulbColorController : MonoBehaviour
 {
-    [SerializeField] private List<Light> lights;
+    private List<Light> lights = new List<Light>();
 
-    //design inteface
     public Image bulbImage;
     public Image bulbEffect;
     public Slider redSlider;
     public Slider greenSlider;
     public Slider blueSlider;
-
     public List<Image> TargetColorImages;
-
     [SerializeField] Image currentColorImage;
-    public TMP_Text matchMessageText; // Reference to UI Text
-
-    private int roundTo = 100;
-    private int minimumMatch = 30;
-
+    public TMP_Text matchMessageText;
     public AudioClip doneSound;
-
-    public GameObject ArrowRoomInteface;
-
-
+    public GameObject ArrowRoomInterface;
     [SerializeField] Color targetColor;
 
+    private int roundTo = 100;
+    [SerializeField] int minimumMatch = 30;
+
+    public bool IsDone { get; private set; } = false;
 
     private void Start()
     {
+        lights = MazeController.Instance.Lights;
         redSlider.onValueChanged.AddListener(_ => UpdateLightColor());
         greenSlider.onValueChanged.AddListener(_ => UpdateLightColor());
         blueSlider.onValueChanged.AddListener(_ => UpdateLightColor());
     }
 
-    public void showArrowChalange()
+    public void ShowArrowChallenge()
     {
         if (lights.Count > 1)
         {
@@ -61,29 +53,18 @@ public class BulbColorController : MonoBehaviour
         redSlider.interactable = true;
         greenSlider.interactable = true;
 
-
-        ArrowRoomInteface.SetActive(true);
+        ArrowRoomInterface.SetActive(true);
 
         targetColor.a = 1;
-        // print(targetColor.r + " : " + targetColor.g + " : " + targetColor.b);
-
         TargetColorImages.ForEach(i => i.color = targetColor);
 
-
         if (matchMessageText != null)
-        {
             matchMessageText.gameObject.SetActive(false);
-        }
     }
-
 
     void UpdateLightColor()
     {
-        float r = redSlider.value;
-        float g = greenSlider.value;
-        float b = blueSlider.value;
-
-        Color currentColor = new Color(r, g, b, 1f);
+        Color currentColor = new Color(redSlider.value, greenSlider.value, blueSlider.value, 1f);
 
         lights.ForEach(l => l.color = currentColor);
         currentColorImage.color = currentColor;
@@ -119,17 +100,15 @@ public class BulbColorController : MonoBehaviour
         int b2 = (int)(b.b * roundTo);
 
         int total = Mathf.Abs(r1 - r2) + Mathf.Abs(g1 - g2) + Mathf.Abs(b1 - b2);
-
-        // hint, DO NOT DELETE
-        // print( Mathf.Abs(r1 - r2)+ " : " + Mathf.Abs(g1 - g2) + " : " + Mathf.Abs(b1 - b2));
         return total < minimumMatch;
     }
-
 
     IEnumerator HideArrowInterfaceAfterDelay()
     {
         lights.ForEach(l => l.color = targetColor);
         yield return new WaitForSeconds(2f);
-        ArrowRoomInteface.SetActive(false);
+        ArrowRoomInterface.SetActive(false);
+        IsDone = true;
+        MazeController.Instance.BoardIsDone();
     }
 }
