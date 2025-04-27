@@ -46,5 +46,7 @@ public class PlayerManager : MonoBehaviour
         player.GetComponent<PlayerInput>().enabled = enable;
         player.GetComponent<CharacterController>().enabled = enable;
         player.GetComponent<Animator>().enabled = enable;
+        player.enabled = enable;
     }
+    
 }
