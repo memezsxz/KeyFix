@@ -3,14 +3,26 @@ using UnityEngine;
 
 public class SpaceManager : MonoBehaviour
 {
-    [Header("Corridors in order")]
-    [SerializeField] private List<Corridor> corridors = new List<Corridor>();
+    [Header("Corridors in order")] [SerializeField]
+    private List<Corridor> corridors = new List<Corridor>();
 
     private int currentCorridorIndex = -1;
 
     private void Start()
     {
+        
+        corridors.ForEach(c =>
+        {
+            if (c != null) c.OnCorridorCompleted += HandleCorridorCompleted;
+        });
+
         DeactivateAllCorridors();
+    }
+
+    private void HandleCorridorCompleted(Corridor corridor)
+    {
+        Debug.Log($"Corridor completed: {corridor.name}");
+        ActivateNextCorridor();
     }
 
     public void ActivateNextCorridor()
