@@ -19,6 +19,7 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
     private SpeedersInteraction mover;
     private ScalerInteraction scaler;
     private bool canMove = true;
+    private Vector3 externalForce = Vector3.zero; // to receive wind push
 
     [SerializeField]
     private CharacterType _charecterType = CharacterType.Robot; // the type of character that is holding the script
@@ -90,7 +91,25 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
         // Move vector and motion
 
         Vector3 move = new Vector3(moveValue.x, 0.0f, moveValue.y);
-        controller.Move(move * Time.deltaTime * playerSpeed);
+
+// Get player intended movement
+        Vector3 moveInput = new Vector3(moveValue.x, 0.0f, moveValue.y) * playerSpeed;
+
+// Compete wind vs input
+        Vector3 finalMove = moveInput + externalForce;
+
+// If player moving against wind, reduce wind impact
+        if (moveInput != Vector3.zero && Vector3.Dot(moveInput.normalized, externalForce.normalized) < 0)
+        {
+            // If moving against wind, reduce wind effect
+            finalMove += externalForce * 0.5f; // Wind is only half as effective
+        }
+
+// Move the player
+        controller.Move(finalMove * Time.deltaTime);
+
+// Reset wind for next frame
+        externalForce = Vector3.zero;
 
         // Rotate to direction of movement
         if ( move != Vector3.zero)
@@ -155,6 +174,10 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
         // }
         //
         // lastYPosition = currentY;
+    }
+    public void ApplyExternalForce(Vector3 force)
+    {
+        externalForce += force;
     }
 
     #endregion
