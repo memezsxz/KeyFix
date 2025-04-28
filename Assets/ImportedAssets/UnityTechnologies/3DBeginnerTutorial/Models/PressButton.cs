@@ -9,8 +9,10 @@ public class PressButton : MonoBehaviour
     private Vector3 originalPosition;
     private Vector3 targetPosition;
     public float moveSpeed = 5f;
-
     private bool isPressed = false;
+
+    public AudioSource audioSource; // NEW
+    public AudioClip pressSound;    // NEW
 
     private void Start()
     {
@@ -36,8 +38,12 @@ public class PressButton : MonoBehaviour
             targetPosition = originalPosition + pressedOffset;
             isPressed = true;
             Debug.Log("Button Pressed!");
-        }
 
+            if (audioSource != null && pressSound != null)
+            {
+                audioSource.PlayOneShot(pressSound);
+            }
+        }
     }
 
     private void OnCollisionExit(Collision collision)
