@@ -8,6 +8,7 @@ TagManager:
   - GameManager
   - PlayerEyes
   - Enemy
+  - Button
   layers:
   - Default
   - TransparentFX
