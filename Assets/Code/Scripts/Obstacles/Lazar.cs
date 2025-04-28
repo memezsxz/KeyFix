@@ -3,12 +3,13 @@ using UnityEngine;
 using Code.Scripts.Managers;
 
 [RequireComponent(typeof(LineRenderer))]
-public class Lazer : MonoBehaviour
+public class Lazar : MonoBehaviour
 {
     private LineRenderer lr;
     private bool isActive = true;
     private float timer = 0f;
     private float nextToggleTime;
+    [SerializeField] private Vector3 fireDirection = Vector3.left;
 
     private void Start()
     {
@@ -32,7 +33,7 @@ public class Lazer : MonoBehaviour
         lr.SetPosition(0, transform.position);
 
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, -transform.right, out hit))
+        if (Physics.Raycast(transform.position, fireDirection, out hit))
         {
             if (hit.collider.gameObject.CompareTag("Player"))
             {
@@ -46,7 +47,7 @@ public class Lazer : MonoBehaviour
         }
         else
         {
-            lr.SetPosition(1, transform.position + -transform.right * 50);
+            lr.SetPosition(1, transform.position + fireDirection * 50);
         }
     }
 
