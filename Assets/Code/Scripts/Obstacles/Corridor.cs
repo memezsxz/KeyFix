@@ -3,74 +3,58 @@ using System.Collections.Generic;
 using System.Linq;
 using Code.Scripts.Obstacles;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class Corridor : MonoBehaviour
 {
-    [Header("Corridor Elements")] [SerializeField]
+    [Header("Corridor Elements")] 
     private List<Lazar> lazars = new List<Lazar>();
+    private List<WindBlower> windBlowers = new List<WindBlower>();
 
-    [SerializeField] private List<WindBlower> windBlowers = new List<WindBlower>();
-
-    private bool isDone = false;
-    public event System.Action<Corridor> OnCorridorCompleted;
-
+    // public event Action<Corridor> OnCorridorCompleted;
 
     private void Start()
     {
-        lazars.Clear();
-        windBlowers.Clear();
-
         lazars = GetComponentsInChildren<Lazar>(includeInactive: true).ToList();
         windBlowers = GetComponentsInChildren<WindBlower>(includeInactive: true).ToList();
-        DeactivateCorridor();
+        // DeactivateCorridor();
+    }
+
+    private void UpdateObsticals()
+    {
+        lazars = GetComponentsInChildren<Lazar>(includeInactive: true).ToList();
+        windBlowers = GetComponentsInChildren<WindBlower>(includeInactive: true).ToList();
     }
 
     public void ActivateCorridor()
     {
+        UpdateObsticals();
+        // print(lazars.Count);
         foreach (var lazer in lazars)
-        {
             if (lazer != null)
                 lazer.gameObject.SetActive(true);
-        }
+        // print(windBlowers.Count);
 
         foreach (var blower in windBlowers)
-        {
             if (blower != null)
                 blower.gameObject.SetActive(true);
-        }
     }
 
     public void DeactivateCorridor()
     {
-        foreach (var lazar in lazars)
-        {
-            if (lazar != null)
-                lazar.gameObject.SetActive(false);
-        }
+        UpdateObsticals();
+        // print("deactivated");
+        foreach (var lazer in lazars)
+            if (lazer != null)
+                lazer.gameObject.SetActive(false);
 
         foreach (var blower in windBlowers)
-        {
             if (blower != null)
                 blower.gameObject.SetActive(false);
-        }
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (!isDone && other.CompareTag("Player"))
-        {
-            ActivateCorridor();
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            isDone = true;
-            DeactivateCorridor();
-            OnCorridorCompleted?.Invoke(this);
-        }
-    }
+    // public void CompleteCorridor()
+    // {
+    //     DeactivateCorridor();
+    //     OnCorridorCompleted?.Invoke(this);
+    // }
 }

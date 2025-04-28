@@ -1,48 +1,70 @@
 using System.Collections.Generic;
+using Code.Scripts.Interactable;
+using Code.Scripts.Managers;
 using UnityEngine;
 
-public class SpaceManager : MonoBehaviour
+public class SpaceManager : Singleton<SpaceManager>
 {
     [Header("Corridors in order")] [SerializeField]
     private List<Corridor> corridors = new List<Corridor>();
 
+    [SerializeField] private Collider shrinker;
+    [SerializeField] private Collider stretcher;
+
     private int currentCorridorIndex = -1;
+    private bool isCorridorActive = false;
 
     private void Start()
     {
-        
-        corridors.ForEach(c =>
-        {
-            if (c != null) c.OnCorridorCompleted += HandleCorridorCompleted;
-        });
+        // corridors.ForEach(c =>
+        // {
+        //     if (c != null) c.OnCorridorCompleted += HandleCorridorCompleted;
+        // });
 
         DeactivateAllCorridors();
     }
-
-    private void HandleCorridorCompleted(Corridor corridor)
+    
+    public void DeactivateCurrentCorridor()
     {
-        Debug.Log($"Corridor completed: {corridor.name}");
-        ActivateNextCorridor();
+        if (currentCorridorIndex < 0 || currentCorridorIndex >= corridors.Count)
+            return;
+
+        var currentCorridor = corridors[currentCorridorIndex];
+        if (currentCorridor != null)
+        {
+            currentCorridor.DeactivateCorridor();
+            currentCorridor.gameObject.SetActive(false);
+        }
+
+        isCorridorActive = false;
+        ToggleScaler();
     }
 
     public void ActivateNextCorridor()
     {
+        if (isCorridorActive)
+        {
+            Debug.LogWarning("Cannot activate next corridor: current corridor still active. Deactivate first.");
+            return;
+        }
+
         currentCorridorIndex++;
 
         if (currentCorridorIndex >= corridors.Count)
         {
-            Debug.Log("All corridors completed!");
+            GameManager.Instance.ChangeState(GameManager.GameState.Victory);
             return;
         }
 
-        DeactivateAllCorridors();
-
-        Corridor nextCorridor = corridors[currentCorridorIndex];
+        var nextCorridor = corridors[currentCorridorIndex];
         if (nextCorridor != null)
         {
             nextCorridor.gameObject.SetActive(true);
             nextCorridor.ActivateCorridor();
         }
+
+        isCorridorActive = true;
+        ToggleScaler(); // Always lock immediately after corridor becomes active
     }
 
     public void DeactivateAllCorridors()
@@ -55,11 +77,20 @@ public class SpaceManager : MonoBehaviour
                 corridor.gameObject.SetActive(false);
             }
         }
+
+        isCorridorActive = false;
+        ToggleScaler();
     }
 
     public void ResetSpace()
     {
         currentCorridorIndex = -1;
         DeactivateAllCorridors();
+    }
+
+    private void ToggleScaler()
+    {
+        if (shrinker != null) shrinker.enabled = !isCorridorActive;
+        if (stretcher != null) stretcher.enabled = !isCorridorActive;
     }
 }
