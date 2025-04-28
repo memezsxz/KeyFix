@@ -31,14 +31,13 @@ public class PressButton : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.collider.CompareTag("Player") &&
-           collision.gameObject.CompareTag("button") &&
-           !isPressed)
+        if (collision.collider.CompareTag("Player") && !isPressed)
         {
             targetPosition = originalPosition + pressedOffset;
             isPressed = true;
             Debug.Log("Button Pressed!");
         }
+
     }
 
     private void OnCollisionExit(Collision collision)

@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 1254927963255751628}
   - component: {fileID: 1254927963255751631}
   m_Layer: 0
-  m_Name: button Parent
+  m_Name: RoomP_Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
