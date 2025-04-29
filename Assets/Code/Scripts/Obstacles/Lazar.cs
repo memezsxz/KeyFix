@@ -10,6 +10,9 @@ public class Lazar : MonoBehaviour
     private float timer = 0f;
     private float nextToggleTime;
     [SerializeField] private Vector3 fireDirection = Vector3.left;
+    [SerializeField, Range(0.5f, 5f)] private float minToggleTime = 0.5f;
+
+    [SerializeField, Range(0.5f, 5f)] private float maxToggleTime = 1f;
 
     private void Start()
     {
@@ -53,6 +56,6 @@ public class Lazar : MonoBehaviour
 
     private void SetNextToggleTime()
     {
-        nextToggleTime = Random.Range(3f, 5f);
+        nextToggleTime = Random.Range(minToggleTime, maxToggleTime);
     }
 }
