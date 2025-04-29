@@ -8,6 +8,9 @@ public class SpaceManager : Singleton<SpaceManager>
     [Header("Corridors in order")] [SerializeField]
     private List<Corridor> corridors = new List<Corridor>();
 
+    [Header("Buttons in order")] [SerializeField]
+    private List<SpaceButtonInteraction> spaceButtons = new List<SpaceButtonInteraction>();
+
     [SerializeField] private Collider shrinker;
     [SerializeField] private Collider stretcher;
 
@@ -16,14 +19,17 @@ public class SpaceManager : Singleton<SpaceManager>
 
     private void Start()
     {
-        // corridors.ForEach(c =>
-        // {
-        //     if (c != null) c.OnCorridorCompleted += HandleCorridorCompleted;
-        // });
+        for (int i = 0; i < spaceButtons.Count; i++)
+        {
+            if (spaceButtons[i] != null)
+            {
+                spaceButtons[i].gameObject.SetActive(i == 0); // Only the first button active
+            }
+        }
 
         DeactivateAllCorridors();
     }
-    
+
     public void DeactivateCurrentCorridor()
     {
         if (currentCorridorIndex < 0 || currentCorridorIndex >= corridors.Count)
@@ -61,6 +67,13 @@ public class SpaceManager : Singleton<SpaceManager>
         {
             nextCorridor.gameObject.SetActive(true);
             nextCorridor.ActivateCorridor();
+        }
+        
+        var nextButton = spaceButtons[(currentCorridorIndex + 1) % spaceButtons.Count];
+        if (nextButton != null)
+        {
+            print("activated next button " + nextButton.gameObject.name);
+            nextButton.gameObject.SetActive(true);
         }
 
         isCorridorActive = true;

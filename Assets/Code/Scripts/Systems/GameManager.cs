@@ -88,6 +88,7 @@ namespace Code.Scripts.Managers
             }
             else
             {
+                CurrentScene = GameManager.Scenes.HALLWAYS;
                 Debug.LogWarning($"Scene name '{sceneName}' not found in SceneNameMap.");
             }
         }
@@ -171,6 +172,7 @@ namespace Code.Scripts.Managers
                 newScene = Scenes.HALLWAYS;
             DisableAllCanvases();
             gameOverCanvas.SetActive(false);
+            pauseMenuCanvas.SetActive(false);
             loadingScript.sceneToLoad = newScene;
             loadingScript.stateToLoadIn = newState;
             loadingScreen.SetActive(true);
