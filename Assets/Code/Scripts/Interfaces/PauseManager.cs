@@ -103,7 +103,7 @@ public class PauseManager : MonoBehaviour
     public void RestartLevel()
     {
         Time.timeScale = 1f;
-        GameManager.Instance.HandleSceneLoad(GameManager.Instance.CurrentScene);
+        GameManager.Instance.RestartLevel();
     }
 
     public void ToggleHelpPanel()

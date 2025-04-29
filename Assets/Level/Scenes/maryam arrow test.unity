@@ -1253,7 +1253,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1424358483683177357, guid: bd8a0830570804242bf0cfeb754364e6, type: 3}
       propertyPath: minimumMatch
-      value: 20
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1424358483683177357, guid: bd8a0830570804242bf0cfeb754364e6, type: 3}
       propertyPath: targetColor.b

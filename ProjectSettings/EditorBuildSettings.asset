@@ -15,6 +15,24 @@ EditorBuildSettings:
     path: Assets/Level/Scenes/LoadingScreen.unity
     guid: c69b594d0af9ab0438d154d3de565159
   - enabled: 1
+    path: Assets/Level/Scenes/LevelComplete.unity
+    guid: 0ce3aafdf3c61554280653ef6a202ce1
+  - enabled: 1
+    path: Assets/Level/Scenes/Light_puzzel.unity
+    guid: 4a9b6f4a6cddcca4087b15c512020bf1
+  - enabled: 1
+    path: Assets/Level/Scenes/maryam arrow test.unity
+    guid: def676e75870043008df08a90f03b53c
+  - enabled: 1
+    path: Assets/Level/Scenes/maryam co op.unity
+    guid: ab2f8f7dfabd44d98bac5f2f5c58f4bc
+  - enabled: 1
+    path: Assets/Level/Scenes/maryam g romm test.unity
+    guid: 70bb119b983f840b69b4384d64cec179
+  - enabled: 1
+    path: Assets/Level/Scenes/maryam space key test.unity
+    guid: afcca8be427ab4e7b996be030981dd83
+  - enabled: 1
     path: Assets/Level/Scenes/LevelTitle.unity
     guid: 815e5ece084a90445809a37b2bd9c3e1
   - enabled: 1
