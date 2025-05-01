@@ -45,7 +45,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   paperPrefab: {fileID: 632122986887125573, guid: a4ed770dd899c4b879668802806a082a, type: 3}
-  spawnInterval: 1
+  spawnInterval: 0.5
+  paperLimit: 50
   launchForce: 1
 --- !u!1 &8636882438726591764
 GameObject:

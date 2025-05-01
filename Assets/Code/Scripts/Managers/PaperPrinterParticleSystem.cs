@@ -1,3 +1,4 @@
+using Code.Scripts.Managers;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -7,8 +8,9 @@ public class PaperPrinterParticleSystem : MonoBehaviour
     [Header("Spawn Settings")] [SerializeField]
     private GameObject paperPrefab;
 
-    [SerializeField] private float spawnInterval = 1f;
+    [SerializeField] private float spawnInterval = 0.5f;
     private Transform modelTransform;
+    [SerializeField] private int paperLimit = 50;
 
     private Vector2 spawnAreaSize;
     private float timer;
@@ -30,6 +32,17 @@ public class PaperPrinterParticleSystem : MonoBehaviour
 
     private void Update()
     {
+        if (modelTransform == null) return;
+
+        if (modelTransform.childCount >= paperLimit)
+        {
+            Debug.Log("Too many papers! You lose!");
+            GameManager.Instance.ChangeState(GameManager.GameState.GameOver);
+            enabled = false;
+
+            return;
+        }
+
         timer += Time.deltaTime;
         if (timer >= spawnInterval)
         {
