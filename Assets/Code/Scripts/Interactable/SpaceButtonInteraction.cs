@@ -9,6 +9,8 @@ public class SpaceButtonInteraction : InteractableBase
     private bool hasClickedOnce = false;
 
     [SerializeField] private bool isFirstButton = false;
+    [SerializeField] private bool isLastButton = false;
+
     [SerializeField] private Material redMaterial;
     [SerializeField] private Material greenMaterial;
     [SerializeField] private Material grayMaterial;
@@ -29,10 +31,17 @@ public class SpaceButtonInteraction : InteractableBase
 
         if (isFirstButton)
         {
-            // First button behavior: ONLY activate first corridor
             SpaceManager.Instance.ActivateNextCorridor();
             SetGray();
             isInteractable = false;
+        }
+        else if (isLastButton)
+        {
+            SpaceManager.Instance.DeactivateCurrentCorridor();
+            SpaceManager.Instance.ActivateNextCorridor();
+            SetGray();
+            isInteractable = false;
+
         }
         else
         {
@@ -66,11 +75,11 @@ public class SpaceButtonInteraction : InteractableBase
             meshRenderer.material = greenMaterial;
     }
 
-    private void SetGray()
+    public void SetGray()
     {
-        if (meshRenderer != null)
-            meshRenderer.material = grayMaterial;
+        if (meshRenderer != null) meshRenderer.material = grayMaterial;
         ShowHint(false);
+        isInteractable = false;
         gameObject.layer = LayerMask.NameToLayer("Default");
     }
 }
