@@ -14,8 +14,13 @@ public class SpaceManager : Singleton<SpaceManager>
     [SerializeField] private Collider shrinker;
     [SerializeField] private Collider stretcher;
 
+    [SerializeField] private DoorInteract doorInteract;
     private int currentCorridorIndex = -1;
     private bool isCorridorActive = false;
+
+    public bool DidWin { get; private set; }
+
+    [SerializeField] private GameObject door;
 
     private void Start()
     {
@@ -29,7 +34,7 @@ public class SpaceManager : Singleton<SpaceManager>
 
         DeactivateAllCorridors();
     }
-
+ 
     public void DeactivateCurrentCorridor()
     {
         if (currentCorridorIndex < 0 || currentCorridorIndex >= corridors.Count)
@@ -58,7 +63,13 @@ public class SpaceManager : Singleton<SpaceManager>
 
         if (currentCorridorIndex >= corridors.Count)
         {
-            GameManager.Instance.ChangeState(GameManager.GameState.Victory);
+            var lastButtonIndex = Mathf.Min(currentCorridorIndex, spaceButtons.Count - 1);
+            var lastButton = spaceButtons[lastButtonIndex];
+            if (lastButton != null)
+            {
+                lastButton.SetGray();
+            }
+            door.gameObject.layer = LayerMask.NameToLayer("Interactable");
             return;
         }
 
@@ -68,7 +79,7 @@ public class SpaceManager : Singleton<SpaceManager>
             nextCorridor.gameObject.SetActive(true);
             nextCorridor.ActivateCorridor();
         }
-        
+
         var nextButton = spaceButtons[(currentCorridorIndex + 1) % spaceButtons.Count];
         if (nextButton != null)
         {
