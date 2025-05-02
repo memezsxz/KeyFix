@@ -1,40 +1,44 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Code.Scripts.Managers;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 
 public class PauseManager : MonoBehaviour
 {
-
     //scripts reference
-    public LoadingManager loadingScript;
 
     //panel refrences
     public GameObject pauseMenuUI;
     public GameObject helpPanel;
     public GameObject settingsPanel;
     public CanvasGroup pauseMenuGroup;
-    public GameObject loadingScreen;
 
-    [Header("Audio")]
-    public AudioSource music;
-    public AudioMixer audioMixer;
+    [Header("Audio")] public AudioClip backgroundMusic;
+    public AudioClip buttonSound;
 
 
-    private bool isPaused = false;
+    // private bool isPaused = false;
 
 
     private void Start()
     {
-        music.ignoreListenerPause = true;
+        // music.ignoreListenerPause = true;
     }
 
     void Update()
     {
+        if (GameManager.Instance.CurrentScene == GameManager.Scenes.Main_Menu) return;
+
+        // if (GameManager.Instance.State != GameManager.GameState.Playing &&
+        //     GameManager.Instance.State != GameManager.GameState.Paused)
+        //     return;
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (isPaused)
+            if (GameManager.Instance.State == GameManager.GameState.Paused)
             {
                 ResumeGame();
             }
@@ -47,46 +51,59 @@ public class PauseManager : MonoBehaviour
 
     public void ResumeGame()
     {
-        pauseMenuUI.SetActive(false);
-        Time.timeScale = 1f; // Resume game time
-        isPaused = false;
+        GameManager.Instance.ChangeState(GameManager.GameState.Playing);
 
-        if (music.isPlaying)
-            music.Stop();
+        // pauseMenuUI.SetActive(false);
+        // Time.timeScale = 1f; // Resume game time
+        // // isPaused = false;
+        //
+        // if (SoundManager.Instance.IsMusicPlaying) SoundManager.Instance.StopMusic();
     }
 
     public void PauseGame()
     {
-        pauseMenuUI.SetActive(true);
-        Time.timeScale = 0f; // Freeze game time
-        isPaused = true;
+        GameManager.Instance.ChangeState(GameManager.GameState.Paused);
 
-        float savedVolume = PlayerPrefs.GetFloat("MusicVolume", 0.3f);
-        float db = Mathf.Log10(Mathf.Clamp(savedVolume, 0.0001f, 1f)) * 20;
+        // pauseMenuUI.SetActive(true);
+        // Time.timeScale = 0f; // Freeze game time
+        // isPaused = true;
 
-        // Apply to AudioMixer before playing
-        audioMixer.SetFloat("MusicVolume", db);
-
-        if (!music.isPlaying)
-            music.Play();
+        if (!SoundManager.Instance.IsMusicPlaying) SoundManager.Instance.PlayMusic(backgroundMusic);
     }
+
+    // public void ExitToMainMenu()
+    // {
+    //     Time.timeScale = 1f;
+    //     GameStateTracker.returningFromGame = true;
+    //     //SceneManager.LoadScene("Fatima_MainMenu"); // Replace with your actual main menu scene name
+    //     pauseMenuUI.SetActive(false);
+    //
+    //
+    //     // loadingScript.sceneToLoad = GameManager.Scenes.Main_Menu;
+    //     // loadingScreen.SetActive(true);
+    //     // loadingScript.BeginLoading();
+    // }
+    //
+    // public void RestartLevel()
+    // {
+    //     Time.timeScale = 1f;
+    //     SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    // }
 
     public void ExitToMainMenu()
     {
         Time.timeScale = 1f;
         GameStateTracker.returningFromGame = true;
-        //SceneManager.LoadScene("Fatima_MainMenu"); // Replace with your actual main menu scene name
-        pauseMenuUI.SetActive(false);
-        loadingScript.sceneToLoad = "Fatima_MainMenu";
-        loadingScreen.SetActive(true);
-        loadingScript.BeginLoading();
 
+        pauseMenuUI.SetActive(false);
+
+        GameManager.Instance.HandleSceneLoad(GameManager.Scenes.Main_Menu);
     }
 
     public void RestartLevel()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        GameManager.Instance.RestartLevel();
     }
 
     public void ToggleHelpPanel()
@@ -98,8 +115,8 @@ public class PauseManager : MonoBehaviour
 
     public void SaveGame()
     {
-        Debug.Log("Game saved!"); // Replace with your save logic later
- 
+        SaveManager.Instance.SaveGame();
+        Debug.Log("Game saved!");
     }
 
 
@@ -117,10 +134,4 @@ public class PauseManager : MonoBehaviour
         pauseMenuGroup.interactable = true;
         pauseMenuGroup.blocksRaycasts = true;
     }
-
-}
-
-public static class GameStateTracker
-{
-    public static bool returningFromGame = false;
 }

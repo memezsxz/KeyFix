@@ -13,7 +13,7 @@ class DebugController : Singleton<DebugController>
     private string _input;
     private Vector2 _scroll;
     private readonly Dictionary<string, DebugCommand> _commands = new Dictionary<string, DebugCommand>();
-
+private readonly bool TESTING = false;
     private void Start()
     {
         RegisterDefaultCommands();
@@ -140,12 +140,12 @@ class DebugController : Singleton<DebugController>
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error executing command {commandId}: {ex.Message}");
+              if (TESTING)  Debug.LogError($"Error executing command {commandId}: {ex.Message}");
             }
         }
         else
         {
-            Debug.LogWarning($"Unknown command: {commandId}");
+            if (TESTING)   Debug.LogWarning($"Unknown command: {commandId}");
         }
     }
 
@@ -169,11 +169,11 @@ class DebugController : Singleton<DebugController>
     {
         if (_commands.TryAdd(command.CommandId, command))
         {
-            Debug.Log($"Registered debug command: {command.CommandId}"); // for testing only 
+            if (TESTING)   Debug.Log($"Registered debug command: {command.CommandId}"); // for testing only 
         }
         else
         {
-            Debug.LogWarning($"Command {command.CommandId} is already registered.");
+            if (TESTING)  Debug.LogWarning($"Command {command.CommandId} is already registered.");
         }
     }
 
@@ -208,11 +208,11 @@ class DebugController : Singleton<DebugController>
         if (DebugController.Instance != null)
         {
             DebugController.Instance.RegisterCommand(command);
-            // Debug.Log($"Command {command.CommandId} added."); // // for testing only
+            if (TESTING)  Debug.Log($"Command {command.CommandId} added."); 
         }
         else
         {
-            Debug.LogWarning("No debug controller found."); // for testing only
+            if (TESTING) Debug.LogWarning("No debug controller found."); 
         }
     }
 }

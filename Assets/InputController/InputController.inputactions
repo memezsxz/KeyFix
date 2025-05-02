@@ -280,6 +280,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "CoOp",
+            "id": "9f5bb44f-c1f1-463f-a07b-f0615d37826b",
+            "actions": [
+                {
+                    "name": "Interact",
+                    "type": "Button",
+                    "id": "6ccd2abb-f0cc-46e9-8ba1-def6f10bb09f",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "ca906d9e-e341-4add-9315-bf3b917f1ac9",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Interact",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []
