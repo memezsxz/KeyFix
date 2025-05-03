@@ -764,7 +764,6 @@ Transform:
   - {fileID: 1817744731}
   - {fileID: 713832704}
   - {fileID: 256356753}
-  - {fileID: 1738486158}
   - {fileID: 1432162662}
   - {fileID: 1461717195}
   - {fileID: 1238657984}
@@ -3092,7 +3091,7 @@ Transform:
   - {fileID: 1505872790}
   - {fileID: 829165058}
   m_Father: {fileID: 201759192}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1241009398
 GameObject:
@@ -3369,7 +3368,7 @@ Transform:
   - {fileID: 2036846357}
   - {fileID: 1339284495}
   m_Father: {fileID: 201759192}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!1001 &1339284494
 PrefabInstance:
@@ -3781,7 +3780,7 @@ Transform:
   - {fileID: 1185144135}
   - {fileID: 1032956270}
   m_Father: {fileID: 201759192}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1452659343
 PrefabInstance:
@@ -3897,7 +3896,7 @@ Transform:
   - {fileID: 1452659344}
   - {fileID: 1782334694}
   m_Father: {fileID: 201759192}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1505872790 stripped
 Transform:
@@ -4883,37 +4882,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1738486157
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1738486158}
-  m_Layer: 0
-  m_Name: RoomProps
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1738486158
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1738486157}
-  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -11.65, y: 0, z: -4.39}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 201759192}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!1001 &1775814078
 PrefabInstance:
   m_ObjectHideFlags: 0
