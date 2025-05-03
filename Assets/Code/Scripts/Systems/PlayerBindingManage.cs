@@ -16,11 +16,20 @@ public class PlayerBindingManage : Singleton<PlayerBindingManage>, IDataPersiste
 
     private void Awake()
     {
+        if (GetComponent<PlayerMovement>()?.CharecterType != CharacterType.Robot)
+        {
+            // This is not the Robot — disable or destroy this component to prevent interfering with other players
+            Destroy(this);
+            return;
+        }
+
         _playerInput = GetComponent<PlayerInput>();
+ 
     }
 
     private void Start()
     {
+
         SetupDebugCommand();
     }
 
@@ -34,6 +43,7 @@ public class PlayerBindingManage : Singleton<PlayerBindingManage>, IDataPersiste
 
     private void ApplyBinding(InputBindingConfig config)
     {
+        if (_playerInput == null) return;
         var action = _playerInput.actions[config.actionName];
         if (action == null)
         {

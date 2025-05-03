@@ -9,7 +9,7 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(SpeedersInteraction))]
 [RequireComponent(typeof(ScalerInteraction))]
 [RequireComponent(typeof(Animator))]
-[RequireComponent(typeof(PlayerBindingManage))]
+// [RequireComponent(typeof(PlayerBindingManage))]
 public class PlayerMovement : MonoBehaviour, IDataPersistence
 {
     // TODO Maryam: should add require Animator to the script 
@@ -25,6 +25,7 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
     [SerializeField]
     private CharacterType _charecterType = CharacterType.Robot; // the type of character that is holding the script
 
+    public CharacterType CharecterType => _charecterType;
 
     #region Testing Other Input system
 
