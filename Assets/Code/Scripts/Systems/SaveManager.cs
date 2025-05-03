@@ -46,12 +46,13 @@ public class SaveManager : Singleton<SaveManager>
         IsNewGame = PlayerPrefs.GetString(LAST_GAME_PREF) == null;
 
         SaveSlotName = PlayerPrefs.GetString(LAST_GAME_PREF, "Slot1");
-        // Debug.Log("Using save slot: " + SaveSlotName);
+        IsNewGame = !File.Exists(GetSavePath(SaveSlotName));
+        Debug.Log("Using save slot: " + SaveSlotName);
 
-        FindAllDataHandlers();
+        // FindAllDataHandlers();
 
         // Optional: Auto-load
-        // LoadGame(SaveSlotName);
+        LoadGame(SaveSlotName);
 
         DebugController.Instance.AddDebugCommand(new DebugCommand("save_game", "saved the game", "", () => SaveGame()));
     }
@@ -71,7 +72,7 @@ public class SaveManager : Singleton<SaveManager>
 
         foreach (var handler in _dataHandlers)
             handler.SaveData(ref _saveData);
-        
+
         IsNewGame = !File.Exists(GetSavePath(_saveData.Meta.SaveName));
 
         WriteToFile();
@@ -106,8 +107,9 @@ public class SaveManager : Singleton<SaveManager>
                 ? JsonUtility.FromJson<SaveData>(EncryptDecrypt(data))
                 : JsonUtility.FromJson<SaveData>(data);
             // Debug.Log("old game saved");
-
         }
+
+        Debug.Log($"Default binding set copied: {_saveData.Progress.BindingOverrides.bindings.Count} bindings");
 
         foreach (var handler in _dataHandlers)
             handler.LoadData(ref _saveData);
@@ -131,15 +133,39 @@ public class SaveManager : Singleton<SaveManager>
     /// <summary>
     /// Creates a new SaveData object with default values.
     /// </summary>
-    public SaveData CreateDefaultSave()
+    private SaveData CreateDefaultSave()
     {
+        var defaultBindingSet = Resources.Load<InputBindingSet>("InputBindingSet"); // No .asset extension
+        if (defaultBindingSet == null)
+        {
+            Debug.LogError("Default InputBindingSet not found in Resources folder!");
+        }
+
         return new SaveData
         {
             Meta = new MetaData
             {
                 SaveName = SaveSlotName
+            },
+            Progress = new ProgressData
+            {
+                BindingOverrides = DeepCopyBindingSet(defaultBindingSet)
             }
         };
+    }
+
+
+    public void StartNewGame()
+    {
+        IsNewGame = true;
+
+        // Clear any existing save from PlayerPrefs
+        PlayerPrefs.SetString(LAST_GAME_PREF, SaveSlotName);
+        PlayerPrefs.Save();
+
+        // Create default save and defer SaveGame until the scene loads
+        SaveData = CreateDefaultSave();
+        SaveGame();
     }
 
     #endregion
@@ -153,7 +179,7 @@ public class SaveManager : Singleton<SaveManager>
         WriteToFile();
 
         // print($"Saved game settings: sound {_saveData.Sounds.SoundVolume}, music {_saveData.Sounds.MusicVolume}, quality {_saveData.Graphics.QualityName}, resolution {_saveData.Graphics.ResolutionWidth}x{_saveData.Graphics.ResolutionHeight}");
-       
+
         SoundManager.Instance.LoadData(ref _saveData);
         GraphicsManager.Instance.LoadData(ref _saveData);
     }
@@ -165,10 +191,9 @@ public class SaveManager : Singleton<SaveManager>
         _saveData.Sounds = new SoundData();
 
         WriteToFile();
-        
+
         SoundManager.Instance.LoadData(ref _saveData);
         GraphicsManager.Instance.LoadData(ref _saveData);
-
     }
 
     #endregion
@@ -189,15 +214,6 @@ public class SaveManager : Singleton<SaveManager>
         SaveData.Graphics.Fullscreen = Screen.fullScreen;
     }
 
-
-    /// <summary>
-    /// Forces a refresh of the list of data handlers.
-    /// Useful if new handlers are created at runtime.
-    /// </summary>
-    // public void ManualRefreshHandlers() =>
-    //     FindAllDataHandlers();
-
-
     /// <summary>
     /// Scans the scene for all MonoBehaviours implementing IDataPersistence.
     /// </summary>
@@ -208,8 +224,17 @@ public class SaveManager : Singleton<SaveManager>
 
     #endregion
 
+    #region Player Movement Piblic API
+
+    public void LoadPlayerBindings()
+    {
+        if (PlayerBindingManage.Instance ) PlayerBindingManage.Instance.LoadData( ref _saveData);
+    }
+
+    #endregion
+
     #region File System
- 
+
     public bool HasSave(string slotName) =>
         File.Exists(GetSavePath(slotName));
 
@@ -284,4 +309,19 @@ public class SaveManager : Singleton<SaveManager>
     }
 
     #endregion
+
+    private SerializableInputBindingSet DeepCopyBindingSet(InputBindingSet original)
+    {
+        return new SerializableInputBindingSet
+        {
+            bindings = original.bindings
+                .Select(b => new InputBindingConfig
+                {
+                    actionName = b.actionName,
+                    bindingName = b.bindingName,
+                    defaultPath = b.defaultPath,
+                    isUnlocked = b.isUnlocked
+                }).ToList()
+        };
+    }
 }
