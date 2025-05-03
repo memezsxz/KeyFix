@@ -4,27 +4,23 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerBindingManage : MonoBehaviour
+public class PlayerBindingManage : Singleton<PlayerBindingManage>, IDataPersistence 
 {
-    
-    [SerializeField] private InputBindingSet bindingSet;
-    public InputBindingSet BindingSet => bindingSet;
+    // private InputBindingSet bindingSet;
+    public SerializableInputBindingSet BindingSet => bindingSet;
 
     private PlayerInput _playerInput;
+    [SerializeField] private InputBindingSet defaultSet; // For fallback
+
+    private SerializableInputBindingSet bindingSet;
 
     private void Awake()
     {
-        foreach (var inputBindingConfig in bindingSet.bindings)
-        {
-            inputBindingConfig.isUnlocked = true;
-        } // TODO Maryam: make false for game, later on
-        
         _playerInput = GetComponent<PlayerInput>();
     }
 
     private void Start()
     {
-        ApplyAllBindings();
         SetupDebugCommand();
     }
 
@@ -69,6 +65,23 @@ public class PlayerBindingManage : MonoBehaviour
         }
     }
 
+    public void EnableBinding(string actionName, string bindingName = "")
+    {
+        var config = bindingSet.bindings.FirstOrDefault(b =>
+            b.actionName == actionName && b.bindingName == bindingName);
+
+        if (config != null)
+        {
+            config.isUnlocked = true;
+            ApplyBinding(config);
+            Debug.Log($"Enabled binding: {actionName}.{bindingName}");
+        }
+        else
+        {
+            Debug.LogWarning($"Binding not found: {actionName}.{bindingName}");
+        }
+
+    }
     private void SetupDebugCommand()
     {
         DebugController.Instance?.AddDebugCommand(new DebugCommand(
@@ -104,5 +117,40 @@ public class PlayerBindingManage : MonoBehaviour
         ));
     }
 
+    public void SaveData(ref SaveData data)
+    {
+        if (bindingSet == null)
+        {
+            Debug.LogWarning("Binding set is null. Nothing to save.");
+            return;
+        }
+
+        data.Progress.BindingOverrides = bindingSet;
+        print("saving bindings");
+    }
+
+    public void LoadData(ref SaveData data)
+    {
+        
+        bindingSet  = data.Progress.BindingOverrides;
+        ApplyAllBindings();
+        print("loading bindings " + bindingSet.bindings.Count);
+    }
     
+    
+    public void ApplyFromScriptableObject(InputBindingSet source)
+    {
+        bindingSet = new SerializableInputBindingSet
+        {
+            bindings = source.bindings.Select(b => new InputBindingConfig
+            {
+                actionName = b.actionName,
+                bindingName = b.bindingName,
+                defaultPath = b.defaultPath,
+                isUnlocked = b.isUnlocked
+            }).ToList()
+        };
+
+        ApplyAllBindings();
+    }
 }
