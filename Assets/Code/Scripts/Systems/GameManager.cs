@@ -40,6 +40,8 @@ namespace Code.Scripts.Managers
             { GameManager.Scenes.Main_Menu, "Main_Menu" }
         };
 
+        private bool shouldLoadSaveDataAfterSceneLoad = false;
+
         #endregion
 
         #region Enums
@@ -91,6 +93,32 @@ namespace Code.Scripts.Managers
                 CurrentScene = GameManager.Scenes.HALLWAYS;
                 Debug.LogWarning($"Scene name '{sceneName}' not found in SceneNameMap.");
             }
+
+            DebugController.Instance.RegisterCommand(new DebugCommand(
+                "load_level",
+                "Loads a specific level by scene name",
+                "load_level <SceneName>",
+                (args) =>
+                {
+                    if (args.Length == 0)
+                    {
+                        Debug.LogWarning("No scene name provided.");
+                        return;
+                    }
+
+                    string sceneName = args[0];
+
+                    if (Enum.TryParse(typeof(GameManager.Scenes), sceneName, out var scene))
+                    {
+                        GameManager.Instance.HandleSceneLoad((GameManager.Scenes)scene);
+                        Debug.Log($"Jumping to level: {sceneName}");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Scene '{sceneName}' is not recognized. Check your GameManager.Scenes enum.");
+                    }
+                }
+            ));
         }
 
         #endregion
@@ -156,6 +184,7 @@ namespace Code.Scripts.Managers
 
         public void LoadLastSavedLevel()
         {
+            shouldLoadSaveDataAfterSceneLoad = true;
             HandleSceneLoad(SaveManager.Instance.SaveData.Progress.CurrentScene);
         }
 
@@ -184,6 +213,7 @@ namespace Code.Scripts.Managers
         public void HandleSceneLoaded()
         {
             loadingScreen.SetActive(false);
+            SaveManager.Instance.LoadPlayerBindings();
         }
 
         #endregion
@@ -232,6 +262,34 @@ namespace Code.Scripts.Managers
         {
             StopAllSound();
             victoryController.ShowCompleteScene();
+
+
+            var playerBindingManager = GameObject.FindObjectOfType<PlayerBindingManage>();
+
+            if (playerBindingManager == null)
+            {
+                Debug.LogWarning("Cannot find player bindings manager");
+                return;
+            }
+
+            switch (CurrentScene)
+            {
+                case Scenes.W_KEY:
+                {
+                    PlayerBindingManage.Instance.EnableBinding("Move", "up");
+                    break;
+                }
+                case Scenes.A_KEY:
+                {
+                    PlayerBindingManage.Instance.EnableBinding("Move", "left");
+                    break;
+                }
+                case Scenes.SPACE_KEY:
+                {
+                    PlayerBindingManage.Instance.EnableBinding("Jump");
+                    break;
+                }
+            }
         }
 
         #endregion
@@ -245,6 +303,30 @@ namespace Code.Scripts.Managers
 
         public void LoadData(ref SaveData data)
         {
+        }
+
+        #endregion
+
+        #region SenceManager Events
+
+        private void OnEnable()
+        {
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+
+        private void OnDisable()
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            if (shouldLoadSaveDataAfterSceneLoad)
+            {
+                shouldLoadSaveDataAfterSceneLoad = false;
+                SaveManager.Instance.LoadGame(SaveManager.Instance.SaveData.Meta.SaveName);
+                Debug.Log("Save data loaded after loading last saved level.");
+            }
         }
 
         #endregion
