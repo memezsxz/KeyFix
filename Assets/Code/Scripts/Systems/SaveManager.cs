@@ -228,7 +228,8 @@ public class SaveManager : Singleton<SaveManager>
 
     public void LoadPlayerBindings()
     {
-        if (PlayerBindingManage.Instance ) PlayerBindingManage.Instance.LoadData( ref _saveData);
+        var pbm = FindObjectOfType<PlayerBindingManage>();
+        if (pbm ) pbm.LoadData( ref _saveData);
     }
 
     #endregion

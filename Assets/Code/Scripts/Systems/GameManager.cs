@@ -213,6 +213,11 @@ namespace Code.Scripts.Managers
         public void HandleSceneLoaded()
         {
             loadingScreen.SetActive(false);
+            StartCoroutine(ReapplyBindingsNextFrame());
+        }
+        private IEnumerator ReapplyBindingsNextFrame()
+        {
+            yield return null; // wait one frame to ensure PlayerInput is initialized
             SaveManager.Instance.LoadPlayerBindings();
         }
 
@@ -272,23 +277,28 @@ namespace Code.Scripts.Managers
                 return;
             }
 
-            switch (CurrentScene)
+            var pbm = playerBindingManager.GetComponent<PlayerBindingManage>();
+            if (pbm)
             {
-                case Scenes.W_KEY:
+                switch (CurrentScene)
                 {
-                    PlayerBindingManage.Instance.EnableBinding("Move", "up");
-                    break;
+                    case Scenes.W_KEY:
+                    {
+                        pbm.EnableBinding("Move", "up");
+                        break;
+                    }
+                    case Scenes.A_KEY:
+                    {
+                        pbm.EnableBinding("Move", "left");
+                        break;
+                    }
+                    case Scenes.SPACE_KEY:
+                    {
+                        pbm.EnableBinding("Jump");
+                        break;
+                    }
                 }
-                case Scenes.A_KEY:
-                {
-                    PlayerBindingManage.Instance.EnableBinding("Move", "left");
-                    break;
-                }
-                case Scenes.SPACE_KEY:
-                {
-                    PlayerBindingManage.Instance.EnableBinding("Jump");
-                    break;
-                }
+
             }
         }
 

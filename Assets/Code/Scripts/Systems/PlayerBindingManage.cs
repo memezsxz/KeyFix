@@ -4,13 +4,12 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerBindingManage : Singleton<PlayerBindingManage>, IDataPersistence 
+public class PlayerBindingManage : MonoBehaviour, IDataPersistence
 {
     // private InputBindingSet bindingSet;
     public SerializableInputBindingSet BindingSet => bindingSet;
 
     private PlayerInput _playerInput;
-    [SerializeField] private InputBindingSet defaultSet; // For fallback
 
     private SerializableInputBindingSet bindingSet;
 
@@ -24,20 +23,46 @@ public class PlayerBindingManage : Singleton<PlayerBindingManage>, IDataPersiste
         }
 
         _playerInput = GetComponent<PlayerInput>();
- 
     }
 
     private void Start()
     {
-
+        _playerInput = GetComponent<PlayerInput>();
         SetupDebugCommand();
     }
 
     public void ApplyAllBindings()
     {
+        if (_playerInput == null)
+            _playerInput = GetComponent<PlayerInput>();
+
+        if (_playerInput == null)
+        {
+            Debug.LogWarning("[PlayerBindingManage] PlayerInput still null.");
+            return;
+        }
+
+        if (bindingSet == null)
+        {
+            bindingSet = SaveManager.Instance.SaveData.Progress.BindingOverrides;
+            return;
+        }
+
+        if (bindingSet == null)
+        {
+            Debug.LogWarning("[PlayerBindingManage] bindingSet is null.");
+            return;
+        }
+
+        foreach (var action in _playerInput.actions)
+            action.RemoveAllBindingOverrides();
+
         foreach (var bindingConfig in bindingSet.bindings)
         {
+            _playerInput.actions.Disable();
+
             ApplyBinding(bindingConfig);
+            _playerInput.actions.Enable();
         }
     }
 
@@ -66,8 +91,11 @@ public class PlayerBindingManage : Singleton<PlayerBindingManage>, IDataPersiste
 
         if (binding != null)
         {
+            action.Disable();
             var path = config.isUnlocked ? config.defaultPath : " ";
             action.ApplyBindingOverride(binding.index, new InputBinding { overridePath = path });
+            // print("applying binding " + config.bindingName + " to " + config.isUnlocked);
+            action.Enable();
         }
         else
         {
@@ -84,14 +112,14 @@ public class PlayerBindingManage : Singleton<PlayerBindingManage>, IDataPersiste
         {
             config.isUnlocked = true;
             ApplyBinding(config);
-            Debug.Log($"Enabled binding: {actionName}.{bindingName}");
+            // Debug.Log($"Enabled binding: {actionName}.{bindingName}");
         }
         else
         {
-            Debug.LogWarning($"Binding not found: {actionName}.{bindingName}");
+            // Debug.LogWarning($"Binding not found: {actionName}.{bindingName}");
         }
-
     }
+
     private void SetupDebugCommand()
     {
         DebugController.Instance?.AddDebugCommand(new DebugCommand(
@@ -141,13 +169,12 @@ public class PlayerBindingManage : Singleton<PlayerBindingManage>, IDataPersiste
 
     public void LoadData(ref SaveData data)
     {
-        
-        bindingSet  = data.Progress.BindingOverrides;
+        bindingSet = data.Progress.BindingOverrides;
         ApplyAllBindings();
-        print("loading bindings " + bindingSet.bindings.Count);
+        // print("loading bindings " + bindingSet.bindings.Count);
     }
-    
-    
+
+
     public void ApplyFromScriptableObject(InputBindingSet source)
     {
         bindingSet = new SerializableInputBindingSet
