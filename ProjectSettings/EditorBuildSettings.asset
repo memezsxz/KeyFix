@@ -15,28 +15,28 @@ EditorBuildSettings:
     path: Assets/Level/Scenes/LoadingScreen.unity
     guid: c69b594d0af9ab0438d154d3de565159
   - enabled: 1
-    path: Assets/Level/Scenes/LevelComplete.unity
+    path: Assets/Level/Scenes/TestScenes/LevelComplete.unity
     guid: 0ce3aafdf3c61554280653ef6a202ce1
   - enabled: 1
-    path: Assets/Level/Scenes/Light_puzzel.unity
+    path: Assets/Level/Scenes/TestScenes/Light_puzzel.unity
     guid: 4a9b6f4a6cddcca4087b15c512020bf1
   - enabled: 1
-    path: Assets/Level/Scenes/maryam arrow test.unity
+    path: Assets/Level/Scenes/TestScenes/maryam arrow test.unity
     guid: def676e75870043008df08a90f03b53c
   - enabled: 1
-    path: Assets/Level/Scenes/maryam co op.unity
+    path: Assets/Level/Scenes/TestScenes/maryam co op.unity
     guid: ab2f8f7dfabd44d98bac5f2f5c58f4bc
   - enabled: 1
-    path: Assets/Level/Scenes/maryam g romm test.unity
+    path: Assets/Level/Scenes/TestScenes/maryam g romm test.unity
     guid: 70bb119b983f840b69b4384d64cec179
   - enabled: 1
-    path: Assets/Level/Scenes/maryam space key test.unity
+    path: Assets/Level/Scenes/TestScenes/maryam space key test.unity
     guid: afcca8be427ab4e7b996be030981dd83
   - enabled: 1
-    path: Assets/Level/Scenes/LevelTitle.unity
+    path: Assets/Level/Scenes/TestScenes/LevelTitle.unity
     guid: 815e5ece084a90445809a37b2bd9c3e1
   - enabled: 1
-    path: Assets/Level/Scenes/Fatima_PauseMenu.unity
+    path: Assets/Level/Scenes/TestScenes/Fatima_PauseMenu.unity
     guid: a9b408b42766b6c47a4437e2a1813ce3
   - enabled: 1
     path: Assets/Level/Scenes/A_Key.unity
@@ -54,7 +54,7 @@ EditorBuildSettings:
     path: Assets/Level/Scenes/Hallways.unity
     guid: 2c14cc09c413e4b4a8f53867de49509d
   - enabled: 1
-    path: Assets/Level/Scenes/HintsScene.unity
+    path: Assets/Level/Scenes/TestScenes/HintsScene.unity
     guid: 2c32e43e4b81e9c41a119ea29c34ca1b
   - enabled: 1
     path: Assets/Level/Scenes/IncidentScene.unity
@@ -69,13 +69,16 @@ EditorBuildSettings:
     path: Assets/Level/Scenes/Space_Key.unity
     guid: 4d33688e8d98941598a6ff6cf33bca2c
   - enabled: 1
-    path: Assets/Level/Scenes/LoadingScreen 1.unity
+    path: Assets/Level/Scenes/TestScenes/LoadingScreen 1.unity
     guid: 6df0dc6ed4f5e0a43a51e028264a7d7d
   - enabled: 1
+    path: Assets/Level/Scenes/W_Key.unity
+    guid: 2f35ca614fa6bb74bbeae38d7c6fdca1
+  - enabled: 0
     path: Assets/Level/Scenes/ESC_Room.unity
     guid: 5a0529d346a60444488d4f7a7f5f2660
   - enabled: 1
-    path: Assets/Level/Scenes/maryam city test.unity
+    path: Assets/Level/Scenes/TestScenes/maryam city test.unity
     guid: 4edf1e370e9274c2e9282fc3ce606f8f
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: fc6dd7abab3184dada9a30ae25367c5a, type: 2}

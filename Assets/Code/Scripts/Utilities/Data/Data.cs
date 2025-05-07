@@ -49,6 +49,7 @@ public class PlayerStateData
 {
     public Vector3 Position;
     public float Yaw; // The Y-axis rotation (Euler angle)
+    public Transform HallwaysPosition;
     public int LivesRemaining = 10; // lives till the player looses the level and the button is damaged puritanically 
 }
 

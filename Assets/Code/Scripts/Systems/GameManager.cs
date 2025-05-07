@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -38,7 +39,13 @@ namespace Code.Scripts.Managers
             { GameManager.Scenes.G_KEY, "G_Key" },
             { GameManager.Scenes.ARROW_KEYS, "Arrow_Keys" },
             { GameManager.Scenes.P_KEY, "P_Key" },
-            { GameManager.Scenes.Main_Menu, "Main_Menu" }
+            { GameManager.Scenes.Main_Menu, "Main_Menu" },
+            { GameManager.Scenes.INCIDENT, "Incident_Cutscene" },
+            { GameManager.Scenes.W_CUTSCENE, "W_Cutscene" },
+            { GameManager.Scenes.A_CUTSCENE, "A_Cutscene" },
+            { GameManager.Scenes.SPACE_CUTSCENE, "Space_Cutscene" },
+            { GameManager.Scenes.P_CUTSCENE, "P_Cutscene" },
+            { GameManager.Scenes.GAME_VICTORY_CUTSCENE, "Game_Victory_Cutscene" },
         };
 
         private bool shouldLoadSaveDataAfterSceneLoad = false;
@@ -60,15 +67,22 @@ namespace Code.Scripts.Managers
         [Serializable]
         public enum Scenes
         {
-            HALLWAYS,
-            ESC_KEY,
-            W_KEY,
-            A_KEY,
-            SPACE_KEY,
-            G_KEY,
-            ARROW_KEYS,
-            P_KEY,
             Main_Menu,
+            INCIDENT,
+            ESC_KEY,
+            HALLWAYS,
+            W_KEY,
+            W_CUTSCENE,
+            A_KEY,
+            A_CUTSCENE,
+            G_KEY,
+            SPACE_KEY,
+            SPACE_CUTSCENE,
+            ARROW_KEYS,
+            ARROW_CUTSCENE,
+            P_KEY,
+            P_CUTSCENE,
+            GAME_VICTORY_CUTSCENE,
         }
 
         #endregion
@@ -379,14 +393,39 @@ namespace Code.Scripts.Managers
             if (SoundManager.Instance.IsSoundPlaying) SoundManager.Instance.StopSound();
         }
 
+        #endregion
+
+
+        #region Player
+
         public void TogglePlayerMovement(bool value)
         {
-            var player = GameObject.FindGameObjectWithTag("Player");
+            FindPlayer()?.GetComponent<PlayerMovement>().ToggleMovement(value);
+        }
 
-            if (player != null)
+        public Transform GetPlayerTransform()
+        {
+            return FindPlayer()?.GetComponent<Transform>();
+        }
+
+        public void MovePlayerToExitDoorPosition(Transform doorPosition, Vector3 targetPosition)
+        {
+            var playerTransform = GetPlayerTransform();
+            var controller = playerTransform.GetComponent<CharacterController>();
+            if (controller != null)
             {
-                player.GetComponent<PlayerMovement>().ToggleMovement(value);
+                controller.enabled = false;
+                playerTransform.position = doorPosition.position + (targetPosition);
+                playerTransform.rotation = doorPosition.rotation;
+                controller.enabled = true;
             }
+        }
+
+
+        [CanBeNull]
+        private GameObject FindPlayer()
+        {
+            return GameObject.FindGameObjectWithTag("Player");
         }
 
         #endregion
