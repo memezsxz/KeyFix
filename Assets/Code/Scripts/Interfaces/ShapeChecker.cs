@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ShapeChecker : MonoBehaviour
 {
+   public Action successCallback;
     [SerializeField]
     private GameObject wholeGamePanel;
 
@@ -13,10 +15,10 @@ public class ShapeChecker : MonoBehaviour
     private GameObject failedPanel;
 
     [SerializeField]
-    private AudioSource successfulSound;
+    private AudioClip successfulSound;
 
     [SerializeField]
-    private AudioSource failedSound;
+    private AudioClip failedSound;
 
     public Transform bulbGrid; // parent of bulbs
     public bool[] targetPattern; // must match manually to your shape
@@ -50,23 +52,24 @@ public class ShapeChecker : MonoBehaviour
     IEnumerator ShowSuccessfulPanel()
     {
         successfulPanel.SetActive(true);
-        successfulSound.Play();
+        SoundManager.Instance.PlaySound(successfulSound);
 
         yield return new WaitForSeconds(1.5f); // Wait for 1 second
 
         wholeGamePanel.SetActive(false);
 
-        successfulSound.Stop();
+        SoundManager.Instance.StopSound();
+        successCallback?.Invoke();
     }
 
     IEnumerator ShowFailedPanel()
     {
         failedPanel.SetActive(true);
-        failedSound.Play();
+        SoundManager.Instance.PlaySound(failedSound);
 
         yield return new WaitForSeconds(1.5f); // Wait for 1 second
 
         failedPanel.SetActive(false);
-        failedSound.Stop();
+        SoundManager.Instance.StopSound();
     }
 }

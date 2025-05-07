@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -215,6 +216,7 @@ namespace Code.Scripts.Managers
             loadingScreen.SetActive(false);
             StartCoroutine(ReapplyBindingsNextFrame());
         }
+
         private IEnumerator ReapplyBindingsNextFrame()
         {
             yield return null; // wait one frame to ensure PlayerInput is initialized
@@ -266,7 +268,9 @@ namespace Code.Scripts.Managers
         private void HandleVictory()
         {
             StopAllSound();
-            victoryController.ShowCompleteScene();
+            DisableAllCanvases();
+            TogglePlayerMovement(false);
+            victoryController.ShowCompleteScene(); // automatically redirects to HALLWAYS
 
 
             var playerBindingManager = GameObject.FindObjectOfType<PlayerBindingManage>();
@@ -298,7 +302,6 @@ namespace Code.Scripts.Managers
                         break;
                     }
                 }
-
             }
         }
 

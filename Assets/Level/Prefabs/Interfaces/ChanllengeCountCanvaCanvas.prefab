@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1611388579161416037}
   - component: {fileID: 1611388579161416036}
   - component: {fileID: 1611388579161416059}
+  - component: {fileID: 5088677883076733376}
   m_Layer: 5
   m_Name: ChanllengeCountCanvaCanvas
   m_TagString: Untagged
@@ -102,6 +103,19 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &5088677883076733376
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1611388579161416058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea87192bc0af4a75bbc662c0a1a31f68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scoreText: {fileID: 1611388580864251799}
 --- !u!1 &1611388579205338280
 GameObject:
   m_ObjectHideFlags: 0
@@ -137,10 +151,10 @@ RectTransform:
   m_Father: {fileID: 1611388580433277214}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -773.9177, y: 282}
-  m_SizeDelta: {x: 336.7284, y: -941.4702}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 186.08228, y: -80}
+  m_SizeDelta: {x: 336.7284, y: 138.52979}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1611388579205338283
 CanvasRenderer:
