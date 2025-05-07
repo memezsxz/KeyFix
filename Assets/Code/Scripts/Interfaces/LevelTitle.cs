@@ -8,14 +8,24 @@ public class LevelTitle : MonoBehaviour
 {
     public CanvasGroup canvasGroup;
     public TextMeshProUGUI levelText;
+    public TextMeshProUGUI levelDescText;
 
     [Header("Settings")]
     public string levelName = "LEVEL 1";
+    public string levelDescription = "Nothing Here";
     public float fadeDuration = 1f;
     public float displayDuration = 2f;
+
+
+    public void showLevelTitle() {
+        gameObject.SetActive(true);
+        Start();
+    }
+
     private void Start()
     {
         levelText.text = levelName;
+        levelDescText.text = levelDescription;
         StartCoroutine(ShowBanner());
     }
 
