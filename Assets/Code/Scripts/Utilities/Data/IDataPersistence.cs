@@ -1,5 +1,5 @@
 internal interface IDataPersistence
 {
-    void SaveData(SaveData data);
-    void LoadData(SaveData data);
+    void SaveData(ref SaveData data);
+    void LoadData(ref SaveData data);
 }

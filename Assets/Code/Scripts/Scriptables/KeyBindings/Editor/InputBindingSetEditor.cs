@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -17,21 +18,21 @@ public class InputBindingSetEditor : UnityEditor.Editor
 
     private void ApplyBindingsInScene()
     {
-        var bindingSet = (InputBindingSet)target;
+        var bindingSetAsset = (InputBindingSet)target;
 
-        // Find all PlayerBindingManage components in the scene
         var managers = GameObject.FindObjectsOfType<PlayerBindingManage>();
-
         int updated = 0;
+
         foreach (var manager in managers)
         {
-            if (manager != null && manager.BindingSet == bindingSet)
+            if (manager != null)
             {
-                manager.ApplyAllBindings();
+                manager.ApplyFromScriptableObject(bindingSetAsset); // <- add this method
                 updated++;
             }
         }
 
         Debug.Log($"Applied bindings to {updated} manager(s) in scene.");
     }
+
 }

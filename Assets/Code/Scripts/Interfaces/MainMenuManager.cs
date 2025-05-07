@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Code.Scripts.Managers;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
@@ -8,11 +9,8 @@ using UnityEngine.UI;
 
 public class MainMenuManager : MonoBehaviour
 {
-
     //audio refrence
-    //public AudioSource audioSource;
-    //public AudioClip clickSound;
-    public AudioSource spaceSFX;
+    public AudioClip clickSound;
 
 
     //buttons refrence
@@ -26,50 +24,60 @@ public class MainMenuManager : MonoBehaviour
     public GameObject creditsPanel;
     public GameObject exitPanel;
     public CanvasGroup mainMenuGroup;
+    // public GameObject loadingScreen;
+    public GameObject mainScene;
 
 
     //script refrenc
-    public SceneFader sceneFader;
+    // public SceneFader sceneFader;
+    // public LoadingManager loadingScript;
+    public SettingsManager settingsScript;
+
 
     private void Start()
     {
-
-        continueGameButton.interactable = PlayerPrefs.HasKey("LastLevel");
+        continueGameButton.interactable = !SaveManager.Instance.IsNewGame;
+  
 
         //this code must be set after the complete a level
+
         //PlayerPrefs.SetInt("LastLevel", SceneManager.GetActiveScene().buildIndex);
-
     }
-
 
 
     //panels methods
     public void StartNewGame()
     {
-        
-        SceneManager.LoadScene("LoadingScreen");
-        
-        sceneFader.FadeToScene("Fatima_PauseMenu");
-        
+        SaveManager.Instance.StartNewGame();
+        GameManager.Instance.HandleSceneLoad(GameManager.Scenes.HALLWAYS);
+        CloseAllPanels();
+        mainScene.SetActive(false);
     }
 
 
     public void ContinueGame()
     {
-        if (PlayerPrefs.HasKey("LastLevel"))
+        if (!SaveManager.Instance.IsNewGame)
         {
+            GameManager.Instance.LoadLastSavedLevel();
+            // GameManager.Instance.HandleSceneLoad(SaveManager.Instance.SaveData.Progress.CurrentScene);
+            // loadingScript.sceneToLoad = SaveManager.Instance.SaveData.Progress.CurrentScene;
+            // loadingScript.stateToLoadIn = GameManager.GameState.Playing;
+            // loadingScreen.SetActive(true);
+            // loadingScript.BeginLoading();
+
             PlayClickSound();
-            int sceneToLoad = PlayerPrefs.GetInt("LastLevel");
-            SceneManager.LoadScene(sceneToLoad);
+            mainScene.SetActive(false);
+            // Debug.Log("will be going to the last saved level: " + SaveManager.Instance.SaveData.Progress.CurrentScene);
+            // SceneManager.LoadScene("maryam city test");
+            // will be done with use of the game manager and scene manager
+            // int sceneToLoad = PlayerPrefs.GetInt("LastLevel");
+            // SceneManager.LoadScene(sceneToLoad);
         }
         else
         {
             Debug.Log("No saved game found!");
-            
-
         }
-
-
     }
 
     public void OpenSettings()
@@ -77,9 +85,9 @@ public class MainMenuManager : MonoBehaviour
         Debug.Log("Open Settings");
         PlayClickSound();
         settingsPanel.SetActive(true);
+        settingsScript.enabled = true;
         mainMenuGroup.interactable = false;
         mainMenuGroup.blocksRaycasts = false;
-
     }
 
     public void OpenInstructions()
@@ -114,6 +122,12 @@ public class MainMenuManager : MonoBehaviour
     public void CloseAllPanels()
     {
         PlayClickSound();
+        if (settingsPanel.activeSelf)
+        {
+            settingsScript.enabled = false;
+            SaveManager.Instance.SaveSettings();
+        }
+
         settingsPanel.SetActive(false);
         instructionsPanel.SetActive(false);
         creditsPanel.SetActive(false);
@@ -129,8 +143,6 @@ public class MainMenuManager : MonoBehaviour
     }
 
 
-
-
     //Animation methods
     public void OnHoverEnter(GameObject btn)
     {
@@ -140,14 +152,13 @@ public class MainMenuManager : MonoBehaviour
             if (!originalScales.ContainsKey(btn))
             {
                 originalScales[btn] = btn.transform.localScale;
-                
             }
 
             PlayClickSound();
             btn.transform.localScale = originalScales[btn] * 1.1f;
         }
-    
     }
+
     public void OnHoverExit(GameObject btn)
     {
         if (originalScales.ContainsKey(btn))
@@ -158,8 +169,6 @@ public class MainMenuManager : MonoBehaviour
     //Audio methods
     public void PlayClickSound()
     {
-        if (spaceSFX != null)
-            spaceSFX.Play();
+        SoundManager.Instance.PlaySound(clickSound);
     }
-
 }
