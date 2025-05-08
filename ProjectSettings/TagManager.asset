@@ -9,6 +9,7 @@ TagManager:
   - PlayerEyes
   - Enemy
   - Button
+  - Door
   layers:
   - Default
   - TransparentFX

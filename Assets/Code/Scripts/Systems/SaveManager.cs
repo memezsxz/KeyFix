@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using Code.Scripts.Managers;
 using UnityEngine;
 
 /// <summary>
@@ -47,7 +48,7 @@ public class SaveManager : Singleton<SaveManager>
 
         SaveSlotName = PlayerPrefs.GetString(LAST_GAME_PREF, "Slot1");
         IsNewGame = !File.Exists(GetSavePath(SaveSlotName));
-        Debug.Log("Using save slot: " + SaveSlotName);
+        // Debug.Log("Using save slot: " + SaveSlotName);
 
         // FindAllDataHandlers();
 
@@ -109,7 +110,7 @@ public class SaveManager : Singleton<SaveManager>
             // Debug.Log("old game saved");
         }
 
-        Debug.Log($"Default binding set copied: {_saveData.Progress.BindingOverrides.bindings.Count} bindings");
+        // Debug.Log($"Default binding set copied: {_saveData.Progress.BindingOverrides.bindings.Count} bindings");
 
         foreach (var handler in _dataHandlers)
             handler.LoadData(ref _saveData);
@@ -229,9 +230,20 @@ public class SaveManager : Singleton<SaveManager>
     public void LoadPlayerBindings()
     {
         var pbm = FindObjectOfType<PlayerBindingManage>();
-        if (pbm ) pbm.LoadData( ref _saveData);
+        if (pbm) pbm.LoadData(ref _saveData);
     }
 
+    public void SaveHallwayPosition()
+    {
+        if (GameManager.Instance.CurrentScene != GameManager.Scenes.HALLWAYS) return;
+        // print("saving hallway position");
+        HallwaysManager.Instance.SaveData(ref _saveData);
+    }
+    public void LoadHallwayPosition()
+    {
+        if (GameManager.Instance.CurrentScene != GameManager.Scenes.HALLWAYS) return;
+        HallwaysManager.Instance.LoadData(ref _saveData);
+    }
     #endregion
 
     #region File System

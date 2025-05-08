@@ -40,7 +40,7 @@ public class ProgressData
 {
     public bool IsNewGame = true;
     public GameManager.Scenes CurrentScene = GameManager.Scenes.A_KEY;
-    public List<string> RepairedKeys = new(); // e.g. ["W", "A"]
+    public List<GameManager.Scenes> RepairedKeys = new();
     public  SerializableInputBindingSet BindingOverrides = new();
 }
 
@@ -49,7 +49,8 @@ public class PlayerStateData
 {
     public Vector3 Position;
     public float Yaw; // The Y-axis rotation (Euler angle)
-    public Transform HallwaysPosition;
+    public Vector3 HallwaysPosition;
+    public Quaternion HallwaysRotation;
     public int LivesRemaining = 10; // lives till the player looses the level and the button is damaged puritanically 
 }
 
