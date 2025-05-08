@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Code.Scripts.Units.Heroes;
 using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
@@ -32,7 +33,7 @@ namespace Code.Scripts.Managers
 
         private static readonly Dictionary<GameManager.Scenes, string> SceneNameMap = new()
         {
-            { GameManager.Scenes.HALLWAYS, "maryam hallways test" },
+            { GameManager.Scenes.HALLWAYS, "maryam doors test" },
             { GameManager.Scenes.ESC_KEY, "ESC_Key" },
             { GameManager.Scenes.W_KEY, "W_Key" },
             { GameManager.Scenes.A_KEY, "A_Key" },
@@ -198,6 +199,17 @@ namespace Code.Scripts.Managers
             // inisialize the player in the right spot
         }
 
+        public bool CanPause()
+        {
+            if (CurrentScene == Scenes.Main_Menu) return false;
+            if (CurrentScene == Scenes.G_KEY) return false;
+            if (State == GameState.CutScene) return false;
+            if (loadingScreen.activeSelf) return false;
+            if (gameOverCanvas.activeSelf) return false;
+
+            return true;
+        }
+
         #endregion
 
         #region Scene & Level Management
@@ -263,6 +275,7 @@ namespace Code.Scripts.Managers
             else if (State != GameState.Initial) SaveManager.Instance.LoadHallwayPosition();
 
             // print("set player position");
+            HallwaysManager.Instance.UpdateInteractablesUI(SaveManager.Instance.SaveData.Progress.CollectablesCount);
         }
 
         #endregion
@@ -465,6 +478,19 @@ namespace Code.Scripts.Managers
         private GameObject FindPlayer()
         {
             return GameObject.FindGameObjectWithTag("Player");
+        }
+
+        public void IncrementCollectables()
+        {
+            Collector collector = FindPlayer()?.GetComponent<Collector>();
+            collector.AddCollectable();
+            HallwaysManager.Instance.UpdateInteractablesUI(collector.CollectablesCount);
+        }
+
+
+        public int GetCollectablesCount()
+        {
+            return FindPlayer()?.GetComponent<Collector>().CollectablesCount ?? 0;
         }
 
         #endregion

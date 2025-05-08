@@ -42,6 +42,7 @@ public class ProgressData
     public GameManager.Scenes CurrentScene = GameManager.Scenes.A_KEY;
     public List<GameManager.Scenes> RepairedKeys = new();
     public  SerializableInputBindingSet BindingOverrides = new();
+    public int CollectablesCount = 0; 
 }
 
 [Serializable]

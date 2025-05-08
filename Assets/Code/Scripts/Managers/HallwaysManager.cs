@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Code.Scripts.Interactable;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -12,6 +13,8 @@ namespace Code.Scripts.Managers
     {
         [FormerlySerializedAs("doorInteract")] [SerializeField]
         List<Door> doors = new List<Door>();
+
+        [SerializeField] private TextMeshProUGUI collectablesText;
 
         private void Start()
         {
@@ -28,26 +31,6 @@ namespace Code.Scripts.Managers
             });
         }
 
-        public void SaveData(ref SaveData data)
-        {
-            PlayerStateData psd = data.CharacterStates.FirstOrDefault(cse => cse.Type == CharacterType.Robot)?.State;
-            var tf = GameManager.Instance.GetPlayerTransform();
-            if (psd != null && tf != null)
-            {
-                psd.HallwaysPosition = tf.position;
-                psd.HallwaysRotation = tf.rotation;
-                // Debug.Log("Saved hallway position: " + tf.position);
-            }
-        }
-
-        public void LoadData(ref SaveData data)
-        {
-            PlayerStateData psd = data.CharacterStates.FirstOrDefault(cse => cse.Type == CharacterType.Robot)?.State;
-            if (psd != null)
-            {
-                GameManager.Instance.MovePlayerTo(psd.HallwaysPosition, psd.HallwaysRotation);
-            }
-        }
 
         public void HandleVictory(GameManager.Scenes scene)
         {
@@ -71,6 +54,32 @@ namespace Code.Scripts.Managers
             {
                 Debug.LogWarning("Exit door not found for scene: " + scene);
             }
+        }
+
+        public void UpdateInteractablesUI(int value)
+        {
+            collectablesText.text = value.ToString();
+        }
+
+        public void SaveData(ref SaveData data)
+        {
+            PlayerStateData psd = data.CharacterStates.FirstOrDefault(cse => cse.Type == CharacterType.Robot)?.State;
+            var tf = GameManager.Instance.GetPlayerTransform();
+            if (psd != null && tf != null)
+            {
+                psd.HallwaysPosition = tf.position;
+                psd.HallwaysRotation = tf.rotation;
+            }
+        }
+
+        public void LoadData(ref SaveData data)
+        {
+            PlayerStateData psd = data.CharacterStates.FirstOrDefault(cse => cse.Type == CharacterType.Robot)?.State;
+            if (psd != null)
+            {
+                GameManager.Instance.MovePlayerTo(psd.HallwaysPosition, psd.HallwaysRotation);
+            }
+            UpdateInteractablesUI(data.Progress.CollectablesCount);
         }
     }
 }

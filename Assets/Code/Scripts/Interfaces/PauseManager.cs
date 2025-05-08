@@ -30,15 +30,8 @@ public class PauseManager : MonoBehaviour
 
     void Update()
     {
-        if (GameManager.Instance.CurrentScene == GameManager.Scenes.Main_Menu) return;
 
-        // if (GameManager.Instance.State != GameManager.GameState.Playing &&
-        //     GameManager.Instance.State != GameManager.GameState.Paused)
-        //     return;
-
-        if (GameManager.Instance.State is GameManager.GameState.Victory or GameManager.GameState.GameOver
-            or GameManager.GameState.CutScene) return;
-
+        if (GameManager.Instance.CanPause())
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (GameManager.Instance.State == GameManager.GameState.Paused)

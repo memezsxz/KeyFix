@@ -7,7 +7,7 @@ namespace Code.Scripts.Managers
     public class InteractionChallengeManager : Singleton<InteractionChallengeManager>
     {
         [SerializeField] TextMeshProUGUI scoreText;
-        private int currentScore = 3;
+        private int currentScore = 0;
         [SerializeField] private int maxScore = 5;
 
         private void Start()
