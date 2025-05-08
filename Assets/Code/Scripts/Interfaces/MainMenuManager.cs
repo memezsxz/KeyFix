@@ -37,6 +37,7 @@ public class MainMenuManager : MonoBehaviour
     private void Start()
     {
         continueGameButton.interactable = !SaveManager.Instance.IsNewGame;
+  
 
         //this code must be set after the complete a level
 
@@ -47,8 +48,8 @@ public class MainMenuManager : MonoBehaviour
     //panels methods
     public void StartNewGame()
     {
-        GameManager.Instance.HandleSceneLoad(GameManager.Scenes.HALLWAYS);
-        SaveManager.Instance.SaveGame();
+        SaveManager.Instance.StartNewGame();
+        GameManager.Instance.HandleSceneLoad(GameManager.Scenes.HALLWAYS, GameManager.GameState.Initial);
         CloseAllPanels();
         mainScene.SetActive(false);
     }

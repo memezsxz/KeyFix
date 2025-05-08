@@ -3,7 +3,13 @@ guid: ce699aff5713175489a7a328a8954a2f
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - wholeGamePanel: {instanceID: 0}
+  - successfulPanel: {instanceID: 0}
+  - failedPanel: {instanceID: 0}
+  - successfulSound: {fileID: 8300000, guid: 0742e25d160d9df4183a910a4ff96566, type: 3}
+  - failedSound: {fileID: 8300000, guid: 451bd8cb087701c45a96ab791e43a26f, type: 3}
+  - bulbGrid: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

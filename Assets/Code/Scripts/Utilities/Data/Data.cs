@@ -39,10 +39,9 @@ public class GraphicData
 public class ProgressData
 {
     public bool IsNewGame = true;
-    public GameManager.Scenes CurrentScene = GameManager.Scenes.ESC_KEY;
-    public string LastCheckpointId = ""; // TODO Maryam: see how will the checkpoint system work.
-    public List<string> RepairedKeys = new(); // e.g. ["W", "A"]
-    public Dictionary<string, string> BindingOverrides = new(); // e.g. {"left", "<Keyboard>/a"}
+    public GameManager.Scenes CurrentScene = GameManager.Scenes.A_KEY;
+    public List<GameManager.Scenes> RepairedKeys = new();
+    public  SerializableInputBindingSet BindingOverrides = new();
 }
 
 [Serializable]
@@ -50,6 +49,8 @@ public class PlayerStateData
 {
     public Vector3 Position;
     public float Yaw; // The Y-axis rotation (Euler angle)
+    public Vector3 HallwaysPosition;
+    public Quaternion HallwaysRotation;
     public int LivesRemaining = 10; // lives till the player looses the level and the button is damaged puritanically 
 }
 

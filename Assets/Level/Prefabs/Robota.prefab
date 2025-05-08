@@ -2077,7 +2077,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbd9c195b4175477182575f6b4e04486, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _charecterType: 0
+  _charecterType: 1
   anim: {fileID: 0}
   allowPlayerRotation: 0.1
   StartAnimTime: 0.3
@@ -2109,7 +2109,7 @@ MonoBehaviour:
   m_ActionEvents: []
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
-  m_DefaultActionMap: Robot
+  m_DefaultActionMap: 4d9d8b27-119c-4fc2-ba99-cdd71484318b
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
 --- !u!114 &182387075025511771
@@ -2124,7 +2124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34ba05fef7b4a4cd8b9c81295fde89ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bindingSet: {fileID: 11400000, guid: 77eabc764e9aa476cb72303f0d40183f, type: 2}
+  defaultSet: {fileID: 0}
 --- !u!114 &7483285726323481816
 MonoBehaviour:
   m_ObjectHideFlags: 0

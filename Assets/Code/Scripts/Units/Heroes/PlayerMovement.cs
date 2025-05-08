@@ -9,21 +9,23 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(SpeedersInteraction))]
 [RequireComponent(typeof(ScalerInteraction))]
 [RequireComponent(typeof(Animator))]
+// [RequireComponent(typeof(PlayerBindingManage))]
 public class PlayerMovement : MonoBehaviour, IDataPersistence
 {
     // TODO Maryam: should add require Animator to the script 
     private static readonly int Vertical = Animator.StringToHash("vertical");
     private static readonly int Horizontal = Animator.StringToHash("horizontal");
     private static readonly int isFalling = Animator.StringToHash("isFalling");
-    private PlayerBindingManage bindingManage;
+    // private PlayerBindingManage bindingManage;
     private SpeedersInteraction mover;
-    private ScalerInteraction scaler;
+    // private ScalerInteraction scaler;
     private bool canMove = true;
     private Vector3 externalForce = Vector3.zero; // to receive wind push
 
     [SerializeField]
     private CharacterType _charecterType = CharacterType.Robot; // the type of character that is holding the script
 
+    public CharacterType CharecterType => _charecterType;
 
     #region Testing Other Input system
 
@@ -46,18 +48,18 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
 
     private void Start()
     {
-        var d = SaveManager.Instance.SaveData;
-        LoadData(ref d);
+        // var d = SaveManager.Instance.SaveData;
+        // LoadData(ref d);
         lastYPosition = transform.position.y;
         controller = gameObject.GetComponent<CharacterController>();
         anim = this.GetComponent<Animator>();
         // anim.applyRootMotion = false;
-        bindingManage = gameObject.GetComponent<PlayerBindingManage>();
+        // bindingManage = gameObject.GetComponent<PlayerBindingManage>();
         var actions = gameObject.GetComponent<PlayerInput>().actions;
         moveAction = actions.FindAction("Move");
         jumpAction = actions.FindAction("Jump");
         mover = GetComponent<SpeedersInteraction>();
-        scaler = GetComponent<ScalerInteraction>();
+        // scaler = GetComponent<ScalerInteraction>();
     }
 
     void Update()
@@ -70,6 +72,7 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
         {
             playerVelocity.y = 0f;
         }
+
         if (!canMove)
         {
             // Apply gravity only, no input
@@ -79,7 +82,7 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
             anim.SetFloat("Blend", 0f, StopAnimTime, Time.deltaTime);
             return;
         }
-        
+
         // Read input from new Input System
         if (mover.IsBeingPushed) return; // Block input during movement
 
@@ -112,7 +115,7 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
         externalForce = Vector3.zero;
 
         // Rotate to direction of movement
-        if ( move != Vector3.zero)
+        if (move != Vector3.zero)
         {
             gameObject.transform.forward = move;
 
@@ -175,6 +178,7 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
         //
         // lastYPosition = currentY;
     }
+
     public void ApplyExternalForce(Vector3 force)
     {
         externalForce += force;
@@ -324,6 +328,7 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
     {
         canMove = value;
     }
+
     private void UpdatePlayerMovementBinding()
     {
         var moveAction = GetComponent<PlayerInput>().actions["Move"];
@@ -349,21 +354,16 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
         var psd = SaveManager.Instance.GetCharacterData(_charecterType);
         psd.Position = transform.position;
         psd.Yaw = transform.rotation.eulerAngles.y;
-        // psd.Bindings = bindingManage;
-        // psd.HitsRemaining = hits;
-        // psd.LivesRemaining = lives;
-        // Debug.Log($"save data {psd.HitsRemaining} & {psd.LivesRemaining} & {data.Meta.SaveName}");
     }
 
     public void LoadData(ref SaveData data)
     {
         var psd = SaveManager.Instance.GetCharacterData(_charecterType);
+        var controller = GetComponent<CharacterController>();
+
+        controller.enabled = false; // Disable to avoid conflict
         transform.position = psd.Position;
-        var newRot = Quaternion.Euler(0, psd.Yaw, 0);
-        transform.rotation = newRot;
-        // bindingManage = psd.Bindings;
-        // hits = psd.HitsRemaining;
-        // lives = psd.LivesRemaining;
-        // Debug.Log($"load obj {psd.HitsRemaining}");
+        transform.rotation = Quaternion.Euler(0, psd.Yaw, 0);
+        controller.enabled = true; // Re-enable
     }
 }

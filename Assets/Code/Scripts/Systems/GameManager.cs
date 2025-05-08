@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -14,6 +16,7 @@ namespace Code.Scripts.Managers
 
         public Scenes CurrentScene { get; private set; }
         public GameState State { get; private set; }
+        private Scenes previousSceneBeforeVictory;
 
         public static event Action<GameState> OnBeforeGameStateChanged;
         public static event Action<GameState> OnAfterGameStateChanged;
@@ -29,7 +32,7 @@ namespace Code.Scripts.Managers
 
         private static readonly Dictionary<GameManager.Scenes, string> SceneNameMap = new()
         {
-            { GameManager.Scenes.HALLWAYS, "Hallways" },
+            { GameManager.Scenes.HALLWAYS, "maryam hallways test" },
             { GameManager.Scenes.ESC_KEY, "ESC_Key" },
             { GameManager.Scenes.W_KEY, "W_Key" },
             { GameManager.Scenes.A_KEY, "A_Key" },
@@ -37,8 +40,18 @@ namespace Code.Scripts.Managers
             { GameManager.Scenes.G_KEY, "G_Key" },
             { GameManager.Scenes.ARROW_KEYS, "Arrow_Keys" },
             { GameManager.Scenes.P_KEY, "P_Key" },
-            { GameManager.Scenes.Main_Menu, "Main_Menu" }
+            { GameManager.Scenes.Main_Menu, "Main_Menu" },
+            { GameManager.Scenes.INCIDENT, "Incident_Cutscene" },
+            { GameManager.Scenes.W_CUTSCENE, "W_Cutscene" },
+            { GameManager.Scenes.A_CUTSCENE, "A_Cutscene" },
+            { GameManager.Scenes.SPACE_CUTSCENE, "Space_Cutscene" },
+            { GameManager.Scenes.P_CUTSCENE, "P_Cutscene" },
+            { GameManager.Scenes.GAME_VICTORY_CUTSCENE, "Game_Victory_Cutscene" },
         };
+
+        private bool shouldLoadSaveDataAfterSceneLoad = false;
+
+        private bool isVictory;
 
         #endregion
 
@@ -57,15 +70,22 @@ namespace Code.Scripts.Managers
         [Serializable]
         public enum Scenes
         {
-            HALLWAYS,
-            ESC_KEY,
-            W_KEY,
-            A_KEY,
-            SPACE_KEY,
-            G_KEY,
-            ARROW_KEYS,
-            P_KEY,
             Main_Menu,
+            INCIDENT,
+            ESC_KEY,
+            HALLWAYS,
+            W_KEY,
+            W_CUTSCENE,
+            A_KEY,
+            A_CUTSCENE,
+            G_KEY,
+            SPACE_KEY,
+            SPACE_CUTSCENE,
+            ARROW_KEYS,
+            ARROW_CUTSCENE,
+            P_KEY,
+            P_CUTSCENE,
+            GAME_VICTORY_CUTSCENE,
         }
 
         #endregion
@@ -82,7 +102,8 @@ namespace Code.Scripts.Managers
             var sceneName = SceneManager.GetActiveScene().name;
             var match = SceneNameMap.FirstOrDefault(pair => pair.Value == sceneName);
 
-            if (!EqualityComparer<GameManager.Scenes>.Default.Equals(match.Key, default))
+
+            if (!string.IsNullOrEmpty(match.Value))
             {
                 CurrentScene = match.Key;
             }
@@ -91,6 +112,38 @@ namespace Code.Scripts.Managers
                 CurrentScene = GameManager.Scenes.HALLWAYS;
                 Debug.LogWarning($"Scene name '{sceneName}' not found in SceneNameMap.");
             }
+
+
+            DebugController.Instance.RegisterCommand(new DebugCommand(
+                "load_level",
+                "Loads a specific level by scene name",
+                "load_level <SceneName>",
+                (args) =>
+                {
+                    if (args.Length == 0)
+                    {
+                        Debug.LogWarning("No scene name provided.");
+                        return;
+                    }
+
+                    string sceneName = args[0];
+
+                    if (Enum.TryParse(typeof(GameManager.Scenes), sceneName, out var scene))
+                    {
+                        GameManager.Instance.HandleSceneLoad((GameManager.Scenes)scene);
+                        Debug.Log($"Jumping to level: {sceneName}");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Scene '{sceneName}' is not recognized. Check your GameManager.Scenes enum.");
+                    }
+                }
+            ));
+
+
+            DebugController.Instance.AddDebugCommand(new DebugCommand("win",
+                "trigers the victory state for the current level", "win",
+                () => ChangeState(GameState.Victory)));
         }
 
         #endregion
@@ -156,6 +209,7 @@ namespace Code.Scripts.Managers
 
         public void LoadLastSavedLevel()
         {
+            shouldLoadSaveDataAfterSceneLoad = true;
             HandleSceneLoad(SaveManager.Instance.SaveData.Progress.CurrentScene);
         }
 
@@ -184,6 +238,31 @@ namespace Code.Scripts.Managers
         public void HandleSceneLoaded()
         {
             loadingScreen.SetActive(false);
+            StartCoroutine(ReapplyBindingsNextFrame());
+            if (CurrentScene == Scenes.HALLWAYS && State != GameState.Initial)
+            {
+                StartCoroutine(SetPlayerPositionNextFrame());
+            }
+        }
+
+        private IEnumerator ReapplyBindingsNextFrame()
+        {
+            yield return null; // wait one frame to ensure PlayerInput is initialized
+            SaveManager.Instance.LoadPlayerBindings();
+        }
+
+        private IEnumerator SetPlayerPositionNextFrame()
+        {
+            yield return null; // wait one frame to ensure PlayerInput is initialized
+            if (isVictory)
+            {
+                isVictory = false; // reset it now
+                HallwaysManager.Instance.HandleVictory(previousSceneBeforeVictory);
+                // Debug.Log("Set player position next to exit door of: " + previousSceneBeforeVictory);
+            }
+            else if (State != GameState.Initial) SaveManager.Instance.LoadHallwayPosition();
+
+            // print("set player position");
         }
 
         #endregion
@@ -230,8 +309,46 @@ namespace Code.Scripts.Managers
 
         private void HandleVictory()
         {
+            isVictory = true;
+            previousSceneBeforeVictory = CurrentScene;
             StopAllSound();
-            victoryController.ShowCompleteScene();
+            DisableAllCanvases();
+            TogglePlayerMovement(false);
+            victoryController.ShowCompleteScene(); // automatically redirects to HALLWAYS
+
+
+            var playerBindingManager = GameObject.FindObjectOfType<PlayerBindingManage>();
+
+            if (playerBindingManager == null)
+            {
+                Debug.LogWarning("Cannot find player bindings manager");
+                return;
+            }
+
+            var pbm = playerBindingManager.GetComponent<PlayerBindingManage>();
+            if (pbm)
+            {
+                switch (CurrentScene)
+                {
+                    case Scenes.W_KEY:
+                    {
+                        pbm.EnableBinding("Move", "up");
+                        break;
+                    }
+                    case Scenes.A_KEY:
+                    {
+                        pbm.EnableBinding("Move", "left");
+                        break;
+                    }
+                    case Scenes.SPACE_KEY:
+                    {
+                        pbm.EnableBinding("Jump");
+                        break;
+                    }
+                }
+            }
+
+            SaveManager.Instance.SaveData.Progress.RepairedKeys.Add(CurrentScene);
         }
 
         #endregion
@@ -245,6 +362,37 @@ namespace Code.Scripts.Managers
 
         public void LoadData(ref SaveData data)
         {
+        }
+
+        #endregion
+
+        #region SenceManager Events
+
+        private void OnEnable()
+        {
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+
+        private void OnDisable()
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            if (shouldLoadSaveDataAfterSceneLoad)
+            {
+                shouldLoadSaveDataAfterSceneLoad = false;
+                SaveManager.Instance.LoadGame(SaveManager.Instance.SaveData.Meta.SaveName);
+                Debug.Log("Save data loaded after loading last saved level.");
+            }
+            //
+            // if (isVictory)
+            // {
+            //     isVictory = false;
+            //     HallwaysManager.Instance.HandleVictory(CurrentScene);
+            //     Debug.Log("call to set the player position next to exit door.");
+            // }
         }
 
         #endregion
@@ -284,14 +432,39 @@ namespace Code.Scripts.Managers
             if (SoundManager.Instance.IsSoundPlaying) SoundManager.Instance.StopSound();
         }
 
+        #endregion
+
+
+        #region Player
+
         public void TogglePlayerMovement(bool value)
         {
-            var player = GameObject.FindGameObjectWithTag("Player");
+            FindPlayer()?.GetComponent<PlayerMovement>().ToggleMovement(value);
+        }
 
-            if (player != null)
+        public Transform GetPlayerTransform()
+        {
+            return FindPlayer()?.GetComponent<Transform>();
+        }
+
+        public void MovePlayerTo(Vector3 targetPosition, Quaternion targetRotation)
+        {
+            var playerTransform = GetPlayerTransform();
+            var controller = playerTransform.GetComponent<CharacterController>();
+            if (controller != null)
             {
-                player.GetComponent<PlayerMovement>().ToggleMovement(value);
+                controller.enabled = false;
+                playerTransform.position = targetPosition;
+                playerTransform.rotation = targetRotation;
+                controller.enabled = true;
             }
+        }
+
+
+        [CanBeNull]
+        private GameObject FindPlayer()
+        {
+            return GameObject.FindGameObjectWithTag("Player");
         }
 
         #endregion

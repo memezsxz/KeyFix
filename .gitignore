@@ -2,6 +2,7 @@
 #
 # Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
 #
+.vscode/
 .idea/
 .utmp/
 /[Ll]ibrary/
@@ -491,3 +492,5 @@ FodyWeavers.xsd
 # End of https://www.toptal.com/developers/gitignore/api/unity,visualstudio,visualstudiocode,rider
 
 .vsconfig
+
+*AutoSave*
