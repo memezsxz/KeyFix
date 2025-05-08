@@ -48,7 +48,7 @@ namespace Code.Scripts.Managers
             if (door != null)
             {
                 door.HandleExitDoor();
-                Debug.Log("Player moved to exit door of " + scene);
+                // Debug.Log("Player moved to exit door of " + scene);
             }
             else
             {

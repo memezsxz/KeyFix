@@ -43,7 +43,7 @@ public class LevelTitle : MonoBehaviour
     private void OnDisable()
     {
         GameManager.Instance.HandleLevelTitleDone();
-        print("level title disabled");
+        // print("level title disabled");
     }
 
     IEnumerator Fade(float from, float to, float duration)

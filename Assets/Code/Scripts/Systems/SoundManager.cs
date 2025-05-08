@@ -120,6 +120,12 @@ public class SoundManager : Singleton<SoundManager>, IDataPersistence
     {
         sfxAudioSource.Stop();
     }
+    
+    public void StopAllAudio()
+    {
+        if (IsMusicPlaying) StopMusic();
+        if (IsSoundPlaying) StopSound();
+    }
     #endregion
 
     #region Volume Control
