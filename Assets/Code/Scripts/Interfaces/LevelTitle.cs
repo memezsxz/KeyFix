@@ -1,20 +1,23 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Code.Scripts.Managers;
 using GLTFast.Schema;
 using TMPro;
 using UnityEngine;
 
 public class LevelTitle : MonoBehaviour
 {
-    public CanvasGroup canvasGroup;
-    public TextMeshProUGUI levelText;
-    public TextMeshProUGUI levelDescText;
+    [SerializeField] CanvasGroup canvasGroup;
+    [SerializeField] TextMeshProUGUI levelText;
+    [SerializeField] TextMeshProUGUI levelDescText;
 
     [Header("Settings")]
     public string levelName = "LEVEL 1";
     public string levelDescription = "Nothing Here";
-    public float fadeDuration = 1f;
-    public float displayDuration = 2f;
+    public float fadeInDuration = 1f;
+    public float fadeOutDuration = 1f;
+    [SerializeField] float displayDuration = 2f;
 
 
     public void showLevelTitle() {
@@ -31,10 +34,16 @@ public class LevelTitle : MonoBehaviour
 
     IEnumerator ShowBanner()
     {
-        yield return Fade(0, 1, fadeDuration); // Fade In
+        yield return Fade(0, 1, fadeInDuration); // Fade In
         yield return new WaitForSeconds(displayDuration);
-        yield return Fade(1, 0, fadeDuration); // Fade Out
+        yield return Fade(1, 0, fadeOutDuration); // Fade Out
         gameObject.SetActive(false); // Optional: hide after fade
+    }
+
+    private void OnDisable()
+    {
+        GameManager.Instance.HandleLevelTitleDone();
+        print("level title disabled");
     }
 
     IEnumerator Fade(float from, float to, float duration)

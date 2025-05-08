@@ -24,12 +24,14 @@ namespace Code.Scripts.Managers
 
         // private bool IntroScenePlayed = false;
 
-        [SerializeField] GameObject gameOverCanvas;
-        [SerializeField] GameObject pauseMenuCanvas;
+        [SerializeField] private GameObject gameOverCanvas;
+        [SerializeField] private GameObject pauseMenuCanvas;
         [SerializeField] private GameObject loadingScreen;
+        [SerializeField] private GameObject levelTitleCanvas;
+        [SerializeField] private GameObject victoryCanvas;
         [SerializeField] private LoadingManager loadingScript;
         [SerializeField] private LevelCompleteController victoryController;
-        [SerializeField] private GameObject victoryCanvas;
+        [SerializeField] private LevelTitle levelTitleScript;
 
         private static readonly Dictionary<GameManager.Scenes, string> SceneNameMap = new()
         {
@@ -161,15 +163,14 @@ namespace Code.Scripts.Managers
                 return;
             }
 
-
-            if (State == newState) return;
+            if (State == newState && newState != GameState.Initial) return;
 
             OnBeforeGameStateChanged?.Invoke(newState);
 
             switch (newState)
             {
                 case GameState.Initial:
-                    HandelInitialState();
+                    StartCoroutine(HandelInitialState());
                     break;
                 case GameState.Paused:
                     if (CurrentScene != Scenes.Main_Menu) HandlePause();
@@ -194,9 +195,35 @@ namespace Code.Scripts.Managers
             OnAfterGameStateChanged?.Invoke(newState);
         }
 
-        private void HandelInitialState()
+        private IEnumerator HandelInitialState()
         {
-            // inisialize the player in the right spot
+            print("here");
+            if (levelTitleScript == null)
+            {
+                Debug.LogWarning("Level title script not assigned.");
+                yield break;
+            }
+
+            print(CurrentScene + " from inisial state hadel");
+            if (!CanPause())
+                yield break;
+
+
+            levelTitleScript.levelName = GetLevelName(CurrentScene);
+            levelTitleScript.levelDescription = GetLevelDescription(CurrentScene);
+            levelTitleScript.fadeInDuration = 0;
+            TogglePlayerMovement(false);
+
+            var canvases = GameObject.FindObjectsOfType<Canvas>()
+                .Where(c => c.gameObject.scene.name != "DontDestroyOnLoad").ToList();
+            canvases.ForEach(c => c.enabled = (false));
+
+            levelTitleScript.showLevelTitle();
+
+            while (levelTitleScript.gameObject.activeSelf)
+            {
+                yield return null;
+            }
         }
 
         public bool CanPause()
@@ -216,13 +243,13 @@ namespace Code.Scripts.Managers
 
         public void RestartLevel()
         {
-            HandleSceneLoad(CurrentScene);
+            HandleSceneLoad(CurrentScene, GameState.Initial);
         }
 
         public void LoadLastSavedLevel()
         {
             shouldLoadSaveDataAfterSceneLoad = true;
-            HandleSceneLoad(SaveManager.Instance.SaveData.Progress.CurrentScene);
+            HandleSceneLoad(SaveManager.Instance.SaveData.Progress.CurrentScene, GameManager.GameState.Playing);
         }
 
         public AsyncOperation LoadLevelAsync(Scenes scene, GameState newState = GameState.Initial)
@@ -232,7 +259,7 @@ namespace Code.Scripts.Managers
             return op;
         }
 
-        public void HandleSceneLoad(Scenes newScene, GameState newState = GameState.Playing)
+        public void HandleSceneLoad(Scenes newScene, GameState newState = GameState.Initial)
         {
             if (newScene == Scenes.Main_Menu && CurrentScene == Scenes.Main_Menu)
                 newScene = Scenes.HALLWAYS;
@@ -241,6 +268,7 @@ namespace Code.Scripts.Managers
             pauseMenuCanvas.SetActive(false);
             loadingScript.sceneToLoad = newScene;
             loadingScript.stateToLoadIn = newState;
+            TogglePlayerMovement(false);
             loadingScreen.SetActive(true);
             loadingScript.BeginLoading();
 
@@ -250,10 +278,41 @@ namespace Code.Scripts.Managers
         public void HandleSceneLoaded()
         {
             loadingScreen.SetActive(false);
+
+            TogglePlayerMovement(true);
+            
             StartCoroutine(ReapplyBindingsNextFrame());
             if (CurrentScene == Scenes.HALLWAYS && State != GameState.Initial)
             {
                 StartCoroutine(SetPlayerPositionNextFrame());
+            }
+        }
+
+        private IEnumerator WaitForSceneObjects()
+        {
+            // Wait a few frames to ensure all scene objects are loaded and initialized
+            yield return new WaitForSeconds(0.1f); // or yield return null; multiple times if needed
+
+            var canvases = GameObject.FindObjectsOfType<Canvas>()
+                .Where(c => c.gameObject.scene.name != "DontDestroyOnLoad").ToList();
+
+            if (CurrentScene == Scenes.HALLWAYS && State == GameState.Initial)
+            {
+                TogglePlayerMovement(false);
+                canvases.ForEach(c => c.enabled = false);
+
+                Debug.Log($"[HandleSceneLoaded] In Hallways - Found {canvases.Count} canvases.");
+
+                if (levelTitleScript != null)
+                {
+                    levelTitleScript.levelName = "Hallways";
+                    levelTitleScript.levelDescription = "Find the doors for each malfunctioning key";
+                    levelTitleScript.showLevelTitle();
+                }
+                else
+                {
+                    Debug.LogWarning("levelTitleScript is not assigned.");
+                }
             }
         }
 
@@ -313,6 +372,7 @@ namespace Code.Scripts.Managers
             if (SoundManager.Instance.IsSoundPlaying) SoundManager.Instance.StopSound();
 
             pauseMenuCanvas.SetActive(false);
+            TogglePlayerMovement(true);
             Time.timeScale = 1f;
         }
 
@@ -447,7 +507,6 @@ namespace Code.Scripts.Managers
 
         #endregion
 
-
         #region Player
 
         public void TogglePlayerMovement(bool value)
@@ -491,6 +550,69 @@ namespace Code.Scripts.Managers
         public int GetCollectablesCount()
         {
             return FindPlayer()?.GetComponent<Collector>().CollectablesCount ?? 0;
+        }
+
+        #endregion
+
+
+        #region Level Title
+
+        public IEnumerator ShowLevelTitleIfRequired(GameManager.Scenes scene, GameState state)
+        {
+            if (levelTitleScript == null)
+            {
+                Debug.LogWarning("Level title script not assigned.");
+                yield break;
+            }
+
+            if (!ShouldShowLevelTitle(scene, state))
+                yield break;
+
+
+            levelTitleScript.levelName = GetLevelName(scene);
+            levelTitleScript.levelDescription = GetLevelDescription(scene);
+            TogglePlayerMovement(false);
+
+            levelTitleScript.showLevelTitle();
+
+            while (levelTitleScript.gameObject.activeSelf)
+            {
+                yield return null;
+            }
+        }
+
+        private bool ShouldShowLevelTitle(Scenes scene, GameState state)
+        {
+            return state == GameState.Initial;
+            return scene == Scenes.HALLWAYS;
+            // Add other conditions here if needed
+        }
+
+        private string GetLevelName(GameManager.Scenes scene)
+        {
+            return scene switch
+            {
+                Scenes.HALLWAYS => "Hallways",
+                _ => "Level"
+            };
+        }
+
+        private string GetLevelDescription(GameManager.Scenes scene)
+        {
+            return scene switch
+            {
+                Scenes.HALLWAYS => "Find the doors for each malfunctioning key",
+                _ => "Get ready"
+            };
+        }
+
+        public void HandleLevelTitleDone()
+        {
+            var canvases = GameObject.FindObjectsOfType<Canvas>()
+                .Where(c => c.gameObject.scene.name != "DontDestroyOnLoad").ToList();
+            canvases.ForEach(c => c.enabled = (true));
+
+            TogglePlayerMovement(true);
         }
 
         #endregion

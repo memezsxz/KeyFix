@@ -53,6 +53,6 @@ public class LevelCompleteController : MonoBehaviour
         yield return new WaitForSeconds(displayDuration);
         yield return GameManager.Instance.FadeCanvasGroup(canvasGroup,1, 0, fadeOutDuration); // Fade Out
 
-        GameManager.Instance.HandleSceneLoad(GameManager.Scenes.HALLWAYS);
+        GameManager.Instance.HandleSceneLoad(GameManager.Scenes.HALLWAYS, GameManager.GameState.Playing);
     }
 }

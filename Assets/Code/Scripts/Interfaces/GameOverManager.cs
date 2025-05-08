@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Code.Scripts.Managers;
 using GLTFast.Schema;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static Code.Scripts.Managers.GameManager;
