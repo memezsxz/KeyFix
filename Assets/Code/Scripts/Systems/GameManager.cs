@@ -35,9 +35,9 @@ namespace Code.Scripts.Managers
 
         private static readonly Dictionary<GameManager.Scenes, string> SceneNameMap = new()
         {
-            { GameManager.Scenes.HALLWAYS, "maryam doors test" },
+            { GameManager.Scenes.HALLWAYS, "Hallways" },
             { GameManager.Scenes.ESC_KEY, "ESC_Key" },
-            { GameManager.Scenes.W_KEY, "maryam w key" },
+            { GameManager.Scenes.W_KEY, "W_Key" },
             { GameManager.Scenes.A_KEY, "A_Key" },
             { GameManager.Scenes.SPACE_KEY, "Space_Key" },
             { GameManager.Scenes.G_KEY, "G_Key" },
