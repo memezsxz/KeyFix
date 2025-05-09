@@ -13,13 +13,19 @@ namespace Code.Scripts.Managers
 
         private void Start()
         {
-            DebugController.Instance.AddDebugCommand(new DebugCommand("switch_button_colors", "changes button colors", "switch_button_colors", () => SwitchButtonsColors()));
-            DebugController.Instance.AddDebugCommand(new DebugCommand("switch_panel_colors", "changes panel colors", "switch_panel_colors", () => SwitchPanelColors()));
+            DebugController.Instance?.AddDebugCommand(new DebugCommand("switch_button_colors", "changes button colors", "switch_button_colors", () => SwitchButtonsColors()));
+            DebugController.Instance?.AddDebugCommand(new DebugCommand("switch_panel_colors", "changes panel colors", "switch_panel_colors", () => SwitchPanelColors()));
             StartCoroutine(DelayedInit());
         }
 
         public void CheckButtonMatch()
         {
+            if (panels.Count == 0)
+            {
+                // Debug.Log("All panels solved! Victory!");
+                GameManager.Instance.ChangeState(GameManager.GameState.Victory);
+                return;
+            }
             var pressedButtons = buttons.FindAll(b => b.IsPressed);
 
             if (pressedButtons.Count != 2)

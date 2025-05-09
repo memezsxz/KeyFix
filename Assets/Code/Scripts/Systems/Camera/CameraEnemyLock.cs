@@ -15,7 +15,7 @@ public class CameraEnemyLock : MonoBehaviour
 
     private void Start()
     {
-        // playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+        if (!playerTransform) playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
     }
 
     private void OnEnable()

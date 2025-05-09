@@ -56,8 +56,20 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
         // anim.applyRootMotion = false;
         // bindingManage = gameObject.GetComponent<PlayerBindingManage>();
         var actions = gameObject.GetComponent<PlayerInput>().actions;
+        if (_charecterType == CharacterType.Robot)
+        {
+            actions.FindActionMap("Robot").Enable();
+            actions.FindActionMap("Robota").Disable();
+        }
+        else
+        {
+            actions.FindActionMap("Robot").Disable();
+            actions.FindActionMap("Robota").Enable();
+        }
+
         moveAction = actions.FindAction("Move");
         jumpAction = actions.FindAction("Jump");
+        // print("found " + moveAction.bindings[0].name + " to " + gameObject.name);
         mover = GetComponent<SpeedersInteraction>();
         // scaler = GetComponent<ScalerInteraction>();
     }

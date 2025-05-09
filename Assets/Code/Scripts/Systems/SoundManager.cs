@@ -54,7 +54,7 @@ public class SoundManager : Singleton<SoundManager>, IDataPersistence
     private void Start()
     {
         // Add debug commands for adjusting volume via debug console
-        DebugController.Instance.AddDebugCommand(new DebugCommand(
+        DebugController.Instance?.AddDebugCommand(new DebugCommand(
             "set_music_vol", 
             "Changes the music volume",
             "set_music_vol <float>",
@@ -64,7 +64,7 @@ public class SoundManager : Singleton<SoundManager>, IDataPersistence
                     SetMusicVolume(vol);
             }));
 
-        DebugController.Instance.AddDebugCommand(new DebugCommand(
+        DebugController.Instance?.AddDebugCommand(new DebugCommand(
             "set_sound_vol",
             "Changes the sound effect volume",
             "set_sound_vol <float>",
