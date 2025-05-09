@@ -63,5 +63,10 @@ public class InteractionController : MonoBehaviour
         {
             currentTargetedInteractable.Interact();
         }
+
+        if (Keyboard.current.hKey.wasPressedThisFrame && currentTargetedInteractable != null)
+        {
+            currentTargetedInteractable.InteractH();
+        }
     }
 }

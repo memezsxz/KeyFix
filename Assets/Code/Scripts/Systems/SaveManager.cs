@@ -55,7 +55,7 @@ public class SaveManager : Singleton<SaveManager>
         // Optional: Auto-load
         LoadGame(SaveSlotName);
 
-        DebugController.Instance.AddDebugCommand(new DebugCommand("save_game", "saved the game", "", () => SaveGame()));
+        DebugController.Instance?.AddDebugCommand(new DebugCommand("save_game", "saved the game", "", () => SaveGame()));
     }
 
     #endregion

@@ -199,7 +199,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hintUI: {fileID: 5646710017604472565}
-  challengePrefab: {fileID: 4029659655691975464, guid: bc2d4912b41aad447ac6303e411c734e, type: 3}
+  challengePrefab: {fileID: 2201312753738615031, guid: c0b3118c878e72048822c93b218ae37f, type: 3}
 --- !u!1001 &7874765326491634101
 PrefabInstance:
   m_ObjectHideFlags: 0

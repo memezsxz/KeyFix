@@ -124,7 +124,7 @@ public class SettingsManager : MonoBehaviour
         resolutionDropDown.ClearOptions();
         int savedIndex = GraphicsManager.Instance.ResolutionIndex;
 
-        print($"Resolution Index: {savedIndex}");
+        // print($"Resolution Index: {savedIndex}");
         
         List<string> options = new List<string>();
 

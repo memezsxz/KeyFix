@@ -22,6 +22,7 @@ public class PlayerBindingManage : MonoBehaviour, IDataPersistence
             return;
         }
 
+        // print("PlayerBindingManage " + gameObject.name);
         _playerInput = GetComponent<PlayerInput>();
     }
 

@@ -12,6 +12,10 @@ public abstract class InteractableBase : MonoBehaviour
 
     public abstract void Interact();
 
+    public virtual void InteractH()
+    {
+        
+    }
     public virtual void ShowHint(bool show)
     {
         if (hintUI == null) return;

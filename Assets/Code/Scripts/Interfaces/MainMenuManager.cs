@@ -49,7 +49,7 @@ public class MainMenuManager : MonoBehaviour
     public void StartNewGame()
     {
         SaveManager.Instance.StartNewGame();
-        GameManager.Instance.HandleSceneLoad(GameManager.Scenes.HALLWAYS, GameManager.GameState.Initial);
+        GameManager.Instance.HandleSceneLoad(GameManager.Scenes.HALLWAYS);
         CloseAllPanels();
         mainScene.SetActive(false);
     }

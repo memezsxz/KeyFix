@@ -19,6 +19,8 @@ public class LoadingManager : MonoBehaviour
         StartCoroutine(LoadAsyncWithDelay());
     }
 
+    
+    
     IEnumerator LoadAsyncWithDelay()
     {
         float timer = 0f;
@@ -50,10 +52,17 @@ public class LoadingManager : MonoBehaviour
                     yield return null;
                 }
 
+                                // ✅ Allow the scene to become visible
+                                operation.allowSceneActivation = true;
+
+                
+                // ✅ Wait one frame to allow Unity to show the new scene
+                yield return null;
+
+                // ✅ THEN call post-load logic
+                GameManager.Instance.HandleSceneLoaded();
                 GameManager.Instance.ChangeState(stateToLoadIn);
 
-                GameManager.Instance.HandleSceneLoaded();
-                operation.allowSceneActivation = true;
             }
 
             yield return null;
