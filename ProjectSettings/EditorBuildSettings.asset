@@ -15,46 +15,46 @@ EditorBuildSettings:
     path: Assets/Level/Scenes/LoadingScreen.unity
     guid: c69b594d0af9ab0438d154d3de565159
   - enabled: 1
-    path: Assets/Level/Scenes/Cutscenes/A_Cutscene.unity
+    path: Assets/Level/Scenes/_Cutscenes/A_Cutscene.unity
     guid: 7bd7f4b6d60ce4f96aa200c22acaa8f2
   - enabled: 1
-    path: Assets/Level/Scenes/Cutscenes/Game_Victory_Cutscene.unity
+    path: Assets/Level/Scenes/_Cutscenes/Game_Victory_Cutscene.unity
     guid: 331b1bca3c8cb47f8ab8ca98581af1cb
   - enabled: 1
-    path: Assets/Level/Scenes/Cutscenes/Incident_Cutscene.unity
+    path: Assets/Level/Scenes/_Cutscenes/Incident_Cutscene.unity
     guid: 0ec3ac926543f44bcbfd016bc3158cba
   - enabled: 1
-    path: Assets/Level/Scenes/Cutscenes/P_Cutscene.unity
+    path: Assets/Level/Scenes/_Cutscenes/P_Cutscene.unity
     guid: 274588af670b24e35a967de468e52b95
   - enabled: 1
-    path: Assets/Level/Scenes/Cutscenes/Space_Cutscene.unity
+    path: Assets/Level/Scenes/_Cutscenes/Space_Cutscene.unity
     guid: 33fac191b22a2426dae337f9fefb776f
   - enabled: 1
-    path: Assets/Level/Scenes/Cutscenes/W_Cutscene.unity
+    path: Assets/Level/Scenes/_Cutscenes/W_Cutscene.unity
     guid: daa373f412ab04ab1973bb6ed5317815
   - enabled: 1
-    path: Assets/Level/Scenes/TestScenes/LevelComplete.unity
+    path: Assets/Level/Scenes/_TestScenes/LevelComplete.unity
     guid: 0ce3aafdf3c61554280653ef6a202ce1
   - enabled: 1
-    path: Assets/Level/Scenes/TestScenes/Light_puzzel.unity
+    path: Assets/Level/Scenes/_TestScenes/Light_puzzel.unity
     guid: 4a9b6f4a6cddcca4087b15c512020bf1
   - enabled: 1
-    path: Assets/Level/Scenes/TestScenes/maryam arrow test.unity
+    path: Assets/Level/Scenes/_TestScenes/maryam arrow test.unity
     guid: def676e75870043008df08a90f03b53c
   - enabled: 1
-    path: Assets/Level/Scenes/TestScenes/maryam co op.unity
+    path: Assets/Level/Scenes/_TestScenes/maryam co op.unity
     guid: ab2f8f7dfabd44d98bac5f2f5c58f4bc
   - enabled: 1
-    path: Assets/Level/Scenes/TestScenes/maryam g romm test.unity
+    path: Assets/Level/Scenes/_TestScenes/maryam g romm test.unity
     guid: 70bb119b983f840b69b4384d64cec179
   - enabled: 1
-    path: Assets/Level/Scenes/TestScenes/maryam space key test.unity
+    path: Assets/Level/Scenes/_TestScenes/maryam space key test.unity
     guid: afcca8be427ab4e7b996be030981dd83
   - enabled: 1
-    path: Assets/Level/Scenes/TestScenes/LevelTitle.unity
+    path: Assets/Level/Scenes/_TestScenes/LevelTitle.unity
     guid: 815e5ece084a90445809a37b2bd9c3e1
   - enabled: 1
-    path: Assets/Level/Scenes/TestScenes/Fatima_PauseMenu.unity
+    path: Assets/Level/Scenes/_TestScenes/Fatima_PauseMenu.unity
     guid: a9b408b42766b6c47a4437e2a1813ce3
   - enabled: 1
     path: Assets/Level/Scenes/A_Key.unity
@@ -72,7 +72,7 @@ EditorBuildSettings:
     path: Assets/Level/Scenes/Hallways.unity
     guid: 2c14cc09c413e4b4a8f53867de49509d
   - enabled: 1
-    path: Assets/Level/Scenes/TestScenes/HintsScene.unity
+    path: Assets/Level/Scenes/_TestScenes/HintsScene.unity
     guid: 2c32e43e4b81e9c41a119ea29c34ca1b
   - enabled: 1
     path: Assets/Level/Scenes/IncidentScene.unity
@@ -87,7 +87,7 @@ EditorBuildSettings:
     path: Assets/Level/Scenes/Space_Key.unity
     guid: 4d33688e8d98941598a6ff6cf33bca2c
   - enabled: 1
-    path: Assets/Level/Scenes/TestScenes/LoadingScreen 1.unity
+    path: Assets/Level/Scenes/_TestScenes/LoadingScreen 1.unity
     guid: 6df0dc6ed4f5e0a43a51e028264a7d7d
   - enabled: 1
     path: Assets/Level/Scenes/W_Key.unity
@@ -96,7 +96,7 @@ EditorBuildSettings:
     path: Assets/Level/Scenes/ESC_Room.unity
     guid: 5a0529d346a60444488d4f7a7f5f2660
   - enabled: 1
-    path: Assets/Level/Scenes/TestScenes/maryam city test.unity
+    path: Assets/Level/Scenes/_TestScenes/maryam city test.unity
     guid: 4edf1e370e9274c2e9282fc3ce606f8f
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: fc6dd7abab3184dada9a30ae25367c5a, type: 2}
