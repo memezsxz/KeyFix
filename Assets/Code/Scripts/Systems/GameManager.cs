@@ -65,7 +65,15 @@ namespace Code.Scripts.Managers
 
             DebugController.Instance?.AddDebugCommand(new DebugCommand("win",
                 "trigers the victory state for the current level", "win",
-                () => ChangeState(GameState.Victory)));
+                () =>
+                {
+                    if (CurrentScene == Scenes.G_KEY)
+                    {
+                        GameManager.Instance.ChangeState(GameManager.GameState.CutScene);
+                        return;
+                    }
+                    ChangeState(GameState.Victory);
+                }));
             DebugController.Instance?.AddDebugCommand(new DebugCommand("current_state",
                 "prints the current game state", "current_state",
                 () => Debug.Log(State)));
@@ -397,6 +405,7 @@ namespace Code.Scripts.Managers
                 .All(k => SaveManager.Instance.SaveData.Progress.RepairedKeys.Contains(k)))
             {
                 SceneManager.LoadScene(SceneNameMap[Scenes.GAME_VICTORY_CUTSCENE]);
+                CurrentScene = Scenes.GAME_VICTORY_CUTSCENE;
                 ChangeState(GameState.Initial);
                 return;
             }
