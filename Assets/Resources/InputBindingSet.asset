@@ -16,12 +16,12 @@ MonoBehaviour:
   - actionName: Move
     bindingName: up
     defaultPath: <Keyboard>/w
-    isUnlocked: 1
+    isUnlocked: 0
   - actionName: Move
     bindingName: left
     defaultPath: <Keyboard>/a
-    isUnlocked: 1
+    isUnlocked: 0
   - actionName: Jump
     bindingName: 
     defaultPath: <Keyboard>/space
-    isUnlocked: 1
+    isUnlocked: 0
