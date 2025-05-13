@@ -437,8 +437,8 @@ RectTransform:
   - {fileID: 2201312753111001619}
   - {fileID: 2201312753409419486}
   - {fileID: 2201312753640902313}
-  - {fileID: 3591680234722557073}
-  - {fileID: 8579029948692339297}
+  - {fileID: 8010780805416242010}
+  - {fileID: 839793842230692226}
   m_Father: {fileID: 2201312752897610491}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -633,8 +633,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wholeGamePanel: {fileID: 2201312752963918676}
-  successfulPanel: {fileID: 8579029948692339326}
-  failedPanel: {fileID: 3591680234722557072}
+  successfulPanel: {fileID: 839793842230692253}
+  failedPanel: {fileID: 8010780805416242011}
   successfulSound: {fileID: 8300000, guid: 0742e25d160d9df4183a910a4ff96566, type: 3}
   failedSound: {fileID: 8300000, guid: 451bd8cb087701c45a96ab791e43a26f, type: 3}
   bulbGrid: {fileID: 2201312753111001619}
@@ -1025,7 +1025,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!1001 &5116891438119783563
+--- !u!1001 &4299675281189773160
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -1067,18 +1067,6 @@ PrefabInstance:
     - target: {fileID: 3462159736644867818, guid: 5fb03064074144320a74f8fe365f7865, type: 3}
       propertyPath: m_SizeDelta.y
       value: 195.6594
-      objectReference: {fileID: 0}
-    - target: {fileID: 3462159736644867818, guid: 5fb03064074144320a74f8fe365f7865, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3462159736644867818, guid: 5fb03064074144320a74f8fe365f7865, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3462159736644867818, guid: 5fb03064074144320a74f8fe365f7865, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3462159736644867818, guid: 5fb03064074144320a74f8fe365f7865, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1132,19 +1120,23 @@ PrefabInstance:
       propertyPath: m_Name
       value: WRoom_Challenge_Successful
       objectReference: {fileID: 0}
+    - target: {fileID: 3462159736644867829, guid: 5fb03064074144320a74f8fe365f7865, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5fb03064074144320a74f8fe365f7865, type: 3}
---- !u!224 &8579029948692339297 stripped
+--- !u!224 &839793842230692226 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3462159736644867818, guid: 5fb03064074144320a74f8fe365f7865, type: 3}
-  m_PrefabInstance: {fileID: 5116891438119783563}
+  m_PrefabInstance: {fileID: 4299675281189773160}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &8579029948692339326 stripped
+--- !u!1 &839793842230692253 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3462159736644867829, guid: 5fb03064074144320a74f8fe365f7865, type: 3}
-  m_PrefabInstance: {fileID: 5116891438119783563}
+  m_PrefabInstance: {fileID: 4299675281189773160}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &7031623864482960083
+--- !u!1001 &4567050457215477016
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -1186,18 +1178,6 @@ PrefabInstance:
     - target: {fileID: 5786402603378634306, guid: ee6fc740c5fc54351b20ee85362347fb, type: 3}
       propertyPath: m_SizeDelta.y
       value: 195.6594
-      objectReference: {fileID: 0}
-    - target: {fileID: 5786402603378634306, guid: ee6fc740c5fc54351b20ee85362347fb, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5786402603378634306, guid: ee6fc740c5fc54351b20ee85362347fb, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5786402603378634306, guid: ee6fc740c5fc54351b20ee85362347fb, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5786402603378634306, guid: ee6fc740c5fc54351b20ee85362347fb, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1251,15 +1231,19 @@ PrefabInstance:
       propertyPath: m_Name
       value: WRoom_Challenge_Failed
       objectReference: {fileID: 0}
+    - target: {fileID: 5786402603378634307, guid: ee6fc740c5fc54351b20ee85362347fb, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ee6fc740c5fc54351b20ee85362347fb, type: 3}
---- !u!1 &3591680234722557072 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5786402603378634307, guid: ee6fc740c5fc54351b20ee85362347fb, type: 3}
-  m_PrefabInstance: {fileID: 7031623864482960083}
-  m_PrefabAsset: {fileID: 0}
---- !u!224 &3591680234722557073 stripped
+--- !u!224 &8010780805416242010 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5786402603378634306, guid: ee6fc740c5fc54351b20ee85362347fb, type: 3}
-  m_PrefabInstance: {fileID: 7031623864482960083}
+  m_PrefabInstance: {fileID: 4567050457215477016}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8010780805416242011 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5786402603378634307, guid: ee6fc740c5fc54351b20ee85362347fb, type: 3}
+  m_PrefabInstance: {fileID: 4567050457215477016}
   m_PrefabAsset: {fileID: 0}
