@@ -15,7 +15,6 @@ namespace Code.Scripts.Managers
         List<Door> doors = new List<Door>();
 
         [SerializeField] private TextMeshProUGUI collectablesText;
-        [SerializeField] private GameObject Cameras;
 
         private void Start()
         {
