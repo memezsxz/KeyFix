@@ -6,7 +6,7 @@ public class Lazar : MonoBehaviour
 {
     [SerializeField] private Vector3 fireDirection = Vector3.left;
     [SerializeField] [Range(0.5f, 5f)] private float minToggleTime = 0.5f;
-
+    [SerializeField] private AudioClip sound;
     [SerializeField] [Range(0.5f, 5f)] private float maxToggleTime = 1f;
     private bool isActive = true;
     private LineRenderer lr;
@@ -28,6 +28,7 @@ public class Lazar : MonoBehaviour
             lr.enabled = isActive;
             SetNextToggleTime();
             timer = 0f;
+            // SoundManager.Instance.PlaySound(sound);
         }
 
         if (!isActive) return; // Skip update if the laser is off

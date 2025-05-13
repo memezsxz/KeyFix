@@ -11,6 +11,79 @@ namespace Code.Scripts.Managers
 {
     public class GameManager : Singleton<GameManager>, IDataPersistence
     {
+
+
+        #region Fields & Properties
+
+        public Scenes CurrentScene { get; private set; }
+        public GameState State { get; private set; }
+        private Scenes previousSceneBeforeVictory;
+
+        public static event Action<GameState> OnBeforeGameStateChanged;
+        public static event Action<GameState> OnAfterGameStateChanged;
+
+        // private bool IntroScenePlayed = false;
+
+        [SerializeField] private GameObject gameOverCanvas;
+        [SerializeField] private GameObject pauseMenuCanvas;
+        [SerializeField] private GameObject loadingScreen;
+        [SerializeField] private GameObject levelTitleCanvas;
+        [SerializeField] private GameObject victoryCanvas;
+        [SerializeField] private LoadingManager loadingScript;
+        [SerializeField] private LevelCompleteController victoryController;
+        [SerializeField] private LevelTitle levelTitleScript;
+[SerializeField] private AudioClip levelBackgroundMusic;
+
+        private static readonly Dictionary<Scenes, string> SceneNameMap = new()
+        {
+            { Scenes.HALLWAYS, "Hallways" },
+            { Scenes.ESC_KEY, "ESC_Key" },
+            { Scenes.W_KEY, "W_Key" },
+            { Scenes.A_KEY, "A_Key" },
+            { Scenes.SPACE_KEY, "Space_Key" },
+            { Scenes.G_KEY, "G_Key" },
+            { Scenes.ARROW_KEYS, "Arrow_Keys" },
+            { Scenes.P_KEY, "P_Key" },
+            { Scenes.Main_Menu, "Main_Menu" },
+            { Scenes.INCIDENT, "Incident_Cutscene" },
+            { Scenes.GAME_VICTORY_CUTSCENE, "Game_Victory_Cutscene" }
+        };
+
+        private bool shouldLoadSaveDataAfterSceneLoad;
+
+        private bool isVictory;
+
+        #endregion
+
+        #region Enums
+
+        public enum GameState
+        {
+            Initial,
+            CutScene,
+            Playing,
+            Paused,
+            GameOver,
+            Victory
+        }
+
+        [Serializable]
+        public enum Scenes
+        {
+            Main_Menu,
+            INCIDENT,
+            ESC_KEY,
+            HALLWAYS,
+            W_KEY,
+            A_KEY,
+            G_KEY,
+            SPACE_KEY,
+            ARROW_KEYS,
+            P_KEY,
+            GAME_VICTORY_CUTSCENE
+        }
+
+        #endregion
         #region Unity Methods
 
         private void Start()
@@ -93,78 +166,6 @@ namespace Code.Scripts.Managers
 
                     ChangeState(GameState.Victory);
                 }));
-        }
-
-        #endregion
-
-
-        #region Fields & Properties
-
-        public Scenes CurrentScene { get; private set; }
-        public GameState State { get; private set; }
-        private Scenes previousSceneBeforeVictory;
-
-        public static event Action<GameState> OnBeforeGameStateChanged;
-        public static event Action<GameState> OnAfterGameStateChanged;
-
-        // private bool IntroScenePlayed = false;
-
-        [SerializeField] private GameObject gameOverCanvas;
-        [SerializeField] private GameObject pauseMenuCanvas;
-        [SerializeField] private GameObject loadingScreen;
-        [SerializeField] private GameObject levelTitleCanvas;
-        [SerializeField] private GameObject victoryCanvas;
-        [SerializeField] private LoadingManager loadingScript;
-        [SerializeField] private LevelCompleteController victoryController;
-        [SerializeField] private LevelTitle levelTitleScript;
-
-        private static readonly Dictionary<Scenes, string> SceneNameMap = new()
-        {
-            { Scenes.HALLWAYS, "Hallways" },
-            { Scenes.ESC_KEY, "ESC_Key" },
-            { Scenes.W_KEY, "W_Key" },
-            { Scenes.A_KEY, "A_Key" },
-            { Scenes.SPACE_KEY, "Space_Key" },
-            { Scenes.G_KEY, "G_Key" },
-            { Scenes.ARROW_KEYS, "Arrow_Keys" },
-            { Scenes.P_KEY, "P_Key" },
-            { Scenes.Main_Menu, "Main_Menu" },
-            { Scenes.INCIDENT, "Incident_Cutscene" },
-            { Scenes.GAME_VICTORY_CUTSCENE, "Game_Victory_Cutscene" }
-        };
-
-        private bool shouldLoadSaveDataAfterSceneLoad;
-
-        private bool isVictory;
-
-        #endregion
-
-        #region Enums
-
-        public enum GameState
-        {
-            Initial,
-            CutScene,
-            Playing,
-            Paused,
-            GameOver,
-            Victory
-        }
-
-        [Serializable]
-        public enum Scenes
-        {
-            Main_Menu,
-            INCIDENT,
-            ESC_KEY,
-            HALLWAYS,
-            W_KEY,
-            A_KEY,
-            G_KEY,
-            SPACE_KEY,
-            ARROW_KEYS,
-            P_KEY,
-            GAME_VICTORY_CUTSCENE
         }
 
         #endregion
@@ -506,7 +507,7 @@ namespace Code.Scripts.Managers
         {
             if (SoundManager.Instance.IsMusicPlaying) SoundManager.Instance.StopMusic();
             if (SoundManager.Instance.IsSoundPlaying) SoundManager.Instance.StopSound();
-
+            SoundManager.Instance.PlayMusic(levelBackgroundMusic);
             pauseMenuCanvas.SetActive(false);
             TogglePlayerMovement(true);
             Time.timeScale = 1f;

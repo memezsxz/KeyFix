@@ -9,7 +9,7 @@ namespace Code.Scripts.Obstacles
         [SerializeField] private float baseWindStrength = 10f;
         [SerializeField] private float detectionRange = 10f;
         [SerializeField] private float minimumWindResistance = 0.3f; // How much resistance even if huge
-
+        [SerializeField] private AudioClip sound;
         private PlayerMovement playerMovement;
         private Transform playerTransform;
 
@@ -58,6 +58,7 @@ namespace Code.Scripts.Obstacles
 
                     var force = windDirection.normalized * effectiveWindStrength;
                     playerMovement.ApplyExternalForce(force);
+                    SoundManager.Instance.PlaySound(sound);
                 }
         }
     }
