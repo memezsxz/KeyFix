@@ -172,7 +172,7 @@ public class PlayerBindingManage : MonoBehaviour, IDataPersistence
     {
         bindingSet = data.Progress.BindingOverrides;
         ApplyAllBindings();
-        // print("loading bindings " + bindingSet.bindings.Count);
+        print("loading bindings " + bindingSet.bindings.Count);
     }
 
 
