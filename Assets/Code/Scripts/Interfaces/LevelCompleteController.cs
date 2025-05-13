@@ -73,8 +73,8 @@ public class LevelCompleteController : MonoBehaviour
     private void LogAnimatorState()
     {
         AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
-        Debug.Log("Current Animator State: " + stateInfo.fullPathHash);
-        Debug.Log("Start Bool: " + animator.GetBool("start"));
-        Debug.Log("Done Bool: " + animator.GetBool("done"));
+        // Debug.Log("Current Animator State: " + stateInfo.fullPathHash);
+        // Debug.Log("Start Bool: " + animator.GetBool("start"));
+        // Debug.Log("Done Bool: " + animator.GetBool("done"));
     }
 }

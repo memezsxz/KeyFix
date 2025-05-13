@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Code.Scripts.Managers;
 using UnityEngine;
 
 public class SpaceManager : Singleton<SpaceManager>
@@ -55,12 +56,16 @@ public class SpaceManager : Singleton<SpaceManager>
 
         currentCorridorIndex++;
 
-        if (currentCorridorIndex >= corridors.Count)
+        // print($"Active corridor: {currentCorridorIndex}. count is {corridors.Count}, it is {currentCorridorIndex >= corridors.Count}");
+
+        if (currentCorridorIndex >= corridors.Count - 1)
         {
             var lastButtonIndex = Mathf.Min(currentCorridorIndex, spaceButtons.Count - 1);
             var lastButton = spaceButtons[lastButtonIndex];
             if (lastButton != null) lastButton.SetGray();
-            door.gameObject.layer = LayerMask.NameToLayer("Interactable");
+
+            GameManager.Instance.ChangeState(GameManager.GameState.Victory);
+
             return;
         }
 
