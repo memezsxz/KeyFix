@@ -473,6 +473,10 @@ namespace Code.Scripts.Managers
             {
                 SaveManager.Instance.LoadHallwayPosition();
             }
+            else
+            {
+                SaveManager.Instance.SaveGame();
+            }
 
             // print("set player position");
             HallwaysManager.Instance.UpdateInteractablesUI(SaveManager.Instance.SaveData.Progress.CollectablesCount);
