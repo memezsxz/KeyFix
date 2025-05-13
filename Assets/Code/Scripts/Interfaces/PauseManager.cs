@@ -25,7 +25,7 @@ public class PauseManager : MonoBehaviour
 
     private void Update()
     {
-        print("Pause Menu");
+        // print("Pause Menu");
 
         if (!Input.GetKeyDown(KeyCode.Escape)) return;
         print("esc click");

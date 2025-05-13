@@ -277,10 +277,10 @@ namespace Code.Scripts.Managers
 
         public bool CanPause()
         {
-            print(CurrentScene == Scenes.Main_Menu);
-            print(loadingScreen.activeSelf);
-            print(gameOverCanvas.activeSelf);
-            print(victoryCanvas.activeSelf);
+            // print(CurrentScene == Scenes.Main_Menu);
+            // print(loadingScreen.activeSelf);
+            // print(gameOverCanvas.activeSelf);
+            // print(victoryCanvas.activeSelf);
 
             if (CurrentScene == Scenes.Main_Menu) return false;
             if (CurrentScene == Scenes.G_KEY) return false;

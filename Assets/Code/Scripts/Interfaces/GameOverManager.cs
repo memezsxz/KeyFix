@@ -13,7 +13,7 @@ public class GameOverManager : MonoBehaviour
     private void OnEnable()
     {
         print("enabled");
-        SoundManager.Instance.PlayMusic(gameOverSound);
+        SoundManager.Instance.PlaySound(gameOverSound);
     }
 
     public void GoToMainMenu()
