@@ -268,7 +268,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4059648739977973044, guid: 0175b96b4a8ba40acb1971ce898839c4, type: 3}
       propertyPath: _scene
-      value: 8
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4059648739977973044, guid: 0175b96b4a8ba40acb1971ce898839c4, type: 3}
       propertyPath: _doorType
@@ -1186,7 +1186,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4059648739977973044, guid: 0175b96b4a8ba40acb1971ce898839c4, type: 3}
       propertyPath: _scene
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4059648740118366909, guid: 0175b96b4a8ba40acb1971ce898839c4, type: 3}
       propertyPath: m_Name
@@ -3164,7 +3164,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4059648739977973044, guid: 0175b96b4a8ba40acb1971ce898839c4, type: 3}
       propertyPath: _scene
-      value: 13
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 4059648739977973044, guid: 0175b96b4a8ba40acb1971ce898839c4, type: 3}
       propertyPath: _doorType
@@ -4491,7 +4491,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4059648739977973044, guid: 0175b96b4a8ba40acb1971ce898839c4, type: 3}
       propertyPath: _scene
-      value: 11
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 4059648739977973044, guid: 0175b96b4a8ba40acb1971ce898839c4, type: 3}
       propertyPath: _doorType
@@ -4565,7 +4565,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4059648739977973044, guid: 0175b96b4a8ba40acb1971ce898839c4, type: 3}
       propertyPath: _scene
-      value: 8
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4059648739977973044, guid: 0175b96b4a8ba40acb1971ce898839c4, type: 3}
       propertyPath: _doorType
@@ -4872,7 +4872,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4059648739977973044, guid: 0175b96b4a8ba40acb1971ce898839c4, type: 3}
       propertyPath: _scene
-      value: 11
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 4059648739977973044, guid: 0175b96b4a8ba40acb1971ce898839c4, type: 3}
       propertyPath: _doorType
@@ -6151,7 +6151,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4059648739977973044, guid: 0175b96b4a8ba40acb1971ce898839c4, type: 3}
       propertyPath: _scene
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4059648739977973044, guid: 0175b96b4a8ba40acb1971ce898839c4, type: 3}
       propertyPath: _doorType
@@ -8071,7 +8071,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4059648739977973044, guid: 0175b96b4a8ba40acb1971ce898839c4, type: 3}
       propertyPath: _scene
-      value: 13
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 4059648739977973044, guid: 0175b96b4a8ba40acb1971ce898839c4, type: 3}
       propertyPath: _doorType
@@ -11570,7 +11570,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4059648739977973044, guid: 0175b96b4a8ba40acb1971ce898839c4, type: 3}
       propertyPath: _scene
-      value: 9
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 4059648739977973044, guid: 0175b96b4a8ba40acb1971ce898839c4, type: 3}
       propertyPath: _doorType
@@ -13766,7 +13766,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4059648739977973044, guid: 0175b96b4a8ba40acb1971ce898839c4, type: 3}
       propertyPath: _scene
-      value: 9
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 4059648740118366909, guid: 0175b96b4a8ba40acb1971ce898839c4, type: 3}
       propertyPath: m_Name

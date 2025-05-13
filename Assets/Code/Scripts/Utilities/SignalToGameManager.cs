@@ -7,12 +7,8 @@ using UnityEngine.Timeline;
 
 public class SignalToGameManager : MonoBehaviour
 {
-    [SerializeField] private GameManager.Scenes scene = GameManager.Scenes.HALLWAYS;
-    [SerializeField] private GameManager.GameState state = GameManager.GameState.Initial;
-
     public void Go()
     {
-        GameManager.Instance.HandleSceneLoad(scene, state);
+        GameManager.Instance.ChangeState(GameManager.GameState.Victory);
     }
-    
 }

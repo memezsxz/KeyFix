@@ -45,11 +45,6 @@ namespace Code.Scripts.Managers
             { GameManager.Scenes.P_KEY, "P_Key" },
             { GameManager.Scenes.Main_Menu, "Main_Menu" },
             { GameManager.Scenes.INCIDENT, "Incident_Cutscene" },
-            { GameManager.Scenes.W_CUTSCENE, "W_Cutscene" },
-            { GameManager.Scenes.A_CUTSCENE, "A_Cutscene" },
-            { GameManager.Scenes.ARROW_CUTSCENE, "Arrow_Cutscene" },
-            { GameManager.Scenes.SPACE_CUTSCENE, "Space_Cutscene" },
-            { GameManager.Scenes.P_CUTSCENE, "P_Cutscene" },
             { GameManager.Scenes.GAME_VICTORY_CUTSCENE, "Game_Victory_Cutscene" },
         };
 
@@ -79,16 +74,11 @@ namespace Code.Scripts.Managers
             ESC_KEY,
             HALLWAYS,
             W_KEY,
-            W_CUTSCENE,
             A_KEY,
-            A_CUTSCENE,
             G_KEY,
             SPACE_KEY,
-            SPACE_CUTSCENE,
             ARROW_KEYS,
-            ARROW_CUTSCENE,
             P_KEY,
-            P_CUTSCENE,
             GAME_VICTORY_CUTSCENE,
         }
 
@@ -149,6 +139,9 @@ namespace Code.Scripts.Managers
             DebugController.Instance?.AddDebugCommand(new DebugCommand("win",
                 "trigers the victory state for the current level", "win",
                 () => ChangeState(GameState.Victory)));
+            DebugController.Instance?.AddDebugCommand(new DebugCommand("current_state",
+                "prints the current game state", "current_state",
+                () => Debug.Log(State)));
         }
 
         #endregion
@@ -199,7 +192,6 @@ namespace Code.Scripts.Managers
 
         private IEnumerator HandelInitialState()
         {
-            // print("here");
             if (levelTitleScript == null)
             {
                 Debug.LogWarning("Level title script not assigned.");
@@ -207,9 +199,9 @@ namespace Code.Scripts.Managers
             }
 
             // print(CurrentScene + " from inisial state hadel");
-            if (!CanPause())
-                yield break;
-
+            if (CurrentScene == Scenes.Main_Menu) yield break;
+            if (CurrentScene == Scenes.G_KEY) yield break;
+            if (State == GameState.CutScene) yield break;
 
             levelTitleScript.levelName = GetLevelName(CurrentScene);
             levelTitleScript.levelDescription = GetLevelDescription(CurrentScene);
@@ -230,9 +222,15 @@ namespace Code.Scripts.Managers
 
         public bool CanPause()
         {
+            print(CurrentScene == Scenes.Main_Menu);
+            print(loadingScreen.activeSelf);
+            print(gameOverCanvas.activeSelf);
+            print(victoryCanvas.activeSelf);
+            
             if (CurrentScene == Scenes.Main_Menu) return false;
             if (CurrentScene == Scenes.G_KEY) return false;
             if (State == GameState.CutScene) return false;
+            if (State == GameState.Initial) return false;
             if (loadingScreen.activeSelf) return false;
             if (gameOverCanvas.activeSelf) return false;
 
@@ -395,8 +393,17 @@ namespace Code.Scripts.Managers
             SoundManager.Instance.StopAllAudio();
             DisableAllCanvases();
             TogglePlayerMovement(false);
-            victoryController.ShowCompleteScene(); // automatically redirects to HALLWAYS
+            if (CurrentScene != Scenes.G_KEY)
+            {
+                victoryController.ShowCompleteScene(); // automatically redirects to HALLWAYS
+                print("Victory not in g scene");
+            }
 
+            else
+            {
+                GameManager.Instance.HandleSceneLoad(GameManager.Scenes.HALLWAYS, GameManager.GameState.Playing);
+                print("here in vic if else");
+            }
 
             var playerBindingManager = GameObject.FindObjectOfType<PlayerBindingManage>();
 

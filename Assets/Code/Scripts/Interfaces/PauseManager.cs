@@ -30,18 +30,22 @@ public class PauseManager : MonoBehaviour
 
     void Update()
     {
+        print("Pause Menu");
 
-        if (GameManager.Instance.CanPause())
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (!Input.GetKeyDown(KeyCode.Escape)) return;
+        print("esc click");
+        if (!GameManager.Instance.CanPause()) return;
+        print("can pause/resume");
+
+        if (GameManager.Instance.State == GameManager.GameState.Paused)
         {
-            if (GameManager.Instance.State == GameManager.GameState.Paused)
-            {
-                ResumeGame();
-            }
-            else
-            {
-                PauseGame();
-            }
+            print("Paused");
+            ResumeGame();
+        }
+        else
+        {
+            print("Unpaused");
+            PauseGame();
         }
     }
 
