@@ -2,45 +2,47 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using HeurekaGames;
 
 namespace HeurekaGames.AssetHunterPRO
 {
-    [System.Serializable]
+    [Serializable]
     public class AH_IgnoreList
     {
         public delegate void ListUpdatedHandler();
-        public event ListUpdatedHandler ListUpdatedEvent;
+
+        //Size of buttons
+        public const float ButtonSpacer = 70;
+
+        /// <summary>
+        ///     List of the Ignored items
+        /// </summary>
+        [SerializeField] private SerializedIgnoreArray CombinedIgnored = new();
 
         private List<string> DefaultIgnored;
 
         /// <summary>
-        /// List of the Ignored items
-        /// </summary>
-        [SerializeField]
-        private SerializedIgnoreArray CombinedIgnored = new SerializedIgnoreArray();
-        /// <summary>
-        /// Id of the playerpref location
-        /// </summary>
-        private string playerPrefKey;
-
-        /// <summary>
-        /// Interface that deals with drawing and excluding in a way that is specific to the type of exclusion we are doing
+        ///     Interface that deals with drawing and excluding in a way that is specific to the type of exclusion we are doing
         /// </summary>
         private AH_IIgnoreListActions exclusionActions;
 
-        //Size of buttons
-        public const float ButtonSpacer = 70;
-        private string toBeDeleted;
         private bool isDirty;
+
+        /// <summary>
+        ///     Id of the playerpref location
+        /// </summary>
+        private string playerPrefKey;
+
+        private string toBeDeleted;
 
         public AH_IgnoreList(AH_IIgnoreListActions exclusionActions, List<string> Ignored, string playerPrefKey)
         {
             this.exclusionActions = exclusionActions;
             this.exclusionActions.IgnoredAddedEvent += onAddedToignoredList;
             this.playerPrefKey = playerPrefKey;
-            this.DefaultIgnored = new List<string>(Ignored);
+            DefaultIgnored = new List<string>(Ignored);
         }
+
+        public event ListUpdatedHandler ListUpdatedEvent;
 
         internal List<string> GetIgnored()
         {
@@ -48,7 +50,7 @@ namespace HeurekaGames.AssetHunterPRO
             if (CombinedIgnored.Ignored.Count >= 1)
                 return CombinedIgnored.Ignored;
             //We have no list, so read the defaults
-            else if (EditorPrefs.HasKey(playerPrefKey))
+            if (EditorPrefs.HasKey(playerPrefKey))
             {
                 //Populates this class from prefs
                 CombinedIgnored = LoadFromPrefs();
@@ -81,9 +83,9 @@ namespace HeurekaGames.AssetHunterPRO
         }
 
         public void Save()
-        {          
-            string newJsonString = JsonUtility.ToJson(CombinedIgnored);
-            string oldJsonString = EditorPrefs.GetString(playerPrefKey);
+        {
+            var newJsonString = JsonUtility.ToJson(CombinedIgnored);
+            var oldJsonString = EditorPrefs.GetString(playerPrefKey);
 
             //If we haven't changed anything, dont save
             if (newJsonString.Equals(oldJsonString))
@@ -137,15 +139,11 @@ namespace HeurekaGames.AssetHunterPRO
 
             if (GetIgnored().Count > 0)
             {
-
                 EditorGUI.indentLevel++;
-                foreach (var item in GetIgnored())
-                {
-                    drawIgnored(item, exclusionActions.GetLabelFormattedItem(item));
-                }
+                foreach (var item in GetIgnored()) drawIgnored(item, exclusionActions.GetLabelFormattedItem(item));
                 EditorGUI.indentLevel--;
-
             }
+
             EditorGUILayout.EndVertical();
         }
 
@@ -166,15 +164,15 @@ namespace HeurekaGames.AssetHunterPRO
             if (!DefaultIgnored.Contains(identifier))
             {
                 if (GUILayout.Button("Un-Ignore", EditorStyles.miniButton, GUILayout.Width(ButtonSpacer)))
-                {
                     markForDeletion(identifier);
-                }
             }
             //Hidden button to help align, probably not the most elegant solution, but Ill fix later
             else if (DefaultIgnored.Count != GetIgnored().Count)
+            {
                 GUILayout.Button("", GUIStyle.none, GUILayout.Width(ButtonSpacer + 4));
+            }
 
-            float curWidth = EditorGUIUtility.labelWidth;
+            var curWidth = EditorGUIUtility.labelWidth;
             EditorGUILayout.LabelField(getLabelContent(legible), GUILayout.MaxWidth(1024));
             GUILayout.FlexibleSpace();
             EditorGUILayout.EndHorizontal();
@@ -201,7 +199,7 @@ namespace HeurekaGames.AssetHunterPRO
 
         public bool ExistsInList(string element)
         {
-            return (GetIgnored().Contains(element));
+            return GetIgnored().Contains(element);
         }
 
         private void onAddedToignoredList(object sender, IgnoreListEventArgs e)
@@ -245,16 +243,17 @@ namespace HeurekaGames.AssetHunterPRO
         public class SerializedIgnoreArray
         {
             /// <summary>
-            /// List of the Ignored items
+            ///     List of the Ignored items
             /// </summary>
-            [SerializeField]
-            public List<string> Ignored = new List<string>();
+            [SerializeField] public List<string> Ignored = new();
 
-            public SerializedIgnoreArray() { }
+            public SerializedIgnoreArray()
+            {
+            }
 
             public SerializedIgnoreArray(List<string> defaultIgnored)
             {
-                this.Ignored = new List<string>(defaultIgnored);
+                Ignored = new List<string>(defaultIgnored);
             }
         }
     }
@@ -262,20 +261,20 @@ namespace HeurekaGames.AssetHunterPRO
     public class AH_ExclusionTypeList : AH_IgnoreList
     {
         //Call base constructor but convert the types into serializable values
-        public AH_ExclusionTypeList(AH_IIgnoreListActions exclusionAction, List<Type> Ignored, string playerPrefsKey) : base(exclusionAction, Ignored.ConvertAll<string>(val => Heureka_Serializer.SerializeType(val)), playerPrefsKey)
+        public AH_ExclusionTypeList(AH_IIgnoreListActions exclusionAction, List<Type> Ignored, string playerPrefsKey) :
+            base(exclusionAction, Ignored.ConvertAll(val => Heureka_Serializer.SerializeType(val)), playerPrefsKey)
         {
         }
 
         //Return the type tostring instead of the fully qualified type identifier
         protected override string getLabelContent(string item)
         {
-            Type deserializedType = Heureka_Serializer.DeSerializeType(base.getLabelContent(item));
+            var deserializedType = Heureka_Serializer.DeSerializeType(base.getLabelContent(item));
 
             if (deserializedType != null)
                 return deserializedType.ToString();
             //The Ignored type does no longer exist in project
-            else
-                return "Unrecognized type : " + item;
+            return "Unrecognized type : " + item;
         }
 
         internal void IgnoreType(Type t, bool ignore)
@@ -290,12 +289,12 @@ namespace HeurekaGames.AssetHunterPRO
 
         public IgnoreListEventArgs(Type item)
         {
-            this.Item = Heureka_Serializer.SerializeType(item);
+            Item = Heureka_Serializer.SerializeType(item);
         }
 
         public IgnoreListEventArgs(string item)
         {
-            this.Item = item;
+            Item = item;
         }
     }
 }

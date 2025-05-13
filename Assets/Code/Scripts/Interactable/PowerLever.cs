@@ -1,21 +1,11 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Code.Scripts.Managers;
 using UnityEngine;
 
 public class PowerLever : InteractableBase
 {
     private static readonly int IsPowerOn = Animator.StringToHash("is_power_on");
-    Animator animator;
+    private Animator animator;
     private LeverState leverState = LeverState.down;
-
-    private enum LeverState
-    {
-        freeze = -1,
-        down = 0,
-        up = 1
-    }
 
     private void Start()
     {
@@ -46,10 +36,7 @@ public class PowerLever : InteractableBase
 
         SetAnimatorState();
 
-        if (leverState == LeverState.down)
-        {
-            Invoke(nameof(TriggerVictory), 2f);
-        }
+        if (leverState == LeverState.down) Invoke(nameof(TriggerVictory), 2f);
     }
 
 
@@ -61,5 +48,12 @@ public class PowerLever : InteractableBase
     private void SetAnimatorState()
     {
         animator.SetInteger(IsPowerOn, (int)leverState);
+    }
+
+    private enum LeverState
+    {
+        freeze = -1,
+        down = 0,
+        up = 1
     }
 }

@@ -1,16 +1,13 @@
-using System;
 using UnityEngine;
 
 namespace Code.Scripts.Managers
 {
     public class Panel : MonoBehaviour
     {
+        [SerializeField] private PressButton.PressedColor color;
         private Material _material;
 
-        [SerializeField] PressButton.PressedColor color;
-        public PressButton.PressedColor AssignedColor
-        {
-            get { return color;} }
+        public PressButton.PressedColor AssignedColor => color;
 
         private void Start()
         {

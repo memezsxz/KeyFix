@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -7,24 +6,23 @@ using UnityEngine.UI;
 
 public class BulbColorController : MonoBehaviour
 {
-    private List<Light> lights = new List<Light>();
-
     public Image bulbImage;
     public Image bulbEffect;
     public Slider redSlider;
     public Slider greenSlider;
     public Slider blueSlider;
     public List<Image> TargetColorImages;
-    [SerializeField] Image currentColorImage;
+    [SerializeField] private Image currentColorImage;
     public TMP_Text matchMessageText;
     public AudioClip doneSound;
     public GameObject ArrowRoomInterface;
-    [SerializeField] Color targetColor;
+    [SerializeField] private Color targetColor;
+    [SerializeField] private int minimumMatch = 30;
+    private List<Light> lights = new();
 
-    private int roundTo = 100;
-    [SerializeField] int minimumMatch = 30;
+    private readonly int roundTo = 100;
 
-    public bool IsDone { get; private set; } = false;
+    public bool IsDone { get; private set; }
 
     private void Start()
     {
@@ -62,9 +60,9 @@ public class BulbColorController : MonoBehaviour
             matchMessageText.gameObject.SetActive(false);
     }
 
-    void UpdateLightColor()
+    private void UpdateLightColor()
     {
-        Color currentColor = new Color(redSlider.value, greenSlider.value, blueSlider.value, 1f);
+        var currentColor = new Color(redSlider.value, greenSlider.value, blueSlider.value, 1f);
 
         lights.ForEach(l => l.color = currentColor);
         currentColorImage.color = currentColor;
@@ -89,21 +87,21 @@ public class BulbColorController : MonoBehaviour
         }
     }
 
-    bool ColorsAreClose(Color a, Color b)
+    private bool ColorsAreClose(Color a, Color b)
     {
-        int r1 = (int)(a.r * roundTo);
-        int g1 = (int)(a.g * roundTo);
-        int b1 = (int)(a.b * roundTo);
+        var r1 = (int)(a.r * roundTo);
+        var g1 = (int)(a.g * roundTo);
+        var b1 = (int)(a.b * roundTo);
 
-        int r2 = (int)(b.r * roundTo);
-        int g2 = (int)(b.g * roundTo);
-        int b2 = (int)(b.b * roundTo);
+        var r2 = (int)(b.r * roundTo);
+        var g2 = (int)(b.g * roundTo);
+        var b2 = (int)(b.b * roundTo);
 
-        int total = Mathf.Abs(r1 - r2) + Mathf.Abs(g1 - g2) + Mathf.Abs(b1 - b2);
+        var total = Mathf.Abs(r1 - r2) + Mathf.Abs(g1 - g2) + Mathf.Abs(b1 - b2);
         return total < minimumMatch;
     }
 
-    IEnumerator HideArrowInterfaceAfterDelay()
+    private IEnumerator HideArrowInterfaceAfterDelay()
     {
         lights.ForEach(l => l.color = targetColor);
         yield return new WaitForSeconds(2f);

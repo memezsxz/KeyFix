@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
 namespace HeurekaGames.AssetHunterPRO
@@ -7,30 +6,47 @@ namespace HeurekaGames.AssetHunterPRO
     public class AH_EditorData : ScriptableObject
     {
         public delegate void EditorDataRefreshDelegate();
-        public static event EditorDataRefreshDelegate OnEditorDataRefresh;
 
         private static AH_EditorData m_instance;
+
+        public DefaultAsset Documentation;
+        [SerializeField] public ConfigurableIcon WindowPaneIcon = new();
+        [SerializeField] public ConfigurableIcon WindowHeaderIcon = new();
+        [SerializeField] public ConfigurableIcon SceneIcon = new();
+        [SerializeField] public ConfigurableIcon Settings = new();
+        [SerializeField] public ConfigurableIcon LoadLogIcon = new();
+        [SerializeField] public ConfigurableIcon GenerateIcon = new();
+        [SerializeField] public ConfigurableIcon RefreshIcon = new();
+        [SerializeField] public ConfigurableIcon MergerIcon = new();
+        [SerializeField] public ConfigurableIcon HelpIcon = new();
+        [SerializeField] public ConfigurableIcon AchievementIcon = new();
+        [SerializeField] public ConfigurableIcon ReportIcon = new();
+        [SerializeField] public ConfigurableIcon DeleteIcon = new();
+        [SerializeField] public ConfigurableIcon RefToIcon = new();
+        [SerializeField] public ConfigurableIcon RefFromIcon = new();
+        [SerializeField] public ConfigurableIcon RefFromWhiteIcon = new();
+        [SerializeField] public ConfigurableIcon DuplicateIcon = new();
+        [SerializeField] public ConfigurableIcon DuplicateWhiteIcon = new();
+
         public static AH_EditorData Instance
         {
             get
             {
-                if (!m_instance)
-                {
-                    m_instance = loadData();
-                }
+                if (!m_instance) m_instance = loadData();
 
                 return m_instance;
             }
         }
 
+        public static event EditorDataRefreshDelegate OnEditorDataRefresh;
+
         private static AH_EditorData loadData()
         {
             //LOGO ON WINDOW
-            string[] configData = AssetDatabase.FindAssets("EditorData t:" + typeof(AH_EditorData).ToString(), null);
+            var configData = AssetDatabase.FindAssets("EditorData t:" + typeof(AH_EditorData), null);
             if (configData.Length >= 1)
-            {
-                return AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(configData[0]), typeof(AH_EditorData)) as AH_EditorData;
-            }
+                return AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(configData[0]),
+                    typeof(AH_EditorData)) as AH_EditorData;
 
             Debug.LogError("Failed to find config data");
             return null;
@@ -41,24 +57,5 @@ namespace HeurekaGames.AssetHunterPRO
             if (OnEditorDataRefresh != null)
                 OnEditorDataRefresh();
         }
-
-        public UnityEditor.DefaultAsset Documentation;
-        [SerializeField] public ConfigurableIcon WindowPaneIcon = new ConfigurableIcon();
-        [SerializeField] public ConfigurableIcon WindowHeaderIcon = new ConfigurableIcon();
-        [SerializeField] public ConfigurableIcon SceneIcon = new ConfigurableIcon();
-        [SerializeField] public ConfigurableIcon Settings = new ConfigurableIcon();
-        [SerializeField] public ConfigurableIcon LoadLogIcon = new ConfigurableIcon();
-        [SerializeField] public ConfigurableIcon GenerateIcon = new ConfigurableIcon();
-        [SerializeField] public ConfigurableIcon RefreshIcon = new ConfigurableIcon();
-        [SerializeField] public ConfigurableIcon MergerIcon = new ConfigurableIcon();
-        [SerializeField] public ConfigurableIcon HelpIcon = new ConfigurableIcon();
-        [SerializeField] public ConfigurableIcon AchievementIcon = new ConfigurableIcon();
-        [SerializeField] public ConfigurableIcon ReportIcon = new ConfigurableIcon();
-        [SerializeField] public ConfigurableIcon DeleteIcon = new ConfigurableIcon();
-        [SerializeField] public ConfigurableIcon RefToIcon = new ConfigurableIcon();
-        [SerializeField] public ConfigurableIcon RefFromIcon = new ConfigurableIcon();
-        [SerializeField] public ConfigurableIcon RefFromWhiteIcon = new ConfigurableIcon();
-        [SerializeField] public ConfigurableIcon DuplicateIcon = new ConfigurableIcon();
-        [SerializeField] public ConfigurableIcon DuplicateWhiteIcon = new ConfigurableIcon();
     }
 }

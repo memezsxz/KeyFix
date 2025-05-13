@@ -2,12 +2,11 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-
 public class ScalerInteraction : MonoBehaviour
 {
-    private Vector3 shrinkScale = new Vector3(0.5f, 0.5f, 0.5f);
-    private Vector3 stretchScale = new Vector3(1.5f, 1.5f, 1.5f);
     private Coroutine scaleRoutine;
+    private readonly Vector3 shrinkScale = new(0.5f, 0.5f, 0.5f);
+    private readonly Vector3 stretchScale = new(1.5f, 1.5f, 1.5f);
 
 
     public void Shrink(float duration, Action onComplete = null)
@@ -24,8 +23,8 @@ public class ScalerInteraction : MonoBehaviour
 
     private IEnumerator ScaleOverTime(Vector3 targetScale, float duration, Action onComplete)
     {
-        Vector3 startScale = transform.localScale;
-        float timer = 0f;
+        var startScale = transform.localScale;
+        var timer = 0f;
 
         while (timer < duration)
         {
@@ -55,9 +54,9 @@ public class ScalerInteraction : MonoBehaviour
 
     private IEnumerator MoveToCenterOverTime(Transform player, CharacterController controller, float duration)
     {
-        Vector3 startPos = player.position;
-        Vector3 targetPos = transform.position;
-        float elapsed = 0f;
+        var startPos = player.position;
+        var targetPos = transform.position;
+        var elapsed = 0f;
 
         while (elapsed < duration)
         {

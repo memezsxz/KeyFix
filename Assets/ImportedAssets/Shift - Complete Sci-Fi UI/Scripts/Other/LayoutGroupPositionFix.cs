@@ -6,23 +6,26 @@ namespace Michsky.UI.Shift
 {
     public class LayoutGroupPositionFix : MonoBehaviour
     {
-        [Header("Settings")]
-        public bool fixOnEnable = true;
-        public bool fixParent = false;
-        public bool fixWithDelay = false;
-        float fixDelay = 0.025f;
+        [Header("Settings")] public bool fixOnEnable = true;
 
-        void OnEnable()
+        public bool fixParent;
+        public bool fixWithDelay;
+        private readonly float fixDelay = 0.025f;
+
+        private void OnEnable()
         {
             if (fixWithDelay == false)
             {
-                if (fixOnEnable == true && fixParent == false)
+                if (fixOnEnable && fixParent == false)
                     LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());
-                else if (fixOnEnable == true && fixParent == true)
+                else if (fixOnEnable && fixParent)
                     LayoutRebuilder.ForceRebuildLayoutImmediate(transform.parent.GetComponent<RectTransform>());
             }
 
-            else { StartCoroutine("FixDelay"); }
+            else
+            {
+                StartCoroutine("FixDelay");
+            }
         }
 
         public void FixLayout()
@@ -33,7 +36,7 @@ namespace Michsky.UI.Shift
                 StartCoroutine("FixDelay");
         }
 
-        IEnumerator FixDelay()
+        private IEnumerator FixDelay()
         {
             yield return new WaitForSeconds(fixDelay);
             LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());

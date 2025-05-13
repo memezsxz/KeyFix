@@ -1,7 +1,5 @@
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
-
 
 public class PlayerManager : MonoBehaviour
 {
@@ -48,5 +46,4 @@ public class PlayerManager : MonoBehaviour
         player.GetComponent<Animator>().enabled = enable;
         player.enabled = enable;
     }
-    
 }

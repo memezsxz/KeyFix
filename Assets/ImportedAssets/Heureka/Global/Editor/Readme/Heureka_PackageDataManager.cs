@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace HeurekaGames
@@ -8,7 +7,7 @@ namespace HeurekaGames
     {
         public Texture2D icon;
         public string title;
-        public List<PackageLinks> Links = new List<PackageLinks>();
+        public List<PackageLinks> Links = new();
 
         public Heureka_PackageData[] sections;
         public bool loadedLayout;

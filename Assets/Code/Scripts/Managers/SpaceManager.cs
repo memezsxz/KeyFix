@@ -1,40 +1,34 @@
 using System.Collections.Generic;
-using Code.Scripts.Interactable;
-using Code.Scripts.Managers;
 using UnityEngine;
 
 public class SpaceManager : Singleton<SpaceManager>
 {
     [Header("Corridors in order")] [SerializeField]
-    private List<Corridor> corridors = new List<Corridor>();
+    private List<Corridor> corridors = new();
 
     [Header("Buttons in order")] [SerializeField]
-    private List<SpaceButtonInteraction> spaceButtons = new List<SpaceButtonInteraction>();
+    private List<SpaceButtonInteraction> spaceButtons = new();
 
     [SerializeField] private Collider shrinker;
     [SerializeField] private Collider stretcher;
 
     [SerializeField] private DoorInteract doorInteract;
+
+    [SerializeField] private GameObject door;
     private int currentCorridorIndex = -1;
-    private bool isCorridorActive = false;
+    private bool isCorridorActive;
 
     public bool DidWin { get; private set; }
 
-    [SerializeField] private GameObject door;
-
     private void Start()
     {
-        for (int i = 0; i < spaceButtons.Count; i++)
-        {
+        for (var i = 0; i < spaceButtons.Count; i++)
             if (spaceButtons[i] != null)
-            {
                 spaceButtons[i].gameObject.SetActive(i == 0); // Only the first button active
-            }
-        }
 
         DeactivateAllCorridors();
     }
- 
+
     public void DeactivateCurrentCorridor()
     {
         if (currentCorridorIndex < 0 || currentCorridorIndex >= corridors.Count)
@@ -65,10 +59,7 @@ public class SpaceManager : Singleton<SpaceManager>
         {
             var lastButtonIndex = Mathf.Min(currentCorridorIndex, spaceButtons.Count - 1);
             var lastButton = spaceButtons[lastButtonIndex];
-            if (lastButton != null)
-            {
-                lastButton.SetGray();
-            }
+            if (lastButton != null) lastButton.SetGray();
             door.gameObject.layer = LayerMask.NameToLayer("Interactable");
             return;
         }
@@ -94,13 +85,11 @@ public class SpaceManager : Singleton<SpaceManager>
     public void DeactivateAllCorridors()
     {
         foreach (var corridor in corridors)
-        {
             if (corridor != null)
             {
                 corridor.DeactivateCorridor();
                 corridor.gameObject.SetActive(false);
             }
-        }
 
         isCorridorActive = false;
         ToggleScaler();

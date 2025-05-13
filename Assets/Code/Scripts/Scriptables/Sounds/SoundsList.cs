@@ -5,28 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SoundsList", menuName = "Audio/SoundsList")]
 public class SoundsList : ScriptableObject
 {
-    [System.Serializable]
-    public class SoundEntry
-    {
-        public string name;
-        public AudioClip sound;
-        [Range(-0.001f, 1f)] public float volume = -0.001f;
-    }
-
     public SoundEntry[] sounds;
-    // private Dictionary<string, SoundEntry> soundLookup;
-
-    public SoundEntry GetSoundByName(string soundName)
-    {
-        foreach (var entry in sounds)
-        {
-            if (entry.name == soundName)
-                return entry;
-        }
-
-        Debug.LogWarning($"Sound '{soundName}' not found.");
-        return null;
-    }
 
 //     public void Validate()
 //     {
@@ -57,9 +36,9 @@ public class SoundsList : ScriptableObject
 
     private void OnEnable()
     {
-        Dictionary<string, SoundEntry> soundLookup = new Dictionary<string, SoundEntry>();
+        var soundLookup = new Dictionary<string, SoundEntry>();
 
-        HashSet<string> seenNames = new HashSet<string>();
+        var seenNames = new HashSet<string>();
 
         foreach (var entry in sounds)
         {
@@ -78,5 +57,24 @@ public class SoundsList : ScriptableObject
 
             soundLookup[entry.name] = entry;
         }
+    }
+    // private Dictionary<string, SoundEntry> soundLookup;
+
+    public SoundEntry GetSoundByName(string soundName)
+    {
+        foreach (var entry in sounds)
+            if (entry.name == soundName)
+                return entry;
+
+        Debug.LogWarning($"Sound '{soundName}' not found.");
+        return null;
+    }
+
+    [Serializable]
+    public class SoundEntry
+    {
+        public string name;
+        public AudioClip sound;
+        [Range(-0.001f, 1f)] public float volume = -0.001f;
     }
 }

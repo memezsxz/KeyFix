@@ -1,8 +1,10 @@
-﻿
+﻿using System;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
 namespace HeurekaGames.AssetHunterPRO
 {
-    using System.Linq;
-    using UnityEngine;
 #if UNITY_EDITOR
     using UnityEditor;
 #endif
@@ -10,15 +12,15 @@ namespace HeurekaGames.AssetHunterPRO
     using UnityEditor.Build.Reporting;
     using UnityEditor.Build;
 
-    class AH_BuildProcessor : IPreprocessBuildWithReport, IPostprocessBuildWithReport, IProcessSceneWithReport
+    internal class AH_BuildProcessor : IPreprocessBuildWithReport, IPostprocessBuildWithReport, IProcessSceneWithReport
     {
-        public void OnProcessScene(UnityEngine.SceneManagement.Scene scene, BuildReport report)
+        public void OnProcessScene(Scene scene, BuildReport report)
         {
             //For some reason I have to do both recursive, and non-recursive version
-            string[] dependencies = AssetDatabase.GetDependencies(scene.path, true);
+            var dependencies = AssetDatabase.GetDependencies(scene.path, true);
             dependencies.ToList().AddRange(AssetDatabase.GetDependencies(scene.path, false));
             {
-                foreach (string dependency in dependencies)
+                foreach (var dependency in dependencies)
                     processUsedAsset(scene.path, dependency);
             }
         }
@@ -43,7 +45,7 @@ namespace HeurekaGames.AssetHunterPRO
 
         private void addBuildReportInfo(BuildReport report)
         {
-            if(buildInfo != null)
+            if (buildInfo != null)
                 buildInfo.ProcessBuildReport(report);
         }
 
@@ -73,7 +75,7 @@ namespace HeurekaGames.AssetHunterPRO
         }
 #endif
         //#if UNITY_5_6_OR_NEWER
-        static AH_SerializedBuildInfo buildInfo;
+        private static AH_SerializedBuildInfo buildInfo;
 
         private bool isProcessing;
         //private static bool isGenerating;
@@ -85,12 +87,13 @@ namespace HeurekaGames.AssetHunterPRO
 
             if (isProcessing)
             {
-                Debug.Log("AH: Initiated new buildreport - " + System.DateTime.Now);
+                Debug.Log("AH: Initiated new buildreport - " + DateTime.Now);
                 buildInfo = new AH_SerializedBuildInfo();
             }
             else
             {
-                Debug.Log("AH: Build logging not automatically started. Open Asset Hunter preferences if you want it to run");
+                Debug.Log(
+                    "AH: Build logging not automatically started. Open Asset Hunter preferences if you want it to run");
             }
         }
 
@@ -100,7 +103,7 @@ namespace HeurekaGames.AssetHunterPRO
             {
                 isProcessing = false;
 
-                Debug.Log("AH: Finalizing new build report - " + System.DateTime.Now);
+                Debug.Log("AH: Finalizing new build report - " + DateTime.Now);
 
                 buildInfo.FinalizeReport(target);
             }
@@ -112,6 +115,6 @@ namespace HeurekaGames.AssetHunterPRO
                 buildInfo.AddBuildDependency(scenePath, assetPath);
         }
 
-        public int callbackOrder { get { return 0; } }
+        public int callbackOrder => 0;
     }
 }

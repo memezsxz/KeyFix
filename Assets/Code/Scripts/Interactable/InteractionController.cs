@@ -1,38 +1,35 @@
-using System;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class InteractionController : MonoBehaviour
 {
     // [SerializeField] TextMeshProUGUI interactText;
-    [SerializeField] float interactionRadius = 1f;
-    LayerMask interactableLayer;
+    [SerializeField] private float interactionRadius = 1f;
 
-    InteractableBase currentTargetedInteractable;
+    private InteractableBase currentTargetedInteractable;
+    private LayerMask interactableLayer;
 
     private void Start()
     {
         interactableLayer = LayerMask.GetMask("Interactable");
     }
 
-    void Update()
+    private void Update()
     {
         UpdateCurrentInteractable();
         UpdateInteractionText();
         CheckForInteractionInput();
     }
 
-    void UpdateCurrentInteractable()
+    private void UpdateCurrentInteractable()
     {
-        Collider[] hits = Physics.OverlapSphere(transform.position, interactionRadius, interactableLayer);
+        var hits = Physics.OverlapSphere(transform.position, interactionRadius, interactableLayer);
 
         currentTargetedInteractable = null;
 
         foreach (var hit in hits)
         {
-            InteractableBase interactable = hit.GetComponent<InteractableBase>();
+            var interactable = hit.GetComponent<InteractableBase>();
             if (interactable != null)
             {
                 // print("found interactable");
@@ -42,31 +39,21 @@ public class InteractionController : MonoBehaviour
         }
     }
 
-    void UpdateInteractionText()
+    private void UpdateInteractionText()
     {
         // Hide all hints first
-        foreach (var btn in FindObjectsOfType<InteractableBase>())
-        {
-            btn.ShowHint(false);
-        }
+        foreach (var btn in FindObjectsOfType<InteractableBase>()) btn.ShowHint(false);
 
-        if (currentTargetedInteractable is InteractableBase sb)
-        {
-            sb.ShowHint(true);
-        }
+        if (currentTargetedInteractable is InteractableBase sb) sb.ShowHint(true);
     }
 
 
-    void CheckForInteractionInput()
+    private void CheckForInteractionInput()
     {
         if (Keyboard.current.eKey.wasPressedThisFrame && currentTargetedInteractable != null)
-        {
             currentTargetedInteractable.Interact();
-        }
 
         if (Keyboard.current.hKey.wasPressedThisFrame && currentTargetedInteractable != null)
-        {
             currentTargetedInteractable.InteractH();
-        }
     }
 }

@@ -1,4 +1,3 @@
-using GLTFast.Schema;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -8,32 +7,32 @@ public class EnemyAI : MonoBehaviour
     public float detectionRange = 10f;
     public float stopDistance = 2f;
 
-    public Transform firePoint;              
-    public GameObject projectilePrefab;       
-    public float fireForce = 10f;             
-    public float attackCooldown = 2f;         
-
-    private float lastAttackTime = 0f;
-
-    private NavMeshAgent agent;
+    public Transform firePoint;
+    public GameObject projectilePrefab;
+    public float fireForce = 10f;
+    public float attackCooldown = 2f;
     public Animator animator;
 
-    void Start()
+    private NavMeshAgent agent;
+
+    private float lastAttackTime;
+
+    private void Start()
     {
         agent = GetComponent<NavMeshAgent>();
     }
 
-    void Update()
+    private void Update()
     {
-        float distance = Vector3.Distance(transform.position, player.position);
+        var distance = Vector3.Distance(transform.position, player.position);
 
         if (distance <= detectionRange)
         {
             agent.SetDestination(player.position);
 
             // Rotate smoothly toward the player
-            Vector3 direction = (player.position - transform.position).normalized;
-            Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+            var direction = (player.position - transform.position).normalized;
+            var lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
 
             // Stop if too close
@@ -48,7 +47,9 @@ public class EnemyAI : MonoBehaviour
                 }
             }
             else
+            {
                 agent.isStopped = false;
+            }
         }
         else
         {
@@ -56,24 +57,23 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    void OnDrawGizmosSelected()
+    private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, detectionRange);
     }
 
-    void ThrowBall()
+    private void ThrowBall()
     {
         if (projectilePrefab == null || firePoint == null || player == null) return;
 
-        GameObject projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
+        var projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
 
-        Rigidbody rb = projectile.GetComponent<Rigidbody>();
+        var rb = projectile.GetComponent<Rigidbody>();
         if (rb != null)
         {
-            Vector3 direction = (player.position - firePoint.position).normalized;
+            var direction = (player.position - firePoint.position).normalized;
             rb.velocity = direction * fireForce;
         }
     }
-
 }

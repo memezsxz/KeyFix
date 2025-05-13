@@ -6,7 +6,7 @@ using System.Linq;
 
 //If this fails, its because you have an assembly definition file in your project that is not set to allow unit tests
 //Solution, either allow assembly definition to run test, of comment out the top line
-#if runtest 
+#if runtest
 using NUnit.Framework;
 #endif
 
@@ -22,21 +22,19 @@ namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl
 
     public class TreeModel<T> where T : TreeElement
     {
-        IList<T> m_Data;
-        T m_Root;
-        int m_MaxID;
-
-        public T root { get { return m_Root; } set { m_Root = value; } }
-        public event Action modelChanged;
-        public int numberOfDataElements
-        {
-            get { return m_Data.Count; }
-        }
+        private IList<T> m_Data;
+        private int m_MaxID;
 
         public TreeModel(IList<T> data)
         {
             SetData(data);
         }
+
+        public T root { get; set; }
+
+        public int numberOfDataElements => m_Data.Count;
+
+        public event Action modelChanged;
 
         public T Find(int id)
         {
@@ -48,14 +46,14 @@ namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl
             Init(data);
         }
 
-        void Init(IList<T> data)
+        private void Init(IList<T> data)
         {
             if (data == null)
                 throw new ArgumentNullException("data", "Input data is null. Ensure input is a non-null list.");
 
             m_Data = data;
             if (m_Data.Count > 0)
-                m_Root = TreeElementUtility.ListToTree(data);
+                root = TreeElementUtility.ListToTree(data);
 
             m_MaxID = m_Data.Max(e => e.id);
         }
@@ -70,42 +68,35 @@ namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl
             var parents = new List<int>();
             TreeElement T = Find(id);
             if (T != null)
-            {
                 while (T.parent != null)
                 {
                     parents.Add(T.parent.id);
                     T = T.parent;
                 }
-            }
+
             return parents;
         }
 
         public IList<int> GetDescendantsThatHaveChildren(int id)
         {
-            T searchFromThis = Find(id);
-            if (searchFromThis != null)
-            {
-                return GetParentsBelowStackBased(searchFromThis);
-            }
+            var searchFromThis = Find(id);
+            if (searchFromThis != null) return GetParentsBelowStackBased(searchFromThis);
             return new List<int>();
         }
 
-        IList<int> GetParentsBelowStackBased(TreeElement searchFromThis)
+        private IList<int> GetParentsBelowStackBased(TreeElement searchFromThis)
         {
-            Stack<TreeElement> stack = new Stack<TreeElement>();
+            var stack = new Stack<TreeElement>();
             stack.Push(searchFromThis);
 
             var parentsBelow = new List<int>();
             while (stack.Count > 0)
             {
-                TreeElement current = stack.Pop();
+                var current = stack.Pop();
                 if (current.hasChildren)
                 {
                     parentsBelow.Add(current.id);
-                    foreach (var T in current.children)
-                    {
-                        stack.Push(T);
-                    }
+                    foreach (var T in current.children) stack.Push(T);
                 }
             }
 
@@ -121,7 +112,7 @@ namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl
         public void RemoveElements(IList<T> elements)
         {
             foreach (var element in elements)
-                if (element == m_Root)
+                if (element == root)
                     throw new ArgumentException("It is not allowed to remove the root element");
 
             var commonAncestors = TreeElementUtility.FindCommonAncestorsWithinList(elements);
@@ -132,7 +123,7 @@ namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl
                 element.parent = null;
             }
 
-            TreeElementUtility.TreeToList(m_Root, m_Data);
+            TreeElementUtility.TreeToList(root, m_Data);
 
             Changed();
         }
@@ -149,7 +140,7 @@ namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl
             if (parent.children == null)
                 parent.children = new List<TreeElement>();
 
-            parent.children.InsertRange(insertPosition, elements.Cast<TreeElement>());
+            parent.children.InsertRange(insertPosition, elements);
             foreach (var element in elements)
             {
                 element.parent = parent;
@@ -157,7 +148,7 @@ namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl
                 TreeElementUtility.UpdateDepthValues(element);
             }
 
-            TreeElementUtility.TreeToList(m_Root, m_Data);
+            TreeElementUtility.TreeToList(root, m_Data);
 
             Changed();
         }
@@ -192,7 +183,7 @@ namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl
             element.parent = parent;
 
             TreeElementUtility.UpdateDepthValues(parent);
-            TreeElementUtility.TreeToList(m_Root, m_Data);
+            TreeElementUtility.TreeToList(root, m_Data);
 
             Changed();
         }
@@ -200,7 +191,8 @@ namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl
         public void MoveElements(TreeElement parentElement, int insertionIndex, List<TreeElement> elements)
         {
             if (insertionIndex < 0)
-                throw new ArgumentException("Invalid input: insertionIndex is -1, client needs to decide what index elements should be reparented at");
+                throw new ArgumentException(
+                    "Invalid input: insertionIndex is -1, client needs to decide what index elements should be reparented at");
 
             // Invalid reparenting input
             if (parentElement == null)
@@ -213,8 +205,8 @@ namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl
             // Remove draggedItems from their parents
             foreach (var draggedItem in elements)
             {
-                draggedItem.parent.children.Remove(draggedItem);    // remove from old parent
-                draggedItem.parent = parentElement;                 // set new parent
+                draggedItem.parent.children.Remove(draggedItem); // remove from old parent
+                draggedItem.parent = parentElement; // set new parent
             }
 
             if (parentElement.children == null)
@@ -224,12 +216,12 @@ namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl
             parentElement.children.InsertRange(insertionIndex, elements);
 
             TreeElementUtility.UpdateDepthValues(root);
-            TreeElementUtility.TreeToList(m_Root, m_Data);
+            TreeElementUtility.TreeToList(root, m_Data);
 
             Changed();
         }
 
-        void Changed()
+        private void Changed()
         {
             if (modelChanged != null)
                 modelChanged();
@@ -237,7 +229,7 @@ namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl
     }
 
 
-#if runtest 
+#if runtest
     #region Tests
     class TreeModelTests
     {

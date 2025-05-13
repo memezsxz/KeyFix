@@ -1,19 +1,16 @@
-﻿
-using System;
-using UnityEditor;
-using UnityEditor.IMGUI.Controls;
-using UnityEngine;
+﻿using UnityEditor.IMGUI.Controls;
 
 namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl.DependencyGraph
 {
     internal class AH_DepGraphHeader : MultiColumnHeader
     {
-        Mode m_Mode;
         public enum Mode
         {
             Treeview,
             SortedList
         }
+
+        private Mode m_Mode;
 
         public AH_DepGraphHeader(MultiColumnHeaderState state) : base(state)
         {
@@ -22,10 +19,7 @@ namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl.DependencyGraph
 
         public Mode mode
         {
-            get
-            {
-                return m_Mode;
-            }
+            get => m_Mode;
             set
             {
                 m_Mode = value;
@@ -45,10 +39,7 @@ namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl.DependencyGraph
 
         protected override void ColumnHeaderClicked(MultiColumnHeaderState.Column column, int columnIndex)
         {
-            if (mode == Mode.Treeview)
-            {
-                mode = Mode.SortedList;
-            }
+            if (mode == Mode.Treeview) mode = Mode.SortedList;
 
             base.ColumnHeaderClicked(column, columnIndex);
         }

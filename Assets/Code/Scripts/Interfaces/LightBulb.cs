@@ -1,14 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class LightBulb : MonoBehaviour
 {
-    private Image bulbImage;
     public GameObject offSprite;
     public GameObject onSprite;
-    private bool isOn = false;
+    private Image bulbImage;
+    private bool isOn;
 
     private void Awake()
     {
@@ -23,7 +21,8 @@ public class LightBulb : MonoBehaviour
             offSprite.SetActive(false);
             onSprite.SetActive(true);
         }
-        else {
+        else
+        {
             offSprite.SetActive(true);
             onSprite.SetActive(false);
         }

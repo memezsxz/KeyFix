@@ -1,11 +1,9 @@
 using Code.Scripts.Managers;
-using UnityEngine;
 
-
-    public class DoorInteract : InteractableBase
+public class DoorInteract : InteractableBase
+{
+    public override void Interact()
     {
-        public override void Interact()
-        {
-           GameManager.Instance.ChangeState(GameManager.GameState.Victory);
-        }
+        GameManager.Instance.ChangeState(GameManager.GameState.Victory);
     }
+}

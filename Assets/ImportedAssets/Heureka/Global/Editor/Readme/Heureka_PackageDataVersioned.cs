@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditorInternal;
@@ -9,7 +8,7 @@ namespace HeurekaGames
 {
     public class Heureka_PackageDataVersioned : Heureka_PackageData
     {
-        public List<PackageVersion> VersionData = new List<PackageVersion>();
+        public List<PackageVersion> VersionData = new();
         internal bool FoldOutVersionHistory;
 
         private void Item_OnChanged()
@@ -19,37 +18,33 @@ namespace HeurekaGames
 
         public void AddNewVersion(int major, int minor, int patch)
         {
-            PackageVersion newPackageVersion = new PackageVersion(major, minor, patch);
+            var newPackageVersion = new PackageVersion(major, minor, patch);
             VersionData.Add(newPackageVersion);
         }
 
         public void CollapseAll()
         {
-            foreach (var item in VersionData)
-            {
-                item.FoldOut = false;
-            }
+            foreach (var item in VersionData) item.FoldOut = false;
         }
     }
 
-    [System.Serializable]
+    [Serializable]
     public class PackageVersion
     {
-        [SerializeField] public PackageVersionNum VersionNum = new PackageVersionNum();
-        [SerializeField] public List<string> VersionChanges = new List<string>();
-
-        internal bool FoldOut = false;
-        PackageVersionNum newVersionNum = new PackageVersionNum();
-
         private const float btnWidth = 150;
-        private ReorderableList reorderableList;
+        [SerializeField] public PackageVersionNum VersionNum;
+        [SerializeField] public List<string> VersionChanges = new();
 
-        private bool initialized = false;
+        internal bool FoldOut;
+
+        private bool initialized;
+        private PackageVersionNum newVersionNum;
+        private ReorderableList reorderableList;
 
         public PackageVersion(int major, int minor, int patch)
         {
-            this.VersionNum = newVersionNum = new PackageVersionNum(major, minor, patch);
-            this.FoldOut = true;
+            VersionNum = newVersionNum = new PackageVersionNum(major, minor, patch);
+            FoldOut = true;
         }
 
         private void initialize()
@@ -65,7 +60,7 @@ namespace HeurekaGames
         }
 
         /// <summary>
-        /// Draws the header of the list
+        ///     Draws the header of the list
         /// </summary>
         /// <param name="rect"></param>
         private void DrawHeader(Rect rect)
@@ -74,7 +69,7 @@ namespace HeurekaGames
         }
 
         /// <summary>
-        /// Draws one element of the list (ListItemExample)
+        ///     Draws one element of the list (ListItemExample)
         /// </summary>
         /// <param name="rect"></param>
         /// <param name="index"></param>
@@ -82,7 +77,8 @@ namespace HeurekaGames
         /// <param name="focused"></param>
         private void DrawElement(Rect rect, int index, bool active, bool focused)
         {
-            VersionChanges[index] = EditorGUI.TextField(new Rect(rect.x + 18, rect.y, rect.width - 18, rect.height), VersionChanges[index]);
+            VersionChanges[index] = EditorGUI.TextField(new Rect(rect.x + 18, rect.y, rect.width - 18, rect.height),
+                VersionChanges[index]);
         }
 
         private void AddItem(ReorderableList list)
@@ -118,13 +114,10 @@ namespace HeurekaGames
                 EditorGUILayout.BeginHorizontal();
 
                 //versionDescription = GUILayout.TextArea(versionDescription);
-                if (reorderableList.count > 0 && (GUILayout.Button("Copy to clipboard")))
+                if (reorderableList.count > 0 && GUILayout.Button("Copy to clipboard"))
                 {
-                    string clipboardString = "";
-                    foreach (var item in reorderableList.list)
-                    {
-                        clipboardString += item.ToString() + Environment.NewLine;
-                    }
+                    var clipboardString = "";
+                    foreach (var item in reorderableList.list) clipboardString += item + Environment.NewLine;
                     EditorGUIUtility.systemCopyBuffer = clipboardString;
                 }
 
@@ -142,7 +135,7 @@ namespace HeurekaGames
         }
     }
 
-    [System.Serializable]
+    [Serializable]
     public struct PackageVersionNum : IComparable<PackageVersionNum>
     {
         [SerializeField] public int Major;
@@ -151,19 +144,18 @@ namespace HeurekaGames
 
         public PackageVersionNum(int major, int minor, int path)
         {
-            this.Major = major;
-            this.Minor = minor;
-            this.Patch = path;
+            Major = major;
+            Minor = minor;
+            Patch = path;
         }
 
         public int CompareTo(PackageVersionNum other)
         {
-            if (this.Major != other.Major)
-                return this.Major.CompareTo(other.Major);
-            else if (this.Minor != other.Minor)
-                return this.Minor.CompareTo(other.Minor);
-            else
-                return this.Patch.CompareTo(other.Patch);
+            if (Major != other.Major)
+                return Major.CompareTo(other.Major);
+            if (Minor != other.Minor)
+                return Minor.CompareTo(other.Minor);
+            return Patch.CompareTo(other.Patch);
         }
 
         public class VersionComparer : IComparer<PackageVersionNum>
@@ -181,7 +173,7 @@ namespace HeurekaGames
 
         public bool IsEmpty()
         {
-            return (Major == 0 && Minor == 0 && Patch == 0);
+            return Major == 0 && Minor == 0 && Patch == 0;
         }
     }
 }

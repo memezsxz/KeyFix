@@ -6,17 +6,6 @@ namespace Michsky.UI.Shift
     [ExecuteInEditMode]
     public class UIManagerImage : MonoBehaviour
     {
-        [Header("Resources")]
-        public UIManager UIManagerAsset;
-        public Image imageObject;
-
-        [Header("Settings")]
-        public bool keepAlphaValue = false;
-        public bool useCustomColor = false;
-        public ColorType colorType;
-
-        bool dynamicUpdateEnabled;
-
         public enum ColorType
         {
             Primary,
@@ -26,20 +15,22 @@ namespace Michsky.UI.Shift
             Background
         }
 
-        void OnEnable()
-        {
-            if (UIManagerAsset == null)
-            {
-                try { UIManagerAsset = Resources.Load<UIManager>("Shift UI Manager"); }
-                catch { Debug.Log("No UI Manager found. Assign it manually, otherwise it won't work properly.", this); }
-            }
-        }
+        [Header("Resources")] public UIManager UIManagerAsset;
 
-        void Awake()
+        public Image imageObject;
+
+        [Header("Settings")] public bool keepAlphaValue;
+
+        public bool useCustomColor;
+        public ColorType colorType;
+
+        private bool dynamicUpdateEnabled;
+
+        private void Awake()
         {
             if (dynamicUpdateEnabled == false)
             {
-                this.enabled = true;
+                enabled = true;
                 UpdateButton();
             }
 
@@ -47,19 +38,34 @@ namespace Michsky.UI.Shift
                 imageObject = gameObject.GetComponent<Image>();
         }
 
-        void LateUpdate()
+        private void LateUpdate()
         {
             if (UIManagerAsset != null)
             {
-                if (UIManagerAsset.enableDynamicUpdate == true) { dynamicUpdateEnabled = true; }
-                else { dynamicUpdateEnabled = false; }
+                if (UIManagerAsset.enableDynamicUpdate)
+                    dynamicUpdateEnabled = true;
+                else
+                    dynamicUpdateEnabled = false;
 
-                if (dynamicUpdateEnabled == true)
+                if (dynamicUpdateEnabled)
                     UpdateButton();
             }
         }
 
-        void UpdateButton()
+        private void OnEnable()
+        {
+            if (UIManagerAsset == null)
+                try
+                {
+                    UIManagerAsset = Resources.Load<UIManager>("Shift UI Manager");
+                }
+                catch
+                {
+                    Debug.Log("No UI Manager found. Assign it manually, otherwise it won't work properly.", this);
+                }
+        }
+
+        private void UpdateButton()
         {
             try
             {
@@ -82,20 +88,29 @@ namespace Michsky.UI.Shift
                     else
                     {
                         if (colorType == ColorType.Primary)
-                            imageObject.color = new Color(UIManagerAsset.primaryColor.r, UIManagerAsset.primaryColor.g, UIManagerAsset.primaryColor.b, imageObject.color.a);
+                            imageObject.color = new Color(UIManagerAsset.primaryColor.r, UIManagerAsset.primaryColor.g,
+                                UIManagerAsset.primaryColor.b, imageObject.color.a);
                         else if (colorType == ColorType.Secondary)
-                            imageObject.color = new Color(UIManagerAsset.secondaryColor.r, UIManagerAsset.secondaryColor.g, UIManagerAsset.secondaryColor.b, imageObject.color.a);
+                            imageObject.color = new Color(UIManagerAsset.secondaryColor.r,
+                                UIManagerAsset.secondaryColor.g, UIManagerAsset.secondaryColor.b, imageObject.color.a);
                         else if (colorType == ColorType.PrimaryReversed)
-                            imageObject.color = new Color(UIManagerAsset.primaryReversed.r, UIManagerAsset.primaryReversed.g, UIManagerAsset.primaryReversed.b, imageObject.color.a);
+                            imageObject.color = new Color(UIManagerAsset.primaryReversed.r,
+                                UIManagerAsset.primaryReversed.g, UIManagerAsset.primaryReversed.b,
+                                imageObject.color.a);
                         else if (colorType == ColorType.Negative)
-                            imageObject.color = new Color(UIManagerAsset.negativeColor.r, UIManagerAsset.negativeColor.g, UIManagerAsset.negativeColor.b, imageObject.color.a);
+                            imageObject.color = new Color(UIManagerAsset.negativeColor.r,
+                                UIManagerAsset.negativeColor.g, UIManagerAsset.negativeColor.b, imageObject.color.a);
                         else if (colorType == ColorType.Background)
-                            imageObject.color = new Color(UIManagerAsset.backgroundColor.r, UIManagerAsset.backgroundColor.g, UIManagerAsset.backgroundColor.b, imageObject.color.a);
+                            imageObject.color = new Color(UIManagerAsset.backgroundColor.r,
+                                UIManagerAsset.backgroundColor.g, UIManagerAsset.backgroundColor.b,
+                                imageObject.color.a);
                     }
                 }
             }
 
-            catch { }
+            catch
+            {
+            }
         }
     }
 }

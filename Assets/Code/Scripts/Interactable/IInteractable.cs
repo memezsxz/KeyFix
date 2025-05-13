@@ -14,19 +14,15 @@ public abstract class InteractableBase : MonoBehaviour
 
     public virtual void InteractH()
     {
-        
     }
+
     public virtual void ShowHint(bool show)
     {
         if (hintUI == null) return;
 
         if (show)
-        {
             hintUI.ShowHint();
-        }
         else
-        {
             hintUI.HideHint();
-        }
     }
 }

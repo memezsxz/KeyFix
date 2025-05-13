@@ -1,25 +1,20 @@
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 using Code.Scripts.Managers;
+using UnityEngine;
 
 [RequireComponent(typeof(BulbColorController))]
 public class LightBoard : InteractableBase
 {
-    [SerializeField] MeshRenderer bulbRenderer;
-    [SerializeField] Material bulbRedMaterial;
-    [SerializeField] GameObject canvas;
+    [SerializeField] private MeshRenderer bulbRenderer;
+    [SerializeField] private Material bulbRedMaterial;
+    [SerializeField] private GameObject canvas;
 
     private BulbColorController bulbColorController;
-    private bool isActive = false;
+    private bool isActive;
 
     private void Awake()
     {
         bulbColorController = gameObject.GetComponent<BulbColorController>();
-        if (canvas != null)
-        {
-            canvas.SetActive(false); // Always hide the canvas initially
-        }
+        if (canvas != null) canvas.SetActive(false); // Always hide the canvas initially
     }
 
     private void Start()
@@ -56,11 +51,8 @@ public class LightBoard : InteractableBase
         bulbColorController.enabled = value;
         // Do NOT enable the canvas based on BulbColorController directly
         if (!value)
-        {
             // If we are disabling, make sure canvas is hidden too
             if (canvas != null)
                 canvas.SetActive(false);
-        }
     }
-    
 }

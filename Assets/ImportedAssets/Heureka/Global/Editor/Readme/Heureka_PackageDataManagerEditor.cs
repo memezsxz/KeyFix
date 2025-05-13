@@ -1,11 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEditor;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.IO;
-using System.Reflection;
-using System;
+using UnityEditor;
+using UnityEngine;
 
 namespace HeurekaGames
 {
@@ -15,14 +11,70 @@ namespace HeurekaGames
     {
         public static readonly string ShowedReadmeProjectStateName = "HeurekaGames.PackageDataManager.ShowedReadme";
 
-        static float kSpace = 16f;
+        private static readonly float kSpace = 16f;
+        [SerializeField] private GUIStyle m_LinkStyle;
+        [SerializeField] private GUIStyle m_TitleStyle;
+        [SerializeField] private GUIStyle m_HeadingStyle;
+        [SerializeField] private GUIStyle m_BodyStyle;
+
+        private bool m_Initialized;
+
+        private Heureka_PackageDataManager readmeManager;
 
         static Heureka_PackageDataManagerEditor()
         {
             EditorApplication.delayCall += SelectReadmeAutomatically;
         }
 
-        static void SelectReadmeAutomatically()
+        private GUIStyle LinkStyle => m_LinkStyle;
+
+        private GUIStyle TitleStyle => m_TitleStyle;
+
+        private GUIStyle HeadingStyle => m_HeadingStyle;
+
+        private GUIStyle BodyStyle => m_BodyStyle;
+
+        private void OnEnable()
+        {
+            readmeManager = SelectReadme(); // (Heureka_PackageDataManager)target;
+            //populate sections
+            var guids = AssetDatabase.FindAssets($"t:{nameof(Heureka_PackageData)}");
+            var tmpList = new List<Heureka_PackageData>();
+            foreach (var item in guids)
+            {
+                var path = AssetDatabase.GUIDToAssetPath(item);
+                tmpList.Add(AssetDatabase.LoadAssetAtPath<Heureka_PackageData>(path));
+            }
+
+            readmeManager.sections = tmpList.ToArray();
+            //readmeManager.sections = Resources.FindObjectsOfTypeAll<Heureka_PackageData>();
+
+            //Sorted lidt by show Priority
+            readmeManager.sections = readmeManager.sections.OrderByDescending(val => val.PackageShowPrio).ToArray();
+
+            var listUniqueEntries = new List<Heureka_PackageData>();
+            foreach (var item in readmeManager.sections)
+                //If we dont have this asset identifier in list already
+                if (!listUniqueEntries.Any(val => val.AssetIdentifier == item.AssetIdentifier))
+                {
+                    listUniqueEntries.Add(item);
+                }
+                //If it IS in list already find the one that is NOT a promo, and put that in list
+                else
+                {
+                    //If the one we look at right now is a promo, just ignore
+                    if (item.GetType() == typeof(Heureka_PackageDataPromo))
+                        continue;
+                    //Remove the promo from list and insert the new one with similar identifier (Which should be a readme)
+                    listUniqueEntries.Remove(listUniqueEntries.Find(val =>
+                        val.AssetIdentifier == item.AssetIdentifier));
+                    listUniqueEntries.Add(item);
+                }
+
+            readmeManager.sections = listUniqueEntries.ToArray();
+        }
+
+        private static void SelectReadmeAutomatically()
         {
             if (!EditorPrefs.GetBool(getUniqueReadMeStatePrefKey(), false))
             {
@@ -39,60 +91,18 @@ namespace HeurekaGames
         [MenuItem("Window/Heureka/Readme", priority = 10)]
         public static Heureka_PackageDataManager SelectReadme()
         {
-            var ids = AssetDatabase.FindAssets("t:" + typeof(Heureka_PackageDataManager).ToString());
+            var ids = AssetDatabase.FindAssets("t:" + typeof(Heureka_PackageDataManager));
 
             if (ids.Length == 1)
             {
                 var readmeObject = AssetDatabase.LoadMainAssetAtPath(AssetDatabase.GUIDToAssetPath(ids[0]));
 
-                Selection.objects = new UnityEngine.Object[] { readmeObject };
+                Selection.objects = new[] { readmeObject };
                 return (Heureka_PackageDataManager)readmeObject;
             }
-            else
-            {
-                Debug.Log("Couldn't find a readme");
-                return null;
-            }
-        }
 
-        private void OnEnable()
-        {
-            readmeManager = SelectReadme();// (Heureka_PackageDataManager)target;
-            //populate sections
-            var guids = AssetDatabase.FindAssets($"t:{nameof(Heureka_PackageData).ToString()}");
-            List<Heureka_PackageData> tmpList = new List<Heureka_PackageData>();
-            foreach (var item in guids)
-            {
-                string path = AssetDatabase.GUIDToAssetPath(item);
-                tmpList.Add(AssetDatabase.LoadAssetAtPath<Heureka_PackageData>(path));
-            }
-            readmeManager.sections = tmpList.ToArray();
-            //readmeManager.sections = Resources.FindObjectsOfTypeAll<Heureka_PackageData>();
-
-            //Sorted lidt by show Priority
-            readmeManager.sections = readmeManager.sections.OrderByDescending(val => val.PackageShowPrio).ToArray();
-
-            List<Heureka_PackageData> listUniqueEntries = new List<Heureka_PackageData>();
-            foreach (var item in readmeManager.sections)
-            {
-                //If we dont have this asset identifier in list already
-                if (!listUniqueEntries.Any(val=>val.AssetIdentifier == item.AssetIdentifier))
-                    listUniqueEntries.Add(item);
-                //If it IS in list already find the one that is NOT a promo, and put that in list
-                else
-                {
-                    //If the one we look at right now is a promo, just ignore
-                    if (item.GetType() == typeof(Heureka_PackageDataPromo))
-                        continue;
-                    else
-                    {
-                        //Remove the promo from list and insert the new one with similar identifier (Which should be a readme)
-                        listUniqueEntries.Remove(listUniqueEntries.Find(val=>val.AssetIdentifier == item.AssetIdentifier));
-                        listUniqueEntries.Add(item);
-                    }
-                }
-            }
-            readmeManager.sections = listUniqueEntries.ToArray();
+            Debug.Log("Couldn't find a readme");
+            return null;
         }
 
         protected override void OnHeaderGUI()
@@ -102,7 +112,7 @@ namespace HeurekaGames
             //Make sure we have the proper readme's
             SelectReadme();
 
-            var iconWidth = 96;// Mathf.Min(EditorGUIUtility.currentViewWidth / 3f - 20f, 128f);
+            var iconWidth = 96; // Mathf.Min(EditorGUIUtility.currentViewWidth / 3f - 20f, 128f);
 
             GUILayout.BeginHorizontal();
             {
@@ -118,13 +128,10 @@ namespace HeurekaGames
                 GUILayout.FlexibleSpace();
                 GUILayout.EndHorizontal();
 
-                foreach (var link in readmeManager.Links.Where(val => val.ActiveLink == true))
-                {
+                foreach (var link in readmeManager.Links.Where(val => val.ActiveLink))
                     if (LinkLabel(new GUIContent(link.Name)))
-                    {
                         Application.OpenURL(link.Link);
-                    }
-                }
+
                 EditorGUILayout.EndVertical();
             }
             GUILayout.EndHorizontal();
@@ -150,47 +157,41 @@ namespace HeurekaGames
                     EditorGUILayout.EndHorizontal();
                     GUILayout.Space(kSpace);
                 }
-                if (!string.IsNullOrEmpty(section.Description))
-                {
-                    GUILayout.Label(section.Description, BodyStyle);
-                }
+
+                if (!string.IsNullOrEmpty(section.Description)) GUILayout.Label(section.Description, BodyStyle);
                 if (section.Links != null)
-                {
-                    foreach (var link in section.Links.Where(val => val.ActiveLink == true))
-                    {
+                    foreach (var link in section.Links.Where(val => val.ActiveLink))
                         if (LinkLabel(new GUIContent(link.Name)))
-                        {
                             Application.OpenURL(link.Link);
-                        }
-                    }
-                }
+
                 GUILayout.Space(10);
 
                 //If this is a versioned data package
                 if (section.GetType() == typeof(Heureka_PackageDataVersioned))
                 {
-                    Heureka_PackageDataVersioned versionedSection = (Heureka_PackageDataVersioned)section;
+                    var versionedSection = (Heureka_PackageDataVersioned)section;
                     if (versionedSection.VersionData != null && versionedSection.VersionData.Count > 0)
                     {
-                        versionedSection.FoldOutVersionHistory = EditorGUILayout.Foldout(versionedSection.FoldOutVersionHistory, "Version History");
+                        versionedSection.FoldOutVersionHistory =
+                            EditorGUILayout.Foldout(versionedSection.FoldOutVersionHistory, "Version History");
                         if (versionedSection.FoldOutVersionHistory)
                         {
-                            for (int i = versionedSection.VersionData.Count() - 1; i >= 0; i--)
+                            for (var i = versionedSection.VersionData.Count() - 1; i >= 0; i--)
                             {
                                 EditorGUI.indentLevel++;
                                 {
-                                    GUILayout.Label(versionedSection.VersionData[i].VersionNum.GetVersionString(), HeadingStyle);
+                                    GUILayout.Label(versionedSection.VersionData[i].VersionNum.GetVersionString(),
+                                        HeadingStyle);
 
-                                    EditorGUI.indentLevel+=2;
+                                    EditorGUI.indentLevel += 2;
                                     foreach (var versionChange in versionedSection.VersionData[i].VersionChanges)
-                                    {
                                         EditorGUILayout.LabelField("- " + versionChange, BodyStyle);
-                                    }
-                                    EditorGUI.indentLevel-=2;
+                                    EditorGUI.indentLevel -= 2;
                                 }
                                 EditorGUI.indentLevel--;
                                 GUILayout.Space(4);
                             }
+
                             GUILayout.Space(kSpace);
                         }
                     }
@@ -207,23 +208,7 @@ namespace HeurekaGames
             EditorGUILayout.Space();
         }
 
-        bool m_Initialized;
-
-        GUIStyle LinkStyle { get { return m_LinkStyle; } }
-        [SerializeField] GUIStyle m_LinkStyle;
-
-        GUIStyle TitleStyle { get { return m_TitleStyle; } }
-        [SerializeField] GUIStyle m_TitleStyle;
-
-        GUIStyle HeadingStyle { get { return m_HeadingStyle; } }
-        [SerializeField] GUIStyle m_HeadingStyle;
-
-        GUIStyle BodyStyle { get { return m_BodyStyle; } }
-        [SerializeField] GUIStyle m_BodyStyle;
-
-        private Heureka_PackageDataManager readmeManager;
-
-        void Init()
+        private void Init()
         {
             if (m_Initialized)
                 return;
@@ -249,7 +234,7 @@ namespace HeurekaGames
             m_Initialized = true;
         }
 
-        bool LinkLabel(GUIContent label, params GUILayoutOption[] options)
+        private bool LinkLabel(GUIContent label, params GUILayoutOption[] options)
         {
             var position = GUILayoutUtility.GetRect(label, LinkStyle, options);
 

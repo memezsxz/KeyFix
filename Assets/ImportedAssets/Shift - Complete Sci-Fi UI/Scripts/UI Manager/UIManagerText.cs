@@ -1,23 +1,11 @@
-﻿using UnityEngine;
-using TMPro;
+﻿using TMPro;
+using UnityEngine;
 
 namespace Michsky.UI.Shift
 {
     [ExecuteInEditMode]
     public class UIManagerText : MonoBehaviour
     {
-        [Header("Resources")]
-        public UIManager UIManagerAsset;
-        public TextMeshProUGUI textObject;
-
-        [Header("Settings")]
-        public bool keepAlphaValue = false;
-        public bool useCustomColor = false;
-        public ColorType colorType;
-        public FontType fontType;
-
-        bool dynamicUpdateEnabled;
-
         public enum ColorType
         {
             Primary,
@@ -36,20 +24,23 @@ namespace Michsky.UI.Shift
             Bold
         }
 
-        void OnEnable()
-        {
-            if (UIManagerAsset == null)
-            {
-                try { UIManagerAsset = Resources.Load<UIManager>("Shift UI Manager"); }
-                catch { Debug.Log("No UI Manager found. Assign it manually, otherwise it won't work properly.", this); }
-            }
-        }
+        [Header("Resources")] public UIManager UIManagerAsset;
 
-        void Awake()
+        public TextMeshProUGUI textObject;
+
+        [Header("Settings")] public bool keepAlphaValue;
+
+        public bool useCustomColor;
+        public ColorType colorType;
+        public FontType fontType;
+
+        private bool dynamicUpdateEnabled;
+
+        private void Awake()
         {
             if (dynamicUpdateEnabled == false)
             {
-                this.enabled = true;
+                enabled = true;
                 UpdateButton();
             }
 
@@ -57,21 +48,34 @@ namespace Michsky.UI.Shift
                 textObject = gameObject.GetComponent<TextMeshProUGUI>();
         }
 
-        void LateUpdate()
+        private void LateUpdate()
         {
             if (UIManagerAsset != null)
             {
-                if (UIManagerAsset.enableDynamicUpdate == true)
+                if (UIManagerAsset.enableDynamicUpdate)
                     dynamicUpdateEnabled = true;
                 else
                     dynamicUpdateEnabled = false;
 
-                if (dynamicUpdateEnabled == true)
+                if (dynamicUpdateEnabled)
                     UpdateButton();
             }
         }
 
-        void UpdateButton()
+        private void OnEnable()
+        {
+            if (UIManagerAsset == null)
+                try
+                {
+                    UIManagerAsset = Resources.Load<UIManager>("Shift UI Manager");
+                }
+                catch
+                {
+                    Debug.Log("No UI Manager found. Assign it manually, otherwise it won't work properly.", this);
+                }
+        }
+
+        private void UpdateButton()
         {
             try
             {
@@ -95,15 +99,20 @@ namespace Michsky.UI.Shift
                     else
                     {
                         if (colorType == ColorType.Primary)
-                            textObject.color = new Color(UIManagerAsset.primaryColor.r, UIManagerAsset.primaryColor.g, UIManagerAsset.primaryColor.b, textObject.color.a);
+                            textObject.color = new Color(UIManagerAsset.primaryColor.r, UIManagerAsset.primaryColor.g,
+                                UIManagerAsset.primaryColor.b, textObject.color.a);
                         else if (colorType == ColorType.Secondary)
-                            textObject.color = new Color(UIManagerAsset.secondaryColor.r, UIManagerAsset.secondaryColor.g, UIManagerAsset.secondaryColor.b, textObject.color.a);
+                            textObject.color = new Color(UIManagerAsset.secondaryColor.r,
+                                UIManagerAsset.secondaryColor.g, UIManagerAsset.secondaryColor.b, textObject.color.a);
                         else if (colorType == ColorType.PrimaryReversed)
-                            textObject.color = new Color(UIManagerAsset.primaryReversed.r, UIManagerAsset.primaryReversed.g, UIManagerAsset.primaryReversed.b, textObject.color.a);
+                            textObject.color = new Color(UIManagerAsset.primaryReversed.r,
+                                UIManagerAsset.primaryReversed.g, UIManagerAsset.primaryReversed.b, textObject.color.a);
                         else if (colorType == ColorType.Negative)
-                            textObject.color = new Color(UIManagerAsset.negativeColor.r, UIManagerAsset.negativeColor.g, UIManagerAsset.negativeColor.b, textObject.color.a);
+                            textObject.color = new Color(UIManagerAsset.negativeColor.r, UIManagerAsset.negativeColor.g,
+                                UIManagerAsset.negativeColor.b, textObject.color.a);
                         else if (colorType == ColorType.Background)
-                            textObject.color = new Color(UIManagerAsset.backgroundColor.r, UIManagerAsset.backgroundColor.g, UIManagerAsset.backgroundColor.b, textObject.color.a);
+                            textObject.color = new Color(UIManagerAsset.backgroundColor.r,
+                                UIManagerAsset.backgroundColor.g, UIManagerAsset.backgroundColor.b, textObject.color.a);
                     }
                 }
 
@@ -120,7 +129,9 @@ namespace Michsky.UI.Shift
                     textObject.font = UIManagerAsset.boldFont;
             }
 
-            catch { }
+            catch
+            {
+            }
         }
     }
 }

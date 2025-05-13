@@ -1,7 +1,7 @@
-﻿using HeurekaGames.AssetHunterPRO.BaseTreeviewImpl.AssetTreeView;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using HeurekaGames.AssetHunterPRO.BaseTreeviewImpl.AssetTreeView;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,37 +11,23 @@ namespace HeurekaGames.AssetHunterPRO
     public class AH_BuildInfoManager : ScriptableObject
     {
         public delegate void BuildInfoSelectionChangedDelegate();
-        public BuildInfoSelectionChangedDelegate OnBuildInfoSelectionChanged;
 
-        [SerializeField] private bool hasTreeviewSelection = false;
+        [SerializeField] private bool hasTreeviewSelection;
         [SerializeField] private string chosenFilePath;
         [SerializeField] private AH_SerializedBuildInfo chosenBuildInfo;
-        [SerializeField] AH_BuildInfoTreeView treeView;
+        [SerializeField] private AH_BuildInfoTreeView treeView;
         [SerializeField] private bool projectDirty;
         [SerializeField] private bool projectIsClean;
+        public BuildInfoSelectionChangedDelegate OnBuildInfoSelectionChanged;
 
-        public AH_BuildInfoTreeView TreeView
+        public AH_BuildInfoTreeView TreeView => treeView;
+
+        public bool HasSelection => hasTreeviewSelection;
+
+        public bool ProjectDirty
         {
-            get
-            {
-                return treeView;
-            }
-        }
-
-        public bool HasSelection
-        {
-            get
-            {
-                return hasTreeviewSelection;
-            }
-        }
-
-        public bool ProjectDirty { 
             get => projectDirty;
-            set
-            { 
-                projectDirty = value;
-            } 
+            set => projectDirty = value;
         }
 
         public void OnEnable()
@@ -59,8 +45,7 @@ namespace HeurekaGames.AssetHunterPRO
         {
             if (treeView != null && treeView.treeElements != null && treeView.treeElements.Count > 0)
                 return treeView.treeElements;
-            else
-                Debug.LogError("Missing Data!!!");
+            Debug.LogError("Missing Data!!!");
 
             return null;
         }
@@ -73,16 +58,11 @@ namespace HeurekaGames.AssetHunterPRO
 
             Version reportVersion;
             if (Version.TryParse(chosenBuildInfo.versionNumber, out reportVersion))
-            {
-                if (reportVersion.CompareTo(new Version("2.2.0")) < 0) //If report is older than 2.2.0 (tweaked datamodel in 2.2.0 from saving 'Paths' to saving 'guids')
-                {
+                if (reportVersion.CompareTo(new Version("2.2.0")) <
+                    0) //If report is older than 2.2.0 (tweaked datamodel in 2.2.0 from saving 'Paths' to saving 'guids')
                     //Change paths to guids
                     foreach (var item in chosenBuildInfo.AssetListUnSorted)
-                    {
                         item.ChangePathToGUID();
-                    }
-                }
-            }
 
             if (chosenBuildInfo == null)
                 return;
@@ -107,8 +87,8 @@ namespace HeurekaGames.AssetHunterPRO
 
         private bool populateBuildReport()
         {
-            treeView = ScriptableObject.CreateInstance<AH_BuildInfoTreeView>();
-            bool success = treeView.PopulateTreeView(chosenBuildInfo);
+            treeView = CreateInstance<AH_BuildInfoTreeView>();
+            var success = treeView.PopulateTreeView(chosenBuildInfo);
 
             projectIsClean = !treeView.HasUnused();
 

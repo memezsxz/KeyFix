@@ -21,8 +21,8 @@ public class DebugCommand : DebugCommandBase
     }
 
     /// <summary>
-    /// Invoke a command with or without arguments
-    /// could be used for methods with arguments or to handel multiple input values at the same time
+    ///     Invoke a command with or without arguments
+    ///     could be used for methods with arguments or to handel multiple input values at the same time
     /// </summary>
     /// <param name="args">array of string arguments</param>
     /// <exception cref="InvalidOperationException">throw when the command is not found</exception>
@@ -71,16 +71,10 @@ public class DebugCommand : DebugCommandBase
     public void Invoke(params string[] args)
     {
         if (_expectsArguments && _commandWithArgs != null)
-        {
             _commandWithArgs.Invoke(args);
-        }
         else if (!_expectsArguments && _command != null)
-        {
             _command.Invoke();
-        }
         else
-        {
             throw new InvalidOperationException($"Command {CommandId} was not set up correctly.");
-        }
     }
 }

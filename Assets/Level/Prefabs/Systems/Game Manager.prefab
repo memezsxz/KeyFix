@@ -225,9 +225,17 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 234384386277556256}
     m_Modifications:
+    - target: {fileID: 3607959859347531920, guid: 054cd6cf8b92c4b8386361952cacd962, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3607959859751112016, guid: 054cd6cf8b92c4b8386361952cacd962, type: 3}
       propertyPath: m_Name
       value: LevelCompleteCanvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 3607959859751112016, guid: 054cd6cf8b92c4b8386361952cacd962, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3607959859751112028, guid: 054cd6cf8b92c4b8386361952cacd962, type: 3}
       propertyPath: m_Pivot.x
@@ -346,6 +354,10 @@ PrefabInstance:
     - target: {fileID: 7139843819540115178, guid: 37d8917d7c33dff44b524a26d04026de, type: 3}
       propertyPath: m_Name
       value: SceneController
+      objectReference: {fileID: 0}
+    - target: {fileID: 7139843819540115178, guid: 37d8917d7c33dff44b524a26d04026de, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7139843819540115179, guid: 37d8917d7c33dff44b524a26d04026de, type: 3}
       propertyPath: m_RootOrder
@@ -689,7 +701,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1014584963891733155, guid: 4bb1ebb71f119164ba80f3dadfd4773c, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2075498360168738311, guid: 4bb1ebb71f119164ba80f3dadfd4773c, type: 3}
       propertyPath: m_IsActive

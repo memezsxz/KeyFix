@@ -12,11 +12,11 @@ public class SaveManagerEditor : Editor
     [HideInInspector] public int SelectedSlotIndex;
     private string[] _availableSaveSlots = Array.Empty<string>();
     private string _customSlotName = "Game1";
+    private bool _initialized;
     private int _selectedSlotIndex;
-    private bool _initialized = false;
 
     public string SaveSlotName =>
-        (_availableSaveSlots != null && SelectedSlotIndex >= 0 && SelectedSlotIndex < _availableSaveSlots.Length)
+        _availableSaveSlots != null && SelectedSlotIndex >= 0 && SelectedSlotIndex < _availableSaveSlots.Length
             ? _availableSaveSlots[SelectedSlotIndex]
             : "Game1";
 
@@ -44,13 +44,10 @@ public class SaveManagerEditor : Editor
             // Only initialize once
             if (!_initialized)
             {
-                string lastGame = PlayerPrefs.GetString(SaveManager.LAST_GAME_PREF);
-                int index = Array.IndexOf(_availableSaveSlots, lastGame);
+                var lastGame = PlayerPrefs.GetString(SaveManager.LAST_GAME_PREF);
+                var index = Array.IndexOf(_availableSaveSlots, lastGame);
 
-                if (!string.IsNullOrWhiteSpace(lastGame) && index >= 0)
-                {
-                    _selectedSlotIndex = index;
-                }
+                if (!string.IsNullOrWhiteSpace(lastGame) && index >= 0) _selectedSlotIndex = index;
 
                 _initialized = true;
             }

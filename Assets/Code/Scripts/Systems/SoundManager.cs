@@ -1,32 +1,34 @@
-using System;
 using UnityEngine;
 using UnityEngine.Audio;
 
 /// <summary>
-/// Manages sound and music playback, volumes, and persistence.
+///     Manages sound and music playback, volumes, and persistence.
 /// </summary>
 public class SoundManager : Singleton<SoundManager>, IDataPersistence
 {
     #region Fields & Properties
 
-    [Header("Audio Sources")]
-    [SerializeField] private AudioSource musicAudioSource;
+    [Header("Audio Sources")] [SerializeField]
+    private AudioSource musicAudioSource;
+
     [SerializeField] private AudioSource sfxAudioSource;
 
     public AudioSource MusicAudioSource => musicAudioSource;
     public AudioSource SFXAudioSource => sfxAudioSource;
 
-    [Header("Audio Mixer Groups")]
-    [SerializeField] private AudioMixerGroup SFXGroup;
+    [Header("Audio Mixer Groups")] [SerializeField]
+    private AudioMixerGroup SFXGroup;
+
     [SerializeField] private AudioMixerGroup MusicGroup;
 
     [SerializeField] private AudioMixer audioMixer;
 
-    [Header("Volume Levels")]
-    [SerializeField, Range(0f, 1f)] private float musicVolume = 1f;
-    [SerializeField, Range(0f, 1f)] private float soundVolume = 1f;
+    [Header("Volume Levels")] [SerializeField] [Range(0f, 1f)]
+    private float musicVolume = 1f;
 
-    public float MusicVolume => musicVolume; 
+    [SerializeField] [Range(0f, 1f)] private float soundVolume = 1f;
+
+    public float MusicVolume => musicVolume;
     public float SoundVolume => soundVolume;
     public bool IsMusicPlaying => MusicAudioSource.isPlaying;
     public bool IsSoundPlaying => SFXAudioSource.isPlaying;
@@ -55,7 +57,7 @@ public class SoundManager : Singleton<SoundManager>, IDataPersistence
     {
         // Add debug commands for adjusting volume via debug console
         DebugController.Instance?.AddDebugCommand(new DebugCommand(
-            "set_music_vol", 
+            "set_music_vol",
             "Changes the music volume",
             "set_music_vol <float>",
             args =>
@@ -85,8 +87,8 @@ public class SoundManager : Singleton<SoundManager>, IDataPersistence
     public void PlaySound(AudioClip clip, float volumeMultiplier = -1f)
     {
         if (clip == null) return;
-        
-        float finalVolume = (volumeMultiplier < 0.001f || volumeMultiplier > 1f) ? MusicVolume : volumeMultiplier;
+
+        var finalVolume = volumeMultiplier < 0.001f || volumeMultiplier > 1f ? MusicVolume : volumeMultiplier;
 
         volumeMultiplier = Mathf.Clamp01(finalVolume);
 
@@ -101,10 +103,10 @@ public class SoundManager : Singleton<SoundManager>, IDataPersistence
         if (clip == null) return;
 
         musicAudioSource.clip = clip;
-        float finalVolume = (volumeMultiplier < 0.001f || volumeMultiplier > 1f) ? MusicVolume : volumeMultiplier;
+        var finalVolume = volumeMultiplier < 0.001f || volumeMultiplier > 1f ? MusicVolume : volumeMultiplier;
 
         volumeMultiplier = Mathf.Clamp01(finalVolume);
-        
+
         if (!musicAudioSource.isPlaying)
             musicAudioSource.Play();
     }
@@ -114,18 +116,19 @@ public class SoundManager : Singleton<SoundManager>, IDataPersistence
     {
         musicAudioSource.Stop();
     }
-    
+
     /// <summary>Stops the music clip currently playing</summary>
     public void StopSound()
     {
         sfxAudioSource.Stop();
     }
-    
+
     public void StopAllAudio()
     {
         if (IsMusicPlaying) StopMusic();
         if (IsSoundPlaying) StopSound();
     }
+
     #endregion
 
     #region Volume Control
@@ -135,9 +138,9 @@ public class SoundManager : Singleton<SoundManager>, IDataPersistence
     public void SetSoundVolume(float volume)
     {
         if (volume is < 0 or > 1) return;
-        
+
         soundVolume = volume;
-        float decibels = ConvertVolumeToDecibels(volume);
+        var decibels = ConvertVolumeToDecibels(volume);
         audioMixer.SetFloat(SfxPref, decibels);
     }
 
@@ -146,9 +149,9 @@ public class SoundManager : Singleton<SoundManager>, IDataPersistence
     public void SetMusicVolume(float volume)
     {
         if (volume is < 0 or > 1) return;
-        
+
         musicVolume = volume;
-        float decibels = ConvertVolumeToDecibels(volume);
+        var decibels = ConvertVolumeToDecibels(volume);
         audioMixer.SetFloat(MusicPref, decibels);
     }
 

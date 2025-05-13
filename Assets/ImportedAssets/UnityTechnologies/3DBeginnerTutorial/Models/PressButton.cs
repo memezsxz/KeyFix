@@ -1,36 +1,32 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using Code.Scripts.Managers;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class PressButton : MonoBehaviour
 {
-    [SerializeField] Transform insidePart;
-    public Vector3 pressedOffset = new Vector3(0, -0.1f, 0);
-    private Vector3 originalPosition;
-    private Vector3 targetPosition;
-    [SerializeField] float moveSpeed = 5f;
-    public PressedColor AssignedColor
-    {
-        get { return pressedColor;} }
-    public bool IsPressed { get; private set; }
-
-    private Material material;
-    [SerializeField] AudioClip pressSound;
-
-    private PressedColor pressedColor;
-
-    public Action<PressedColor> OnPressed;
-    public Action<PressedColor> OnReleased;
-
     public enum PressedColor
     {
         Red,
         Green,
-        Blue,
+        Blue
     }
+
+    [SerializeField] private Transform insidePart;
+    public Vector3 pressedOffset = new(0, -0.1f, 0);
+    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private AudioClip pressSound;
+
+    private Material material;
+
+    public Action<PressedColor> OnPressed;
+    public Action<PressedColor> OnReleased;
+    private Vector3 originalPosition;
+
+    private Vector3 targetPosition;
+
+    public PressedColor AssignedColor { get; private set; }
+
+    public bool IsPressed { get; private set; }
 
     private void Start()
     {
@@ -46,10 +42,8 @@ public class PressButton : MonoBehaviour
     private void Update()
     {
         if (insidePart != null)
-        {
             insidePart.localPosition =
                 Vector3.Lerp(insidePart.localPosition, targetPosition, moveSpeed * Time.deltaTime);
-        }
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -59,11 +53,8 @@ public class PressButton : MonoBehaviour
             targetPosition = originalPosition + pressedOffset;
             IsPressed = true;
             if (pressSound != null && !SoundManager.Instance.IsSoundPlaying)
-            {
                 SoundManager.Instance.PlaySound(pressSound);
-            }
             ColorCoordinator.Instance.CheckButtonMatch();
-
         }
     }
 
@@ -78,8 +69,8 @@ public class PressButton : MonoBehaviour
 
     public void ChangeColor(PressedColor color)
     {
-        pressedColor = color;
-        material.color = pressedColor switch
+        AssignedColor = color;
+        material.color = AssignedColor switch
         {
             PressedColor.Blue => Color.blue,
             PressedColor.Red => Color.red,

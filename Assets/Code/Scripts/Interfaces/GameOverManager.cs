@@ -1,15 +1,10 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Code.Scripts.Managers;
-using GLTFast.Schema;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using static Code.Scripts.Managers.GameManager;
 
 public class GameOverManager : MonoBehaviour
 {
-    [SerializeField] AudioClip gameOverSound;
+    [SerializeField] private AudioClip gameOverSound;
     // public LoadingManager loadingScript;
     // public GameObject loadingScreen;
     // public GameObject GameOverScene;

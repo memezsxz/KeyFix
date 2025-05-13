@@ -91,6 +91,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Game Manager
       objectReference: {fileID: 0}
+    - target: {fileID: 3757335958144013909, guid: 81e2487bc4d1044aa8281050a28e61c4, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4941819135438951655, guid: 81e2487bc4d1044aa8281050a28e61c4, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 81e2487bc4d1044aa8281050a28e61c4, type: 3}
 --- !u!4 &463794878743932964 stripped
@@ -214,6 +222,10 @@ PrefabInstance:
     - target: {fileID: 7828890616340516228, guid: 2f8b59fa1630d48b6a19c91f715cf973, type: 3}
       propertyPath: m_Name
       value: Debug Controller
+      objectReference: {fileID: 0}
+    - target: {fileID: 7828890616340516228, guid: 2f8b59fa1630d48b6a19c91f715cf973, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2f8b59fa1630d48b6a19c91f715cf973, type: 3}

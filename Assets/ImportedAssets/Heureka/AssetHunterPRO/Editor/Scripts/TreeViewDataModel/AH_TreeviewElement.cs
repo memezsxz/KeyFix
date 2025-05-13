@@ -1,174 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Profiling;
 
 namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl.AssetTreeView
 {
-    [System.Serializable]
+    [Serializable]
     public class AH_TreeviewElement : TreeElement, ISerializationCallbackReceiver
     {
-        #region Fields
-        [SerializeField]
-        private string absPath;
-        //[SerializeField]
-        private string relativePath;
-        [SerializeField]
-        private string guid;
-        //[SerializeField]
-        private Type assetType;
-        [SerializeField]
-        private string assetTypeSerialized;
-        private long assetSize;
-        //private string assestSizeStringRepresentation;
-        //[SerializeField]
-        private long fileSize;
-        //[SerializeField]
-        //private string fileSizeStringRepresentation;
-        [SerializeField]
-        private List<string> scenesReferencingAsset;
-        [SerializeField]
-        private bool usedInBuild;
-        [SerializeField]
-        private bool isFolder;
-        [SerializeField]
-        private Dictionary<AH_MultiColumnHeader.AssetShowMode, long> combinedAssetSizeInFolder = new Dictionary<AH_MultiColumnHeader.AssetShowMode, long>();
-
-        //Dictionary of asset types and their icons (Cant be serialized)
-        private static Dictionary<Type, Texture> iconDictionary = new Dictionary<Type, Texture>();
-
-        #endregion
-
-        #region Properties
-
-        public string RelativePath
-        {
-            get
-            {
-                if(!string.IsNullOrEmpty(relativePath))
-                    return relativePath;
-                else
-                   return relativePath = UnityEditor.AssetDatabase.GUIDToAssetPath(GUID);
-            }
-        }
-
-        public string GUID
-        {
-            get
-            {
-                return guid;
-            }
-        }
-
-        public Type AssetType
-        {
-            get
-            {
-                return assetType;
-            }
-        }
-
-        //TODO, make this threaded
-        public string AssetTypeSerialized
-        {
-            get
-            {
-                if(String.IsNullOrEmpty(assetTypeSerialized) && assetType!=null)
-                    assetTypeSerialized = Heureka_Serializer.SerializeType(assetType);
-                return assetTypeSerialized;
-            }
-        }
-
-        public long AssetSize
-        {
-            get
-            {
-                if(UsedInBuild && assetSize == 0)
-                {
-                    UnityEngine.Object asset = UnityEditor.AssetDatabase.LoadMainAssetAtPath(RelativePath);
-                    //#if UNITY_2017_1_OR_NEWER
-                    if (asset != null)
-                        return this.assetSize = Profiler.GetRuntimeMemorySizeLong(asset) / 2;
-                    else
-                        return -1;
-                }
-                else
-                    return assetSize;
-            }
-        }
-
-        public string AssetSizeStringRepresentation
-        {
-            get
-            {
-                return AH_Utils.GetSizeAsString(AssetSize);
-            }
-        }
-
-        //TODO, make this threaded
-        public long FileSize
-        {
-            get
-            {
-                if (fileSize != 0)
-                    return fileSize;
-                else
-                {
-                    var fileInfo = new System.IO.FileInfo(absPath);
-                    if (fileInfo.Exists)
-                        return fileSize = fileInfo != null ? fileInfo.Length : 0;
-                    else
-                        return -1;
-                }
-            }
-        }
-
-        public string FileSizeStringRepresentation
-        {
-            get
-            { 
-                return AH_Utils.GetSizeAsString(fileSize);
-            }       
-        }
-
-        public List<string> ScenesReferencingAsset
-        {
-            get { return scenesReferencingAsset; }
-        }
-
-        public int SceneRefCount
-        {
-            get { return (scenesReferencingAsset != null) ? scenesReferencingAsset.Count : 0; }
-        }
-
-        public bool UsedInBuild
-        {
-            get { return usedInBuild; }
-        }
-
-        public bool IsFolder
-        {
-            get { return isFolder; }
-        }
-        #endregion
-
-        public AH_TreeviewElement(string absPath, int depth, int id, string relativepath, string assetID, List<string> scenesReferencing, bool isUsedInBuild) : base(System.IO.Path.GetFileName(absPath), depth, id)
+        public AH_TreeviewElement(string absPath, int depth, int id, string relativepath, string assetID,
+            List<string> scenesReferencing, bool isUsedInBuild) : base(Path.GetFileName(absPath), depth, id)
         {
             this.absPath = absPath;
             var assetPath = relativepath;
-            this.guid = UnityEditor.AssetDatabase.AssetPathToGUID(assetPath);
-            this.scenesReferencingAsset = scenesReferencing;
-            this.usedInBuild = isUsedInBuild;
+            guid = AssetDatabase.AssetPathToGUID(assetPath);
+            scenesReferencingAsset = scenesReferencing;
+            usedInBuild = isUsedInBuild;
 
             //Return if its a folder
-            if (isFolder = UnityEditor.AssetDatabase.IsValidFolder(assetPath))
+            if (isFolder = AssetDatabase.IsValidFolder(assetPath))
                 return;
 
             //Return if its not an asset
-            if (!string.IsNullOrEmpty(this.guid))
+            if (!string.IsNullOrEmpty(guid))
             {
-                this.assetType = UnityEditor.AssetDatabase.GetMainAssetTypeAtPath(assetPath);
+                AssetType = AssetDatabase.GetMainAssetTypeAtPath(assetPath);
                 updateIconDictEntry();
             }
         }
@@ -188,16 +46,16 @@ namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl.AssetTreeView
             if (hasChildren)
                 foreach (AH_TreeviewElement item in children)
                 {
-                    bool validAsset = (showMode == AH_MultiColumnHeader.AssetShowMode.All) ||
-                        ((showMode == AH_MultiColumnHeader.AssetShowMode.Unused && !item.usedInBuild) ||
-                        (showMode == AH_MultiColumnHeader.AssetShowMode.Used && item.usedInBuild));
+                    var validAsset = showMode == AH_MultiColumnHeader.AssetShowMode.All ||
+                                     (showMode == AH_MultiColumnHeader.AssetShowMode.Unused && !item.usedInBuild) ||
+                                     (showMode == AH_MultiColumnHeader.AssetShowMode.Used && item.usedInBuild);
 
                     //Loop thropugh folders and assets thats used not in build
                     if (validAsset || item.isFolder)
                         combinedChildrenSize += item.GetFileSizeRecursively(showMode);
                 }
 
-            combinedChildrenSize += this.FileSize;
+            combinedChildrenSize += FileSize;
 
             //Cache the value
             combinedAssetSizeInFolder.Add(showMode, combinedChildrenSize);
@@ -205,31 +63,12 @@ namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl.AssetTreeView
             return combinedChildrenSize;
         }
 
-        #region Serialization callbacks
-        //TODO Maybe we can store type infos in BuildInfoTreeView instead of on each individual element, might be performance heavy
-
-        //Store serializable string so we can retrieve type after serialization
-        public void OnBeforeSerialize()
-        {
-            if (assetType != null)
-                assetTypeSerialized = Heureka_Serializer.SerializeType(assetType);
-        }
-
-        //Set type from serialized property
-        public void OnAfterDeserialize()
-        {
-            if (!string.IsNullOrEmpty(AssetTypeSerialized))
-            {
-                this.assetType = Heureka_Serializer.DeSerializeType(AssetTypeSerialized);
-                //assetTypeSerialized = "";
-            }
-        }
-        #endregion
-
         internal bool AssetMatchesState(AH_MultiColumnHeader.AssetShowMode showMode)
         {
             //Test if we want to add this element (We dont want to show "used" when window searches for "unused"
-            return (AssetType != null && ((showMode == AH_MultiColumnHeader.AssetShowMode.All) || ((showMode == AH_MultiColumnHeader.AssetShowMode.Used && usedInBuild) || (showMode == AH_MultiColumnHeader.AssetShowMode.Unused && !usedInBuild))));
+            return AssetType != null && (showMode == AH_MultiColumnHeader.AssetShowMode.All ||
+                                         (showMode == AH_MultiColumnHeader.AssetShowMode.Used && usedInBuild) ||
+                                         (showMode == AH_MultiColumnHeader.AssetShowMode.Unused && !usedInBuild));
         }
 
         internal bool HasChildrenThatMatchesState(AH_MultiColumnHeader.AssetShowMode showMode)
@@ -242,65 +81,58 @@ namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl.AssetTreeView
             {
                 if (child.AssetMatchesState(showMode))
                     return true;
-                else if (child.HasChildrenThatMatchesState(showMode))
+                if (child.HasChildrenThatMatchesState(showMode))
                     return true;
-                else
-                    continue;
             }
+
             return false;
         }
 
         internal List<string> GetUnusedPathsRecursively()
         {
-            List<string> unusedAssetsInFolder = new List<string>();
+            var unusedAssetsInFolder = new List<string>();
 
             //Combine the size of all the children
             if (hasChildren)
                 foreach (AH_TreeviewElement item in children)
-                {
                     if (item.isFolder)
                         unusedAssetsInFolder.AddRange(item.GetUnusedPathsRecursively());
                     //Loop thropugh folders and assets thats used not in build
                     else if (!item.usedInBuild)
                         unusedAssetsInFolder.Add(item.RelativePath);
-                }
             return unusedAssetsInFolder;
         }
 
         internal static List<string> GetStoredIconTypes()
         {
-            List<string> iconTypesSerialized = new List<string>();
-            foreach (var item in iconDictionary)
-            {
-                iconTypesSerialized.Add(Heureka_Serializer.SerializeType(item.Key));
-            }
+            var iconTypesSerialized = new List<string>();
+            foreach (var item in iconDictionary) iconTypesSerialized.Add(Heureka_Serializer.SerializeType(item.Key));
             return iconTypesSerialized;
         }
 
         internal static List<Texture> GetStoredIconTextures()
         {
-            List<Texture> iconTexturesSerialized = new List<Texture>();
-            foreach (var item in iconDictionary)
-            {
-                iconTexturesSerialized.Add(item.Value);
-            }
+            var iconTexturesSerialized = new List<Texture>();
+            foreach (var item in iconDictionary) iconTexturesSerialized.Add(item.Value);
             return iconTexturesSerialized;
         }
 
         private void updateIconDictEntry()
         {
-            if (assetType != null && !iconDictionary.ContainsKey(assetType))
-                iconDictionary.Add(assetType, UnityEditor.EditorGUIUtility.ObjectContent(null, assetType).image);
+            if (AssetType != null && !iconDictionary.ContainsKey(AssetType))
+                iconDictionary.Add(AssetType, EditorGUIUtility.ObjectContent(null, AssetType).image);
         }
 
-        internal static void UpdateIconDictAfterSerialization(List<string> serializationHelperListIconTypes, List<Texture> serializationHelperListIconTextures)
+        internal static void UpdateIconDictAfterSerialization(List<string> serializationHelperListIconTypes,
+            List<Texture> serializationHelperListIconTextures)
         {
             iconDictionary = new Dictionary<Type, Texture>();
-            for (int i = 0; i < serializationHelperListIconTypes.Count; i++)
+            for (var i = 0; i < serializationHelperListIconTypes.Count; i++)
             {
-                Type deserializedType = Heureka_Serializer.DeSerializeType(serializationHelperListIconTypes[i]);
+                var deserializedType = Heureka_Serializer.DeSerializeType(serializationHelperListIconTypes[i]);
                 if (deserializedType != null)
-                    iconDictionary.Add(Heureka_Serializer.DeSerializeType(serializationHelperListIconTypes[i]), serializationHelperListIconTextures[i]);
+                    iconDictionary.Add(Heureka_Serializer.DeSerializeType(serializationHelperListIconTypes[i]),
+                        serializationHelperListIconTextures[i]);
             }
         }
 
@@ -308,5 +140,132 @@ namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl.AssetTreeView
         {
             return iconDictionary[assetType];
         }
+
+        #region Fields
+
+        [SerializeField] private string absPath;
+
+        //[SerializeField]
+        private string relativePath;
+
+        [SerializeField] private string guid;
+
+        //[SerializeField]
+
+        [SerializeField] private string assetTypeSerialized;
+
+        private long assetSize;
+
+        //private string assestSizeStringRepresentation;
+        //[SerializeField]
+        private long fileSize;
+
+        //[SerializeField]
+        //private string fileSizeStringRepresentation;
+        [SerializeField] private List<string> scenesReferencingAsset;
+
+        [SerializeField] private bool usedInBuild;
+
+        [SerializeField] private bool isFolder;
+
+        private Dictionary<AH_MultiColumnHeader.AssetShowMode, long> combinedAssetSizeInFolder = new();
+
+        //Dictionary of asset types and their icons (Cant be serialized)
+        private static Dictionary<Type, Texture> iconDictionary = new();
+
+        #endregion
+
+        #region Properties
+
+        public string RelativePath
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(relativePath))
+                    return relativePath;
+                return relativePath = AssetDatabase.GUIDToAssetPath(GUID);
+            }
+        }
+
+        public string GUID => guid;
+
+        public Type AssetType { get; private set; }
+
+        //TODO, make this threaded
+        public string AssetTypeSerialized
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(assetTypeSerialized) && AssetType != null)
+                    assetTypeSerialized = Heureka_Serializer.SerializeType(AssetType);
+                return assetTypeSerialized;
+            }
+        }
+
+        public long AssetSize
+        {
+            get
+            {
+                if (UsedInBuild && assetSize == 0)
+                {
+                    var asset = AssetDatabase.LoadMainAssetAtPath(RelativePath);
+                    //#if UNITY_2017_1_OR_NEWER
+                    if (asset != null)
+                        return assetSize = Profiler.GetRuntimeMemorySizeLong(asset) / 2;
+                    return -1;
+                }
+
+                return assetSize;
+            }
+        }
+
+        public string AssetSizeStringRepresentation => AH_Utils.GetSizeAsString(AssetSize);
+
+        //TODO, make this threaded
+        public long FileSize
+        {
+            get
+            {
+                if (fileSize != 0)
+                    return fileSize;
+                var fileInfo = new FileInfo(absPath);
+                if (fileInfo.Exists)
+                    return fileSize = fileInfo != null ? fileInfo.Length : 0;
+                return -1;
+            }
+        }
+
+        public string FileSizeStringRepresentation => AH_Utils.GetSizeAsString(fileSize);
+
+        public List<string> ScenesReferencingAsset => scenesReferencingAsset;
+
+        public int SceneRefCount => scenesReferencingAsset != null ? scenesReferencingAsset.Count : 0;
+
+        public bool UsedInBuild => usedInBuild;
+
+        public bool IsFolder => isFolder;
+
+        #endregion
+
+        #region Serialization callbacks
+
+        //TODO Maybe we can store type infos in BuildInfoTreeView instead of on each individual element, might be performance heavy
+
+        //Store serializable string so we can retrieve type after serialization
+        public void OnBeforeSerialize()
+        {
+            if (AssetType != null)
+                assetTypeSerialized = Heureka_Serializer.SerializeType(AssetType);
+        }
+
+        //Set type from serialized property
+        public void OnAfterDeserialize()
+        {
+            if (!string.IsNullOrEmpty(AssetTypeSerialized))
+                AssetType = Heureka_Serializer.DeSerializeType(AssetTypeSerialized);
+            //assetTypeSerialized = "";
+        }
+
+        #endregion
     }
 }
