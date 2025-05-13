@@ -252,8 +252,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b270369335d7b422093030a5620dace3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scene: 3
-  state: 0
 --- !u!114 &211535740
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -274,7 +272,7 @@ MonoBehaviour:
         m_Calls:
         - m_Target: {fileID: 211535739}
           m_TargetAssemblyTypeName: SignalToGameManager, Assembly-CSharp
-          m_MethodName: Go
+          m_MethodName: PlayNextCutScene
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}

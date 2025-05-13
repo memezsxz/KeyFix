@@ -346,7 +346,7 @@ MonoBehaviour:
         m_Calls:
         - m_Target: {fileID: 44561571}
           m_TargetAssemblyTypeName: SignalToGameManager, Assembly-CSharp
-          m_MethodName: Go
+          m_MethodName: PlayNextCutScene
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}

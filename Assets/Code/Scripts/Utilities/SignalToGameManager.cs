@@ -1,14 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using Code.Scripts.Managers;
 using UnityEngine;
-using UnityEngine.Playables;
-using UnityEngine.Timeline;
 
 public class SignalToGameManager : MonoBehaviour
 {
-    public void Go()
+    public void PlayNextCutScene()
     {
-        GameManager.Instance.ChangeState(GameManager.GameState.Victory);
+        GameManager.Instance.ChangeState(GameManager.GameState.CutScene);
     }
 }

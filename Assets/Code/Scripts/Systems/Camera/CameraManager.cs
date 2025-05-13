@@ -1,27 +1,24 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using Cinemachine;
+using UnityEngine;
 using UnityEngine.InputSystem;
-
 
 public class CameraManager : Singleton<CameraManager>
 {
+    [SerializeField] private CinemachineVirtualCameraBase focusCamera;
+    [SerializeField] private GameObject Player;
+
+    [SerializeField] private GameObject PlayerEye;
     // Camera manager needs to adapt to change between multiple cameras for cut scenes
     // we can do that using camera zones -colliders-
 
     private List<CinemachineVirtualCameraBase> _cameras;
-    [SerializeField] private CinemachineVirtualCameraBase focusCamera;
-    [SerializeField] private GameObject Player;
-    [SerializeField] private GameObject PlayerEye;
+    private InputAction _changeInputAction;
     private int _firstCameraIndex = -1;
     private InputAction _lockInputAction;
-    private InputAction _changeInputAction;
-    private bool _focusOnEnemy = false;
 
-    public bool IsFocusing => _focusOnEnemy;
+    public bool IsFocusing { get; private set; }
 
     private void Start()
     {
@@ -30,7 +27,7 @@ public class CameraManager : Singleton<CameraManager>
             gameObject.GetComponentsInChildren<CinemachineVirtualCameraBase>()
                 .Where(cam =>
                     !(cam.transform.parent != null &&
-                      cam.transform.parent.GetComponent<Cinemachine.CinemachineFreeLook>() != null))
+                      cam.transform.parent.GetComponent<CinemachineFreeLook>() != null))
         );
 
         // Debug.LogWarning("cms:" + _cameras.Count);
@@ -65,12 +62,6 @@ public class CameraManager : Singleton<CameraManager>
         EnableNextCamera();
     }
 
-    private void OnChange(InputAction.CallbackContext ctx)
-    {
-        if (_focusOnEnemy) return;
-        EnableNextCamera();
-    }
-
     private void OnDisable()
     {
         if (_changeInputAction != null)
@@ -82,7 +73,13 @@ public class CameraManager : Singleton<CameraManager>
             _lockInputAction.canceled -= OnFocusCanceled;
         }
     }
-    
+
+    private void OnChange(InputAction.CallbackContext ctx)
+    {
+        if (IsFocusing) return;
+        EnableNextCamera();
+    }
+
     private void EnableNextCamera()
     {
         DisableAllCameras();
@@ -97,7 +94,7 @@ public class CameraManager : Singleton<CameraManager>
 
     private void OnFocusStarted(InputAction.CallbackContext ctx)
     {
-        _focusOnEnemy = true;
+        IsFocusing = true;
 
         DisableAllCameras();
         if (focusCamera != null)
@@ -106,7 +103,7 @@ public class CameraManager : Singleton<CameraManager>
 
     private void OnFocusCanceled(InputAction.CallbackContext ctx)
     {
-        _focusOnEnemy = false;
+        IsFocusing = false;
 
         DisableAllCameras();
 

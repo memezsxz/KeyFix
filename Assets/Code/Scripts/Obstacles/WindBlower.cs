@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -16,7 +15,7 @@ namespace Code.Scripts.Obstacles
 
         private void Start()
         {
-            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            var player = GameObject.FindGameObjectWithTag("Player");
             if (player != null)
             {
                 playerMovement = player.GetComponent<PlayerMovement>();
@@ -27,44 +26,39 @@ namespace Code.Scripts.Obstacles
         private void Update()
         {
             if (playerMovement == null || playerTransform == null) return;
-            Vector3 center = transform.position;
-            Vector3 halfExtents = transform.localScale * 0.5f;
-            Quaternion rotation = transform.rotation;
+            var center = transform.position;
+            var halfExtents = transform.localScale * 0.5f;
+            var rotation = transform.rotation;
 
             RaycastHit hit;
             if (Physics.BoxCast(center, halfExtents, windDirection, out hit, rotation, detectionRange))
-            {
                 if (hit.collider.CompareTag("Player"))
                 {
-                    float scaleFactor = playerTransform.localScale.magnitude / Mathf.Sqrt(3f);
+                    var scaleFactor = playerTransform.localScale.magnitude / Mathf.Sqrt(3f);
 
-                    float effectiveWindStrength = baseWindStrength;
+                    var effectiveWindStrength = baseWindStrength;
 
                     if (scaleFactor > 1f)
                     {
-                        effectiveWindStrength /= (scaleFactor * 2f);
+                        effectiveWindStrength /= scaleFactor * 2f;
                         effectiveWindStrength =
                             Mathf.Max(effectiveWindStrength, baseWindStrength * minimumWindResistance);
                     }
 
                     var inputActions = playerTransform.GetComponent<PlayerInput>().actions;
-                    Vector2 moveValue = inputActions.FindAction("Move").ReadValue<Vector2>();
+                    var moveValue = inputActions.FindAction("Move").ReadValue<Vector2>();
 
                     if (moveValue != Vector2.zero && scaleFactor > 1f)
                     {
-                        Vector3 moveInput = new Vector3(moveValue.x, 0f, moveValue.y).normalized;
-                        float againstWind = Vector3.Dot(moveInput, windDirection.normalized);
+                        var moveInput = new Vector3(moveValue.x, 0f, moveValue.y).normalized;
+                        var againstWind = Vector3.Dot(moveInput, windDirection.normalized);
 
-                        if (againstWind < 0f)
-                        {
-                            effectiveWindStrength *= 0.5f;
-                        }
+                        if (againstWind < 0f) effectiveWindStrength *= 0.5f;
                     }
 
-                    Vector3 force = windDirection.normalized * effectiveWindStrength;
+                    var force = windDirection.normalized * effectiveWindStrength;
                     playerMovement.ApplyExternalForce(force);
                 }
-            }
         }
     }
 }

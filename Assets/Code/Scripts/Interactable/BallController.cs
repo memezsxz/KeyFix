@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,7 +9,7 @@ public class BallController : MonoBehaviour
     private float xInput, zInput; // Use these variables to store user input.
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         ballSpeed = 5.0f;
         rb = GetComponent<Rigidbody>();
@@ -19,17 +17,17 @@ public class BallController : MonoBehaviour
         zInput = 0.0f;
     }
 
-    void OnMove(InputValue movementValue)
+    // Update is called once per frame
+    private void Update()
     {
-        Vector2 movementVector = movementValue.Get<Vector2>();
-        xInput = movementVector.x;
-        zInput = movementVector.y;
+        var movement = new Vector3(xInput, 0f, zInput);
+        rb.AddForce(movement * ballSpeed);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnMove(InputValue movementValue)
     {
-        Vector3 movement = new Vector3(xInput, 0f, zInput);
-        rb.AddForce(movement * ballSpeed);
+        var movementVector = movementValue.Get<Vector2>();
+        xInput = movementVector.x;
+        zInput = movementVector.y;
     }
 }

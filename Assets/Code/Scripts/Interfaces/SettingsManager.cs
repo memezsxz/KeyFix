@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
-using Michsky.UI.Shift;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,21 +11,22 @@ public class SettingsManager : MonoBehaviour
     // public AudioSource buttonClickSound;
     // public AudioSource musicSound;
 
-    [Header("Volume")]
-    public Slider musicSlider;
+    [Header("Volume")] public Slider musicSlider;
+
     public Slider sfxSlider;
 
-    [Header("Graphics")]
-    public TMP_Dropdown graphicsDropdown;
-    private int qualityIndex;
+    [Header("Graphics")] public TMP_Dropdown graphicsDropdown;
 
-    [Header("Resolution")]
-    public TextMeshProUGUI txt_resolution;
-    private Resolution[] resolutionsList;
+    [Header("Resolution")] public TextMeshProUGUI txt_resolution;
+
     public TMP_Dropdown resolutionDropDown;
+
+    private int qualityIndex;
     // private int currentResolutionIndex = 0;
 
     private List<Resolution> resolutions;
+
+    private Resolution[] resolutionsList;
     //private HorizontalSelector resolutionScript;
 
     // private const string MUSIC_PREF = "MusicVolume";
@@ -49,13 +48,14 @@ public class SettingsManager : MonoBehaviour
     }
 
     #region Volume
+
     public void SetupVolume()
     {
-        musicSlider.onValueChanged.AddListener((value) => SoundManager.Instance.SetMusicVolume(value));
-        sfxSlider.onValueChanged.AddListener((value) => SoundManager.Instance.SetSoundVolume(value));
+        musicSlider.onValueChanged.AddListener(value => SoundManager.Instance.SetMusicVolume(value));
+        sfxSlider.onValueChanged.AddListener(value => SoundManager.Instance.SetSoundVolume(value));
 
-        float musicVolume = SoundManager.Instance.MusicVolume;
-        float sfxVolume = SoundManager.Instance.SoundVolume;
+        var musicVolume = SoundManager.Instance.MusicVolume;
+        var sfxVolume = SoundManager.Instance.SoundVolume;
 
         musicSlider.value = musicVolume;
         sfxSlider.value = sfxVolume;
@@ -63,16 +63,37 @@ public class SettingsManager : MonoBehaviour
 
     #endregion
 
-    #region Graphics
-    private bool initializingGraphicsDropdown = false;
+    #region Reset
 
-    void SetupGraphicsDropdown()
+    public void ResetSettings()
+    {
+        SaveManager.Instance.ResetSettings();
+        // PlayerPrefs.DeleteKey(MUSIC_PREF);
+        // PlayerPrefs.DeleteKey(SFX_PREF);
+        // PlayerPrefs.DeleteKey(QUALITY_PREF);
+        // PlayerPrefs.DeleteKey(RES_PREF);
+
+
+        // int defaultQuality = 2; // You can change this to 1 or 0 based on what you want
+        // QualitySettings.SetQualityLevel(defaultQuality);
+        // PlayerPrefs.SetInt(QUALITY_PREF, defaultQuality);
+
+        Start();
+    }
+
+    #endregion
+
+    #region Graphics
+
+    private bool initializingGraphicsDropdown;
+
+    private void SetupGraphicsDropdown()
     {
         initializingGraphicsDropdown = true;
 
         graphicsDropdown.ClearOptions();
 
-        string[] qualityLevels = QualitySettings.names;
+        var qualityLevels = QualitySettings.names;
         graphicsDropdown.AddOptions(new List<string>(qualityLevels));
 
         // int savedIndex = GraphicsManager.Instance.QualityIndex;
@@ -113,24 +134,25 @@ public class SettingsManager : MonoBehaviour
         QualitySettings.SetQualityLevel(qualityIndex);
         Debug.Log("Graphics set to: " + QualitySettings.names[qualityIndex]);
     }
+
     #endregion
 
     #region Resolution
+
     public void SetupResolutionSelector()
     {
-
         resolutionsList = Screen.resolutions;
 
         resolutionDropDown.ClearOptions();
-        int savedIndex = GraphicsManager.Instance.ResolutionIndex;
+        var savedIndex = GraphicsManager.Instance.ResolutionIndex;
 
         // print($"Resolution Index: {savedIndex}");
-        
-        List<string> options = new List<string>();
 
-        for (int i = 0; i < resolutionsList.Length; i++) {
+        var options = new List<string>();
 
-            string option = resolutionsList[i].width + " x " + resolutionsList[i].height;
+        for (var i = 0; i < resolutionsList.Length; i++)
+        {
+            var option = resolutionsList[i].width + " x " + resolutionsList[i].height;
             options.Add(option);
 
             // If no saved resolution, match current screen resolution
@@ -151,34 +173,13 @@ public class SettingsManager : MonoBehaviour
         resolutionDropDown.AddOptions(options);
         resolutionDropDown.value = GraphicsManager.Instance.ResolutionIndex;
         resolutionDropDown.RefreshShownValue();
-
-
-
     }
 
     public void ApplyResolution(int index)
     {
-        Resolution r = resolutionsList[index];
+        var r = resolutionsList[index];
         Screen.SetResolution(r.width, r.height, Screen.fullScreen);
     }
-    #endregion
 
-    #region Reset
-    public void ResetSettings()
-    {
-        SaveManager.Instance.ResetSettings();
-        // PlayerPrefs.DeleteKey(MUSIC_PREF);
-        // PlayerPrefs.DeleteKey(SFX_PREF);
-        // PlayerPrefs.DeleteKey(QUALITY_PREF);
-        // PlayerPrefs.DeleteKey(RES_PREF);
-
-
-        // int defaultQuality = 2; // You can change this to 1 or 0 based on what you want
-        // QualitySettings.SetQualityLevel(defaultQuality);
-        // PlayerPrefs.SetInt(QUALITY_PREF, defaultQuality);
-
-        Start();
-
-    }
     #endregion
 }

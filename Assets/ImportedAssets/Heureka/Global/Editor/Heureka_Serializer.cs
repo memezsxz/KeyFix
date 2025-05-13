@@ -13,9 +13,9 @@ namespace HeurekaGames
 
         public static List<string> DeserializeStringList(string json)
         {
-            StringList list = JsonUtility.FromJson<StringList>(json);
+            var list = JsonUtility.FromJson<StringList>(json);
 
-            return (list != null) ? list.Items : new List<string>();
+            return list != null ? list.Items : new List<string>();
         }
 
         public static Type DeSerializeType(string serializedType)
@@ -28,14 +28,13 @@ namespace HeurekaGames
             return type.AssemblyQualifiedName;
         }
 
-        [SerializeField]
         public class StringList
         {
-            public List<string> Items = new List<string>();
+            public List<string> Items = new();
 
             public StringList(List<string> items)
             {
-                this.Items = items;
+                Items = items;
             }
         }
     }

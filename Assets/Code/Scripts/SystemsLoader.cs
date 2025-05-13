@@ -1,16 +1,16 @@
 using UnityEngine;
 
-    public static class SystemsLoader
+public static class SystemsLoader
+{
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    public static void Execute()
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        public static void Execute()
-        {
-            var systems = Resources.Load("Managers");
+        var systems = Resources.Load("Managers");
 
-            if (!systems)
-                return;
+        if (!systems)
+            return;
 
-            Object.DontDestroyOnLoad(Object.Instantiate(systems));
-            // Debug.Log("Systems Loaded");
-        }
+        Object.DontDestroyOnLoad(Object.Instantiate(systems));
+        // Debug.Log("Systems Loaded");
     }
+}

@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,13 +7,15 @@ namespace Code.Scripts.Managers
 {
     public class ColorCoordinator : Singleton<ColorCoordinator>
     {
-        [SerializeField] List<PressButton> buttons = new();
-        [SerializeField] List<Panel> panels = new();
+        [SerializeField] private List<PressButton> buttons = new();
+        [SerializeField] private List<Panel> panels = new();
 
         private void Start()
         {
-            DebugController.Instance?.AddDebugCommand(new DebugCommand("switch_button_colors", "changes button colors", "switch_button_colors", () => SwitchButtonsColors()));
-            DebugController.Instance?.AddDebugCommand(new DebugCommand("switch_panel_colors", "changes panel colors", "switch_panel_colors", () => SwitchPanelColors()));
+            DebugController.Instance?.AddDebugCommand(new DebugCommand("switch_button_colors", "changes button colors",
+                "switch_button_colors", () => SwitchButtonsColors()));
+            DebugController.Instance?.AddDebugCommand(new DebugCommand("switch_panel_colors", "changes panel colors",
+                "switch_panel_colors", () => SwitchPanelColors()));
             StartCoroutine(DelayedInit());
         }
 
@@ -26,6 +27,7 @@ namespace Code.Scripts.Managers
                 GameManager.Instance.ChangeState(GameManager.GameState.Victory);
                 return;
             }
+
             var pressedButtons = buttons.FindAll(b => b.IsPressed);
 
             if (pressedButtons.Count != 2)
@@ -42,15 +44,10 @@ namespace Code.Scripts.Managers
                 panels.RemoveAt(0);
 
                 if (panels.Count == 0)
-                {
                     // Debug.Log("All panels solved! Victory!");
                     GameManager.Instance.ChangeState(GameManager.GameState.Victory);
-                }
-                else
-                {
-                    // Optional: highlight next panel
-                    // Debug.Log("Proceed to next panel.");
-                }
+                // Optional: highlight next panel
+                // Debug.Log("Proceed to next panel.");
             }
         }
 
@@ -82,17 +79,14 @@ namespace Code.Scripts.Managers
             };
 
             // Shuffle the color assignments
-            for (int i = 0; i < colorPool.Count; i++)
+            for (var i = 0; i < colorPool.Count; i++)
             {
-                int rnd = Random.Range(i, colorPool.Count);
+                var rnd = Random.Range(i, colorPool.Count);
                 (colorPool[i], colorPool[rnd]) = (colorPool[rnd], colorPool[i]);
             }
 
             // Assign to buttons in order
-            for (int i = 0; i < 6; i++)
-            {
-                buttons[i].ChangeColor(colorPool[i]);
-            }
+            for (var i = 0; i < 6; i++) buttons[i].ChangeColor(colorPool[i]);
         }
 
         private void SwitchPanelColors()
@@ -113,23 +107,17 @@ namespace Code.Scripts.Managers
 
             // Fill the remaining with random colors
             while (requiredColors.Count < panels.Count)
-            {
                 requiredColors.Add((PressButton.PressedColor)Random.Range(0, 3));
-            }
 
             // Shuffle the colors only, not the panels
-            for (int i = 0; i < requiredColors.Count; i++)
+            for (var i = 0; i < requiredColors.Count; i++)
             {
-                int rnd = Random.Range(i, requiredColors.Count);
+                var rnd = Random.Range(i, requiredColors.Count);
                 (requiredColors[i], requiredColors[rnd]) = (requiredColors[rnd], requiredColors[i]);
             }
 
             // Assign colors in order to the panels list (no shuffling)
-            for (int i = 0; i < panels.Count; i++)
-            {
-                panels[i].ChangeColor(requiredColors[i]);
-            }
+            for (var i = 0; i < panels.Count; i++) panels[i].ChangeColor(requiredColors[i]);
         }
-
     }
 }

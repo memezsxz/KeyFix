@@ -1,10 +1,6 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using Code.Scripts.Managers;
 using UnityEngine;
-using UnityEngine.Audio;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MainMenuManager : MonoBehaviour
@@ -15,7 +11,6 @@ public class MainMenuManager : MonoBehaviour
 
     //buttons refrence
     public Button continueGameButton;
-    private Dictionary<GameObject, Vector3> originalScales = new Dictionary<GameObject, Vector3>();
 
 
     //panels refrence
@@ -23,7 +18,9 @@ public class MainMenuManager : MonoBehaviour
     public GameObject instructionsPanel;
     public GameObject creditsPanel;
     public GameObject exitPanel;
+
     public CanvasGroup mainMenuGroup;
+
     // public GameObject loadingScreen;
     public GameObject mainScene;
 
@@ -32,12 +29,13 @@ public class MainMenuManager : MonoBehaviour
     // public SceneFader sceneFader;
     // public LoadingManager loadingScript;
     public SettingsManager settingsScript;
+    private readonly Dictionary<GameObject, Vector3> originalScales = new();
 
 
     private void Start()
     {
         continueGameButton.interactable = !SaveManager.Instance.IsNewGame;
-  
+
 
         //this code must be set after the complete a level
 
@@ -49,7 +47,7 @@ public class MainMenuManager : MonoBehaviour
     public void StartNewGame()
     {
         SaveManager.Instance.StartNewGame();
-        GameManager.Instance.HandleSceneLoad(GameManager.Scenes.HALLWAYS);
+        GameManager.Instance.HandleSceneLoad(GameManager.Scenes.INCIDENT);
         CloseAllPanels();
         mainScene.SetActive(false);
     }
@@ -146,13 +144,10 @@ public class MainMenuManager : MonoBehaviour
     //Animation methods
     public void OnHoverEnter(GameObject btn)
     {
-        Button button = btn.GetComponent<Button>();
-        if (button != null && button.interactable == true)
+        var button = btn.GetComponent<Button>();
+        if (button != null && button.interactable)
         {
-            if (!originalScales.ContainsKey(btn))
-            {
-                originalScales[btn] = btn.transform.localScale;
-            }
+            if (!originalScales.ContainsKey(btn)) originalScales[btn] = btn.transform.localScale;
 
             PlayClickSound();
             btn.transform.localScale = originalScales[btn] * 1.1f;

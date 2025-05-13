@@ -1,21 +1,19 @@
-
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace HeurekaGames
 {
     public static class Heureka_AddDefineSymbols
     {
         /// <summary>
-        /// Add define symbols as soon as Unity gets done compiling.
+        ///     Add define symbols as soon as Unity gets done compiling.
         /// </summary>
         public static void AddDefineSymbols(string[] Symbols)
         {
-            string definesString = PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
-            List<string> allDefines = definesString.Split(';').ToList();
+            var definesString =
+                PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
+            var allDefines = definesString.Split(';').ToList();
 
             var newDefines = Symbols.Except(allDefines);
             if (newDefines.Count() > 0)

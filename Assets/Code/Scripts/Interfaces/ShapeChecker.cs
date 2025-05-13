@@ -1,35 +1,30 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ShapeChecker : MonoBehaviour
 {
-   public Action successCallback;
-    [SerializeField]
-    private GameObject wholeGamePanel;
+    [SerializeField] private GameObject wholeGamePanel;
 
-    [SerializeField]
-    private GameObject successfulPanel;
-    [SerializeField]
-    private GameObject failedPanel;
+    [SerializeField] private GameObject successfulPanel;
 
-    [SerializeField]
-    private AudioClip successfulSound;
+    [SerializeField] private GameObject failedPanel;
 
-    [SerializeField]
-    private AudioClip failedSound;
+    [SerializeField] private AudioClip successfulSound;
+
+    [SerializeField] private AudioClip failedSound;
 
     public Transform bulbGrid; // parent of bulbs
     public bool[] targetPattern; // must match manually to your shape
+    public Action successCallback;
 
     public void CheckShape()
     {
-        bool match = true;
-        for (int i = 0; i < bulbGrid.childCount; i++)
+        var match = true;
+        for (var i = 0; i < bulbGrid.childCount; i++)
         {
-            LightBulb bulb = bulbGrid.GetChild(i).GetComponent<LightBulb>();
-            bool bulbState = bulb.IsOn();
+            var bulb = bulbGrid.GetChild(i).GetComponent<LightBulb>();
+            var bulbState = bulb.IsOn();
             if (bulbState != targetPattern[i])
             {
                 match = false;
@@ -49,7 +44,7 @@ public class ShapeChecker : MonoBehaviour
         }
     }
 
-    IEnumerator ShowSuccessfulPanel()
+    private IEnumerator ShowSuccessfulPanel()
     {
         successfulPanel.SetActive(true);
         SoundManager.Instance.PlaySound(successfulSound);
@@ -62,7 +57,7 @@ public class ShapeChecker : MonoBehaviour
         successCallback?.Invoke();
     }
 
-    IEnumerator ShowFailedPanel()
+    private IEnumerator ShowFailedPanel()
     {
         failedPanel.SetActive(true);
         SoundManager.Instance.PlaySound(failedSound);

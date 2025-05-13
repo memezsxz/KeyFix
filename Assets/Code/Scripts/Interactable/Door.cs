@@ -1,29 +1,26 @@
-using System;
-using System.Linq;
 using Code.Scripts.Managers;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 
 namespace Code.Scripts.Interactable
 {
     public class Door : InteractableBase
     {
-       public enum DoorType
+        public enum DoorType
         {
             Enter,
-            Exit,
+            Exit
         }
 
-        [SerializeField] GameManager.Scenes _scene;
-      public  GameManager.Scenes Scene => _scene;
-        [SerializeField] private bool isGKey = false;
-        [SerializeField] DoorType _doorType;
+        [SerializeField] private GameManager.Scenes _scene;
+        // [SerializeField] private bool isGKey;
+        [SerializeField] private DoorType _doorType;
+
+
+        [SerializeField] private Vector3 forwardPosition;
+        private readonly float playerPush = 5;
+        public GameManager.Scenes Scene => _scene;
 
         public DoorType type => _doorType;
-        
-
-        [SerializeField] Vector3 forwardPosition;
-        private float playerPush = 5;
 
         private void Start()
         {
@@ -39,13 +36,14 @@ namespace Code.Scripts.Interactable
         private void HandleEnterDoor()
         {
             SaveManager.Instance.SaveHallwayPosition();
-            if (isGKey) GameManager.Instance.HandleSceneLoad(_scene, GameManager.GameState.CutScene);
-            else GameManager.Instance.HandleSceneLoad(_scene);
+            // if (isGKey) GameManager.Instance.HandleSceneLoad(_scene, GameManager.GameState.CutScene);
+            // else 
+            GameManager.Instance.HandleSceneLoad(_scene);
         }
 
         public void HandleExitDoor()
         {
-            var pos = transform.position + (forwardPosition * playerPush);
+            var pos = transform.position + forwardPosition * playerPush;
             GameManager.Instance.MovePlayerTo(pos, transform.rotation);
         }
     }

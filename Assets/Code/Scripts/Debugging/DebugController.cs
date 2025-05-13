@@ -1,22 +1,38 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-
-class DebugController : Singleton<DebugController>
+internal class DebugController : Singleton<DebugController>
 {
     [SerializeField] private bool showConsole;
     [SerializeField] private bool showHelp;
+    private readonly Dictionary<string, DebugCommand> _commands = new();
+    private readonly bool TESTING = false;
     private string _input;
     private Vector2 _scroll;
-    private readonly Dictionary<string, DebugCommand> _commands = new Dictionary<string, DebugCommand>();
-private readonly bool TESTING = false;
+
     private void Start()
     {
         RegisterDefaultCommands();
+    }
+
+    private void OnGUI()
+    {
+        if (!showConsole) return; // If the console is not active, do not draw anything
+
+        var y = 0f;
+
+        // Initialize UI Styles
+        var textFieldStyle = GetTextFieldStyle();
+        var labelStyle = GetLabelStyle();
+
+        // Show the Help Dropdown (if enabled)
+        if (showHelp) y += RenderHelpDropdown(y, labelStyle);
+
+        // Render Input Field
+        RenderInputField(y, textFieldStyle);
     }
 
     private void OnToggleDebug()
@@ -24,28 +40,8 @@ private readonly bool TESTING = false;
         showConsole = !showConsole;
     }
 
-    private void OnGUI()
-    {
-        if (!showConsole) return; // If the console is not active, do not draw anything
-
-        float y = 0f;
-
-        // Initialize UI Styles
-        GUIStyle textFieldStyle = GetTextFieldStyle();
-        GUIStyle labelStyle = GetLabelStyle();
-
-        // Show the Help Dropdown (if enabled)
-        if (showHelp)
-        {
-            y += RenderHelpDropdown(y, labelStyle);
-        }
-
-        // Render Input Field
-        RenderInputField(y, textFieldStyle);
-    }
-
     /// <summary>
-    /// Returns a GUIStyle for the input text field.
+    ///     Returns a GUIStyle for the input text field.
     /// </summary>
     private GUIStyle GetTextFieldStyle()
     {
@@ -57,7 +53,7 @@ private readonly bool TESTING = false;
     }
 
     /// <summary>
-    /// Returns a GUIStyle for command labels.
+    ///     Returns a GUIStyle for command labels.
     /// </summary>
     private GUIStyle GetLabelStyle()
     {
@@ -70,25 +66,25 @@ private readonly bool TESTING = false;
     }
 
     /// <summary>
-    /// Renders the Help Dropdown with all available commands.
+    ///     Renders the Help Dropdown with all available commands.
     /// </summary>
     private float RenderHelpDropdown(float y, GUIStyle labelStyle)
     {
-        float scrollViewHeight = 150f;
-        float commandViewHeight = 50f;
+        var scrollViewHeight = 150f;
+        var commandViewHeight = 50f;
 
         GUI.Box(new Rect(0f, y, Screen.width, scrollViewHeight), "");
 
-        Rect helpRect = new Rect(0f, y, Screen.width - 20f, commandViewHeight * _commands.Count);
+        var helpRect = new Rect(0f, y, Screen.width - 20f, commandViewHeight * _commands.Count);
         _scroll = GUI.BeginScrollView(new Rect(0, y + 10f, Screen.width, scrollViewHeight - 20f), _scroll, helpRect);
 
-        for (int i = 0; i < _commands.Count; i++)
+        for (var i = 0; i < _commands.Count; i++)
         {
             DebugCommandBase command = _commands.Values.ElementAt(i);
-            string label = $"{command.CommandId} - {command.CommandDescription}" +
-                           (string.IsNullOrEmpty(command.CommandFormat) ? "" : $" - {command.CommandFormat}");
+            var label = $"{command.CommandId} - {command.CommandDescription}" +
+                        (string.IsNullOrEmpty(command.CommandFormat) ? "" : $" - {command.CommandFormat}");
 
-            Rect labelRect = new Rect(10f, commandViewHeight * i, helpRect.width - 40f, commandViewHeight);
+            var labelRect = new Rect(10f, commandViewHeight * i, helpRect.width - 40f, commandViewHeight);
             GUI.Label(labelRect, label, labelStyle);
         }
 
@@ -97,7 +93,7 @@ private readonly bool TESTING = false;
     }
 
     /// <summary>
-    /// Renders the Input Field for entering commands.
+    ///     Renders the Input Field for entering commands.
     /// </summary>
     private void RenderInputField(float y, GUIStyle textFieldStyle)
     {
@@ -107,7 +103,7 @@ private readonly bool TESTING = false;
     }
 
     /// <summary>
-    /// Invoked when the user clicks the return key while the debugger is showing
+    ///     Invoked when the user clicks the return key while the debugger is showing
     /// </summary>
     /// <param name="value"></param>
     private void OnReturn(InputValue value)
@@ -120,7 +116,7 @@ private readonly bool TESTING = false;
     }
 
     /// <summary>
-    /// Handles the user input after return is clicked
+    ///     Handles the user input after return is clicked
     /// </summary>
     /// <param name="input">the id of the command</param>
     private void HandleInput(string input)
@@ -128,11 +124,11 @@ private readonly bool TESTING = false;
         if (string.IsNullOrWhiteSpace(input))
             return;
 
-        string[] splitInput = input.Split(' ');
-        string commandId = splitInput[0];
-        string[] args = splitInput.Length > 1 ? splitInput[1..] : new string[0]; // Remaining parts are arguments
+        var splitInput = input.Split(' ');
+        var commandId = splitInput[0];
+        var args = splitInput.Length > 1 ? splitInput[1..] : new string[0]; // Remaining parts are arguments
 
-        if (_commands.TryGetValue(commandId, out DebugCommand command))
+        if (_commands.TryGetValue(commandId, out var command))
         {
             try
             {
@@ -140,20 +136,20 @@ private readonly bool TESTING = false;
             }
             catch (Exception ex)
             {
-              if (TESTING)  Debug.LogError($"Error executing command {commandId}: {ex.Message}");
+                if (TESTING) Debug.LogError($"Error executing command {commandId}: {ex.Message}");
             }
         }
         else
         {
-            if (TESTING)   Debug.LogWarning($"Unknown command: {commandId}");
+            if (TESTING) Debug.LogWarning($"Unknown command: {commandId}");
         }
     }
 
     /// <summary>
-    /// Instantiates the default commands
+    ///     Instantiates the default commands
     ///     1. help
     ///     2. test
-    /// in the debugger
+    ///     in the debugger
     /// </summary>
     private void RegisterDefaultCommands()
     {
@@ -162,38 +158,37 @@ private readonly bool TESTING = false;
     }
 
     /// <summary>
-    /// Adds the provided <para>command</para> to the debugger in the scene
+    ///     Adds the provided
+    ///     <para>command</para>
+    ///     to the debugger in the scene
     /// </summary>
     /// <param name="command">the command to be added</param>
     public void RegisterCommand(DebugCommand command)
     {
         if (_commands.TryAdd(command.CommandId, command))
         {
-            if (TESTING)   Debug.Log($"Registered debug command: {command.CommandId}"); // for testing only 
+            if (TESTING) Debug.Log($"Registered debug command: {command.CommandId}"); // for testing only 
         }
         else
         {
-            if (TESTING)  Debug.LogWarning($"Command {command.CommandId} is already registered.");
+            if (TESTING) Debug.LogWarning($"Command {command.CommandId} is already registered.");
         }
     }
 
     /// <summary>
-    /// the function to be called when the help command is triggered
+    ///     the function to be called when the help command is triggered
     /// </summary>
     private void ShowHelp()
     {
         showHelp = !showHelp;
-        string list = "Available Commands:\n";
-        foreach (DebugCommand command in _commands.Values)
-        {
-            list += ($"\t- {command.CommandId}\t \t{command.CommandDescription}\n");
-        }
+        var list = "Available Commands:\n";
+        foreach (var command in _commands.Values) list += $"\t- {command.CommandId}\t \t{command.CommandDescription}\n";
 
         Debug.Log(list);
     }
-    
+
     /// <summary>
-    /// Add a debug command to the debugger
+    ///     Add a debug command to the debugger
     /// </summary>
     /// <param name="command">The command to be added</param>
     /// <code>AddDebugCommand(
@@ -205,14 +200,14 @@ private readonly bool TESTING = false;
     /// );</code>
     public void AddDebugCommand(DebugCommand command)
     {
-        if (DebugController.Instance != null)
+        if (Instance != null)
         {
-            DebugController.Instance.RegisterCommand(command);
-            if (TESTING)  Debug.Log($"Command {command.CommandId} added."); 
+            Instance.RegisterCommand(command);
+            if (TESTING) Debug.Log($"Command {command.CommandId} added.");
         }
         else
         {
-            if (TESTING) Debug.LogWarning("No debug controller found."); 
+            if (TESTING) Debug.LogWarning("No debug controller found.");
         }
     }
 }

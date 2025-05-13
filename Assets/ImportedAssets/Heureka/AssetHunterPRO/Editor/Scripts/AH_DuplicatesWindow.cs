@@ -1,10 +1,7 @@
-﻿
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
-using UnityEditorInternal;
 using UnityEngine;
 
 namespace HeurekaGames.AssetHunterPRO
@@ -13,24 +10,16 @@ namespace HeurekaGames.AssetHunterPRO
     {
         private static readonly string WINDOWNAME = "AH Duplicates";
         private static AH_DuplicatesWindow window;
-        private AH_DuplicateDataManager duplicateDataManager;
-        private Vector2 scrollPosition;
-        private int scrollStartIndex;
-        private GUIContent guiContentRefresh;
         private GUIContent buttonSelectContent;
+        private AH_DuplicateDataManager duplicateDataManager;
+        private GUIContent guiContentRefresh;
         private GUIContent labelBtnContent;
         private GUIStyle labelBtnStyle;
-        private List<float> scrollviewPositionList = new List<float>();
         private Rect scrollArea;
         private int scrollEndIndex;
-
-        //Add menu named "Dependency Graph" to the window menu  
-        [UnityEditor.MenuItem("Tools/Asset Hunter PRO/Find Duplicates")]
-        [UnityEditor.MenuItem("Window/Heureka/Asset Hunter PRO/Find Duplicates")]
-        public static void OpenDuplicatesView()
-        {
-            Init();
-        }
+        private Vector2 scrollPosition;
+        private int scrollStartIndex;
+        private List<float> scrollviewPositionList = new();
 
         private void OnEnable()
         {
@@ -53,37 +42,47 @@ namespace HeurekaGames.AssetHunterPRO
                 //If window has no cached data
                 if (!duplicateDataManager.HasCache)
                 {
-                    Heureka_WindowStyler.DrawCenteredMessage(window, AH_EditorData.Instance.DuplicateWhiteIcon.Icon, 240f, 110f, "No data" + Environment.NewLine + "Find duplicates");
+                    Heureka_WindowStyler.DrawCenteredMessage(window, AH_EditorData.Instance.DuplicateWhiteIcon.Icon,
+                        240f, 110f, "No data" + Environment.NewLine + "Find duplicates");
                     EditorGUILayout.BeginVertical();
                     GUILayout.FlexibleSpace();
-                    Color origClr = GUI.backgroundColor;
+                    var origClr = GUI.backgroundColor;
 
                     GUI.backgroundColor = Color.red;
-                    if (GUILayout.Button("Find Duplicates", GUILayout.Height(40)))
-                    {
-                        duplicateDataManager.RefreshData();
-                    }
+                    if (GUILayout.Button("Find Duplicates", GUILayout.Height(40))) duplicateDataManager.RefreshData();
                     GUI.backgroundColor = origClr;
                     EditorGUILayout.EndVertical();
                     return;
                 }
+
+                if (!duplicateDataManager.HasDuplicates())
+                {
+                    Heureka_WindowStyler.DrawCenteredMessage(window, AH_EditorData.Instance.DuplicateWhiteIcon.Icon,
+                        240f, 110f,
+                        "Hurray" + Environment.NewLine + "No duplicates assets" + Environment.NewLine +
+                        "in project :)");
+                    GUILayout.FlexibleSpace();
+                }
                 else
                 {
-                    if (!duplicateDataManager.HasDuplicates())
-                    { 
-                        Heureka_WindowStyler.DrawCenteredMessage(window, AH_EditorData.Instance.DuplicateWhiteIcon.Icon, 240f, 110f, "Hurray" + Environment.NewLine + "No duplicates assets" + Environment.NewLine + "in project :)");
-                        GUILayout.FlexibleSpace();
-                    }
-                    else
-                     doBody();
+                    doBody();
                 }
             }
+
             doFooter();
+        }
+
+        //Add menu named "Dependency Graph" to the window menu  
+        [MenuItem("Tools/Asset Hunter PRO/Find Duplicates")]
+        [MenuItem("Window/Heureka/Asset Hunter PRO/Find Duplicates")]
+        public static void OpenDuplicatesView()
+        {
+            Init();
         }
 
         public static void Init()
         {
-            window = AH_DuplicatesWindow.GetWindow<AH_DuplicatesWindow>(WINDOWNAME, true);
+            window = GetWindow<AH_DuplicatesWindow>(WINDOWNAME, true);
             if (window.duplicateDataManager == null)
                 window.duplicateDataManager = AH_DuplicateDataManager.instance;
 
@@ -94,11 +93,8 @@ namespace HeurekaGames.AssetHunterPRO
         {
             Init();
 
-            AH_Window[] mainWindows = Resources.FindObjectsOfTypeAll<AH_Window>();
-            if (mainWindows.Length != 0)
-            {
-                HeurekaGames.Docker.Dock(mainWindows[0], window, dockPosition);
-            }
+            var mainWindows = Resources.FindObjectsOfTypeAll<AH_Window>();
+            if (mainWindows.Length != 0) mainWindows[0].Dock(window, dockPosition);
         }
 
         private void initIfNeeded()
@@ -116,7 +112,7 @@ namespace HeurekaGames.AssetHunterPRO
             titleContent = new GUIContent(WINDOWNAME, AH_EditorData.Instance.DuplicateIcon.Icon);
             guiContentRefresh = new GUIContent(AH_EditorData.Instance.RefreshIcon.Icon, "Refresh data");
 
-            buttonSelectContent = new GUIContent() { };
+            buttonSelectContent = new GUIContent();
 
             labelBtnStyle = new GUIStyle(EditorStyles.label);
             labelBtnStyle.border = new RectOffset(0, 0, 0, 0);
@@ -133,12 +129,13 @@ namespace HeurekaGames.AssetHunterPRO
         {
             Heureka_WindowStyler.DrawGlobalHeader(Heureka_WindowStyler.clr_Red, WINDOWNAME);
         }
+
         private void doBody()
         {
-            if(duplicateDataManager.RequiresScrollviewRebuild)
+            if (duplicateDataManager.RequiresScrollviewRebuild)
                 scrollviewPositionList = new List<float>();
 
-            using (EditorGUILayout.ScrollViewScope scrollview = new EditorGUILayout.ScrollViewScope(scrollPosition))
+            using (var scrollview = new EditorGUILayout.ScrollViewScope(scrollPosition))
             {
                 scrollPosition = scrollview.scrollPosition;
 
@@ -146,37 +143,37 @@ namespace HeurekaGames.AssetHunterPRO
                 if (Event.current.type == EventType.Layout)
                 {
                     scrollStartIndex = scrollviewPositionList.FindLastIndex(x => x < scrollPosition.y);
-                        if (scrollStartIndex == -1) scrollStartIndex = 0;
+                    if (scrollStartIndex == -1) scrollStartIndex = 0;
 
-                    float scrollMaxY = scrollPosition.y + scrollArea.height;
-                    scrollEndIndex = scrollviewPositionList.FindLastIndex(x => x <= scrollMaxY) + 1; //Add one since we want to make sure the entire height of the guielement is shown
+                    var scrollMaxY = scrollPosition.y + scrollArea.height;
+                    scrollEndIndex =
+                        scrollviewPositionList.FindLastIndex(x => x <= scrollMaxY) +
+                        1; //Add one since we want to make sure the entire height of the guielement is shown
                     if (scrollEndIndex > scrollviewPositionList.Count - 1)
-                        scrollEndIndex = scrollviewPositionList.Count >= 1 ? scrollviewPositionList.Count - 1 : duplicateDataManager.Entries.Count - 1; //Dont want out of bounds
+                        scrollEndIndex = scrollviewPositionList.Count >= 1
+                            ? scrollviewPositionList.Count - 1
+                            : duplicateDataManager.Entries.Count - 1; //Dont want out of bounds
                 }
 
                 //Insert empty space in the BEGINNING of scrollview
-                if (scrollStartIndex >= 0 && scrollviewPositionList.Count>0)
+                if (scrollStartIndex >= 0 && scrollviewPositionList.Count > 0)
                     GUILayout.Space(scrollviewPositionList[scrollStartIndex]);
 
-                int counter = -1;
+                var counter = -1;
                 foreach (var kvPair in duplicateDataManager.Entries)
                 {
                     counter++;
-                    if (counter < scrollStartIndex)
-                    {
-                        continue;
-                    }
-                    else if (counter > scrollEndIndex)
-                    {
-                        break;
-                    }            
+                    if (counter < scrollStartIndex) continue;
+
+                    if (counter > scrollEndIndex) break;
 
                     using (var hScope = new EditorGUILayout.HorizontalScope("box"))
                     {
-                        Rect hScopeSize = hScope.rect;
+                        var hScopeSize = hScope.rect;
                         buttonSelectContent.image = kvPair.Value.Preview;
 
-                        if (GUILayout.Button(buttonSelectContent, EditorStyles.boldLabel, GUILayout.Width(64), GUILayout.MaxHeight(64)))
+                        if (GUILayout.Button(buttonSelectContent, EditorStyles.boldLabel, GUILayout.Width(64),
+                                GUILayout.MaxHeight(64)))
                         {
                             var assets = kvPair.Value.Paths.Select(x => AssetDatabase.LoadMainAssetAtPath(x)).ToArray();
                             Selection.objects = assets;
@@ -186,46 +183,45 @@ namespace HeurekaGames.AssetHunterPRO
                         using (var vScope = new EditorGUILayout.VerticalScope("box"))
                         {
                             foreach (var path in kvPair.Value.Paths)
-                            {
-                                using (new EditorGUI.DisabledGroupScope(Selection.objects.Any(x => AssetDatabase.GetAssetPath(x) == path)))
+                                using (new EditorGUI.DisabledGroupScope(
+                                           Selection.objects.Any(x => AssetDatabase.GetAssetPath(x) == path)))
                                 {
-                                    int charCount = (int)vScope.rect.width / 7;
+                                    var charCount = (int)vScope.rect.width / 7;
                                     labelBtnContent.text = AH_Utils.ShrinkPathEnd(path.Remove(0, 7), charCount);
                                     labelBtnContent.tooltip = path;
 
                                     if (GUILayout.Button(labelBtnContent, labelBtnStyle))
                                         Selection.activeObject = AssetDatabase.LoadMainAssetAtPath(path);
                                 }
-                            }
                         }
+
                         if (duplicateDataManager.RequiresScrollviewRebuild && Event.current.type == EventType.Repaint)
-                        {
                             scrollviewPositionList.Add(hScope.rect.y); //Store Y position of guielement rect
-                        }
                     }
                 }
+
                 //We have succesfully rebuild the scrollview position list
                 if (duplicateDataManager.RequiresScrollviewRebuild && Event.current.type == EventType.Repaint)
-                {
                     duplicateDataManager.RequiresScrollviewRebuild = false;
-                }
 
                 //Insert empty space at the END of scrollview
                 if (scrollEndIndex < scrollviewPositionList.Count - 1)
-                    GUILayout.Space(scrollviewPositionList.Last() - scrollviewPositionList[scrollEndIndex]); 
+                    GUILayout.Space(scrollviewPositionList.Last() - scrollviewPositionList[scrollEndIndex]);
             }
+
             if (Event.current.type == EventType.Repaint)
                 scrollArea = GUILayoutUtility.GetLastRect();
         }
 
         private void doFooter()
         {
-            GUIContent RefreshGUIContent = new GUIContent(guiContentRefresh);
-            Color origColor = GUI.color;
+            var RefreshGUIContent = new GUIContent(guiContentRefresh);
+            var origColor = GUI.color;
             if (duplicateDataManager.IsDirty)
             {
                 GUI.color = Heureka_WindowStyler.clr_Red;
-                RefreshGUIContent.tooltip = String.Format("{0}{1}", RefreshGUIContent.tooltip, " (Project has changed which means that data is out of sync)");
+                RefreshGUIContent.tooltip = string.Format("{0}{1}", RefreshGUIContent.tooltip,
+                    " (Project has changed which means that data is out of sync)");
             }
 
             if (AH_UIUtilities.DrawSelectionButton(RefreshGUIContent))

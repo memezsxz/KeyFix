@@ -1,6 +1,6 @@
+using UnityEditor;
 using UnityEngine;
 using GUIContent = UnityEngine.GUIContent;
-using UnityEditor;
 
 public class SoundsHolder : MonoBehaviour
 {
@@ -22,10 +22,7 @@ public class SoundsHolder : MonoBehaviour
     public void PlaySound(string soundName)
     {
         var entry = soundData.GetSoundByName(soundName);
-        if (entry != null)
-        {
-            SoundManager.Instance.PlaySound(entry.sound, entry.volume);
-        }
+        if (entry != null) SoundManager.Instance.PlaySound(entry.sound, entry.volume);
     }
 }
 
@@ -44,8 +41,8 @@ public class SoundsHolderEditor : Editor
         soundDataProp = serializedObject.FindProperty("soundData");
         EditorGUILayout.PropertyField(soundDataProp);
 
-        SoundsHolder holder = (SoundsHolder)target;
-        SoundsList soundData = holder.soundData;
+        var holder = (SoundsHolder)target;
+        var soundData = holder.soundData;
 
         if (soundData == null)
         {
@@ -55,8 +52,8 @@ public class SoundsHolderEditor : Editor
         }
 
         // SerializedObject for SoundsSO
-        SerializedObject soundSO = new SerializedObject(soundData);
-        SerializedProperty soundsProp = soundSO.FindProperty("sounds");
+        var soundSO = new SerializedObject(soundData);
+        var soundsProp = soundSO.FindProperty("sounds");
 
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("🎵 SoundsSO Editor", EditorStyles.boldLabel);
@@ -64,27 +61,22 @@ public class SoundsHolderEditor : Editor
         // Display list size with Add/Remove buttons
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField("Sound Entries", GUILayout.MaxWidth(100));
-        if (GUILayout.Button("+", GUILayout.Width(25)))
-        {
-            soundsProp.InsertArrayElementAtIndex(soundsProp.arraySize);
-        }
+        if (GUILayout.Button("+", GUILayout.Width(25))) soundsProp.InsertArrayElementAtIndex(soundsProp.arraySize);
 
         if (GUILayout.Button("-", GUILayout.Width(25)) && soundsProp.arraySize > 0)
-        {
             soundsProp.DeleteArrayElementAtIndex(soundsProp.arraySize - 1);
-        }
 
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.Space();
 
         // Display and allow editing of each sound entry
-        for (int i = 0; i < soundsProp.arraySize; i++)
+        for (var i = 0; i < soundsProp.arraySize; i++)
         {
-            SerializedProperty soundEntry = soundsProp.GetArrayElementAtIndex(i);
-            SerializedProperty nameProp = soundEntry.FindPropertyRelative("name");
-            SerializedProperty clipProp = soundEntry.FindPropertyRelative("sound");
-            SerializedProperty volProp = soundEntry.FindPropertyRelative("volume");
+            var soundEntry = soundsProp.GetArrayElementAtIndex(i);
+            var nameProp = soundEntry.FindPropertyRelative("name");
+            var clipProp = soundEntry.FindPropertyRelative("sound");
+            var volProp = soundEntry.FindPropertyRelative("volume");
 
             EditorGUILayout.BeginVertical("box");
             EditorGUILayout.LabelField($"Sound {i}", EditorStyles.boldLabel);

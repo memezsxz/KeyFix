@@ -1,17 +1,13 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerBindingManage : MonoBehaviour, IDataPersistence
 {
-    // private InputBindingSet bindingSet;
-    public SerializableInputBindingSet BindingSet => bindingSet;
-
     private PlayerInput _playerInput;
 
-    private SerializableInputBindingSet bindingSet;
+    // private InputBindingSet bindingSet;
+    public SerializableInputBindingSet BindingSet { get; private set; }
 
     private void Awake()
     {
@@ -32,6 +28,25 @@ public class PlayerBindingManage : MonoBehaviour, IDataPersistence
         SetupDebugCommand();
     }
 
+    public void SaveData(ref SaveData data)
+    {
+        if (BindingSet == null)
+        {
+            Debug.LogWarning("Binding set is null. Nothing to save.");
+            return;
+        }
+
+        data.Progress.BindingOverrides = BindingSet;
+        print("saving bindings");
+    }
+
+    public void LoadData(ref SaveData data)
+    {
+        BindingSet = data.Progress.BindingOverrides;
+        ApplyAllBindings();
+        print("loading bindings " + BindingSet.bindings.Count);
+    }
+
     public void ApplyAllBindings()
     {
         if (_playerInput == null)
@@ -43,13 +58,13 @@ public class PlayerBindingManage : MonoBehaviour, IDataPersistence
             return;
         }
 
-        if (bindingSet == null)
+        if (BindingSet == null)
         {
-            bindingSet = SaveManager.Instance.SaveData.Progress.BindingOverrides;
+            BindingSet = SaveManager.Instance.SaveData.Progress.BindingOverrides;
             return;
         }
 
-        if (bindingSet == null)
+        if (BindingSet == null)
         {
             Debug.LogWarning("[PlayerBindingManage] bindingSet is null.");
             return;
@@ -58,7 +73,7 @@ public class PlayerBindingManage : MonoBehaviour, IDataPersistence
         foreach (var action in _playerInput.actions)
             action.RemoveAllBindingOverrides();
 
-        foreach (var bindingConfig in bindingSet.bindings)
+        foreach (var bindingConfig in BindingSet.bindings)
         {
             _playerInput.actions.Disable();
 
@@ -84,11 +99,9 @@ public class PlayerBindingManage : MonoBehaviour, IDataPersistence
 
         // for simple bindings like jump
         if (binding == null)
-        {
             binding = action.bindings
                 .Select((b, i) => new { binding = b, index = i })
                 .FirstOrDefault(b => b.binding.name == "" && b.binding.path == config.defaultPath);
-        }
 
         if (binding != null)
         {
@@ -106,7 +119,7 @@ public class PlayerBindingManage : MonoBehaviour, IDataPersistence
 
     public void EnableBinding(string actionName, string bindingName = "")
     {
-        var config = bindingSet.bindings.FirstOrDefault(b =>
+        var config = BindingSet.bindings.FirstOrDefault(b =>
             b.actionName == actionName && b.bindingName == bindingName);
 
         if (config != null)
@@ -115,10 +128,7 @@ public class PlayerBindingManage : MonoBehaviour, IDataPersistence
             ApplyBinding(config);
             // Debug.Log($"Enabled binding: {actionName}.{bindingName}");
         }
-        else
-        {
-            // Debug.LogWarning($"Binding not found: {actionName}.{bindingName}");
-        }
+        // Debug.LogWarning($"Binding not found: {actionName}.{bindingName}");
     }
 
     private void SetupDebugCommand()
@@ -127,7 +137,7 @@ public class PlayerBindingManage : MonoBehaviour, IDataPersistence
             "update_binding",
             "Update a binding by name",
             "update_binding <action> <binding> <true/false>",
-            (args) =>
+            args =>
             {
                 if (args.Length < 3)
                 {
@@ -135,7 +145,7 @@ public class PlayerBindingManage : MonoBehaviour, IDataPersistence
                     return;
                 }
 
-                var config = bindingSet.bindings
+                var config = BindingSet.bindings
                     .FirstOrDefault(b => b.actionName == args[0] && b.bindingName == args[1]);
 
                 if (config == null)
@@ -144,7 +154,7 @@ public class PlayerBindingManage : MonoBehaviour, IDataPersistence
                     return;
                 }
 
-                if (!bool.TryParse(args[2], out bool value))
+                if (!bool.TryParse(args[2], out var value))
                 {
                     Debug.LogWarning("Value must be true or false.");
                     return;
@@ -156,29 +166,10 @@ public class PlayerBindingManage : MonoBehaviour, IDataPersistence
         ));
     }
 
-    public void SaveData(ref SaveData data)
-    {
-        if (bindingSet == null)
-        {
-            Debug.LogWarning("Binding set is null. Nothing to save.");
-            return;
-        }
-
-        data.Progress.BindingOverrides = bindingSet;
-        print("saving bindings");
-    }
-
-    public void LoadData(ref SaveData data)
-    {
-        bindingSet = data.Progress.BindingOverrides;
-        ApplyAllBindings();
-        print("loading bindings " + bindingSet.bindings.Count);
-    }
-
 
     public void ApplyFromScriptableObject(InputBindingSet source)
     {
-        bindingSet = new SerializableInputBindingSet
+        BindingSet = new SerializableInputBindingSet
         {
             bindings = source.bindings.Select(b => new InputBindingConfig
             {

@@ -10,11 +10,62 @@ namespace HeurekaGames
 {
     public static class Docker
     {
+        public enum DockPosition
+        {
+            Left,
+            Top,
+            Right,
+            Bottom
+        }
+
+        /// <summary>
+        ///     Docks the second window to the first window at the given position
+        /// </summary>
+        public static void Dock(this EditorWindow wnd, EditorWindow other, DockPosition position)
+        {
+            var mousePosition = GetFakeMousePosition(wnd, position);
+
+            var parent = new _EditorWindow(wnd);
+            var child = new _EditorWindow(other);
+            var dockArea = new _DockArea(parent.m_Parent);
+            var containerWindow = new _ContainerWindow(dockArea.window);
+            var splitView = new _SplitView(containerWindow.rootSplitView);
+            var dropInfo = splitView.DragOver(other, mousePosition);
+            dockArea.s_OriginalDragSource = child.m_Parent;
+            splitView.PerformDrop(other, dropInfo, mousePosition);
+        }
+
+        private static Vector2 GetFakeMousePosition(EditorWindow wnd, DockPosition position)
+        {
+            var mousePosition = Vector2.zero;
+
+            // The 20 is required to make the docking work.
+            // Smaller values might not work when faking the mouse position.
+            switch (position)
+            {
+                case DockPosition.Left:
+                    mousePosition = new Vector2(20, wnd.position.size.y / 2);
+                    break;
+                case DockPosition.Top:
+                    mousePosition = new Vector2(wnd.position.size.x / 2, 20);
+                    break;
+                case DockPosition.Right:
+                    mousePosition = new Vector2(wnd.position.size.x - 20, wnd.position.size.y / 2);
+                    break;
+                case DockPosition.Bottom:
+                    mousePosition = new Vector2(wnd.position.size.x / 2, wnd.position.size.y - 20);
+                    break;
+            }
+
+            return GUIUtility.GUIToScreenPoint(mousePosition);
+        }
+
         #region Reflection Types
+
         private class _EditorWindow
         {
-            private EditorWindow instance;
-            private Type type;
+            private readonly EditorWindow instance;
+            private readonly Type type;
 
             public _EditorWindow(EditorWindow instance)
             {
@@ -34,8 +85,8 @@ namespace HeurekaGames
 
         private class _DockArea
         {
-            private object instance;
-            private Type type;
+            private readonly object instance;
+            private readonly Type type;
 
             public _DockArea(object instance)
             {
@@ -64,8 +115,8 @@ namespace HeurekaGames
 
         private class _ContainerWindow
         {
-            private object instance;
-            private Type type;
+            private readonly object instance;
+            private readonly Type type;
 
             public _ContainerWindow(object instance)
             {
@@ -86,8 +137,8 @@ namespace HeurekaGames
 
         private class _SplitView
         {
-            private object instance;
-            private Type type;
+            private readonly object instance;
+            private readonly Type type;
 
             public _SplitView(object instance)
             {
@@ -107,65 +158,17 @@ namespace HeurekaGames
                 try
                 {
                     if (dropInfo != null)
-                        method.Invoke(instance, new object[] { child, dropInfo, screenPoint });
+                        method.Invoke(instance, new[] { child, dropInfo, screenPoint });
                 }
                 catch (Exception)
                 {
-                    Debug.Log($"AHP Unable to autodock {child.GetType().Name} because AHP mainwindow is already docked");
+                    Debug.Log(
+                        $"AHP Unable to autodock {child.GetType().Name} because AHP mainwindow is already docked");
                 }
             }
         }
+
         #endregion
-
-        public enum DockPosition
-        {
-            Left,
-            Top,
-            Right,
-            Bottom
-        }
-
-        /// <summary>
-        /// Docks the second window to the first window at the given position
-        /// </summary>
-        public static void Dock(this EditorWindow wnd, EditorWindow other, DockPosition position)
-        {
-            var mousePosition = GetFakeMousePosition(wnd, position);
-
-            var parent = new _EditorWindow(wnd);
-            var child = new _EditorWindow(other);
-            var dockArea = new _DockArea(parent.m_Parent);
-            var containerWindow = new _ContainerWindow(dockArea.window);
-            var splitView = new _SplitView(containerWindow.rootSplitView);
-            var dropInfo = splitView.DragOver(other, mousePosition);
-            dockArea.s_OriginalDragSource = child.m_Parent;
-            splitView.PerformDrop(other, dropInfo, mousePosition);
-        }
-
-        private static Vector2 GetFakeMousePosition(EditorWindow wnd, DockPosition position)
-        {
-            Vector2 mousePosition = Vector2.zero;
-
-            // The 20 is required to make the docking work.
-            // Smaller values might not work when faking the mouse position.
-            switch (position)
-            {
-                case DockPosition.Left:
-                    mousePosition = new Vector2(20, wnd.position.size.y / 2);
-                    break;
-                case DockPosition.Top:
-                    mousePosition = new Vector2(wnd.position.size.x / 2, 20);
-                    break;
-                case DockPosition.Right:
-                    mousePosition = new Vector2(wnd.position.size.x - 20, wnd.position.size.y / 2);
-                    break;
-                case DockPosition.Bottom:
-                    mousePosition = new Vector2(wnd.position.size.x / 2, wnd.position.size.y - 20);
-                    break;
-            }
-
-            return GUIUtility.GUIToScreenPoint(mousePosition);
-        }
     }
 }
 #endif

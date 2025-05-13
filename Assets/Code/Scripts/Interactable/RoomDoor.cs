@@ -1,11 +1,11 @@
 using Code.Scripts.Managers;
-using UnityEngine;
 
 namespace Code.Scripts.Interactable
 {
     public class RoomDoor : InteractableBase
     {
-        bool didInteract = false;
+        private bool didInteract;
+
         public override void Interact()
         {
         }

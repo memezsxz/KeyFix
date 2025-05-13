@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Speeders : MonoBehaviour
@@ -10,13 +8,14 @@ public class Speeders : MonoBehaviour
     [SerializeField] private Transform endposition;
     [SerializeField] private Material activeMaterial;
     [SerializeField] private Material inactiveMaterial;
+
     [SerializeField] private MeshRenderer meshRenderer;
     // public event Action OnPushEnd;
 
     private Vector3 endpoint;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         endpoint = endposition.position;
         gameObject.transform.localScale = model.transform.localScale;
@@ -30,26 +29,23 @@ public class Speeders : MonoBehaviour
         var player = other.GetComponent<SpeedersInteraction>();
         if (player == null) return;
 
-        Vector3 toPlayer = (player.transform.position - transform.position).normalized;
-        float alignment = Vector3.Dot(transform.forward, toPlayer);
+        var toPlayer = (player.transform.position - transform.position).normalized;
+        var alignment = Vector3.Dot(transform.forward, toPlayer);
 
         if (alignment > 0.3f)
         {
-            
             // Entered from the back (wrong direction) → push just a little
-            Vector3 minimalPushTarget = player.transform.position + transform.forward * 0.4f;
+            var minimalPushTarget = player.transform.position + transform.forward * 0.4f;
             player.TeleportTo(minimalPushTarget); // Not MoveTowards — no freeze or delay
-
         }
         else
         {
             // Normal forward entry → full push
             meshRenderer.material = activeMaterial;
-            Vector3 pushTarget = player.transform.position + transform.forward * model.transform.localScale.z;
+            var pushTarget = player.transform.position + transform.forward * model.transform.localScale.z;
             player.MoveTowards(pushTarget); // Smooth full push
             StartCoroutine(DelayedReset());
         }
-
     }
 
     // private void OnTriggerExit(Collider other)
@@ -68,10 +64,7 @@ public class Speeders : MonoBehaviour
 
     private IEnumerator WaitUntilPushEnds(SpeedersInteraction mover)
     {
-        while (mover != null && mover.IsBeingPushed)
-        {
-            yield return null;
-        }
+        while (mover != null && mover.IsBeingPushed) yield return null;
 
         meshRenderer.material = inactiveMaterial;
     }

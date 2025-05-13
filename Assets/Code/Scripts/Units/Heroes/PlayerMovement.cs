@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -16,187 +13,38 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
     private static readonly int Vertical = Animator.StringToHash("vertical");
     private static readonly int Horizontal = Animator.StringToHash("horizontal");
     private static readonly int isFalling = Animator.StringToHash("isFalling");
-    // private PlayerBindingManage bindingManage;
-    private SpeedersInteraction mover;
-    // private ScalerInteraction scaler;
-    private bool canMove = true;
-    private Vector3 externalForce = Vector3.zero; // to receive wind push
 
     [SerializeField]
     private CharacterType _charecterType = CharacterType.Robot; // the type of character that is holding the script
 
+    // private ScalerInteraction scaler;
+    private bool canMove = true;
+
+    private Vector3 externalForce = Vector3.zero; // to receive wind push
+
+    // private PlayerBindingManage bindingManage;
+    private SpeedersInteraction mover;
+
     public CharacterType CharecterType => _charecterType;
 
-    #region Testing Other Input system
 
-    // public GameManagement GameManagement;
-    // public GameObject LevelSuccessParticles;
-    // public ParticleSystem LevelFailureParticles;
-    private CharacterController controller;
-    private Vector3 playerVelocity;
-    private bool groundedPlayer;
-    private float playerSpeed = 5f;
-    private float jumpHeight = 1.0f;
-    private float gravityValue = -9.81f;
-    private InputAction moveAction, jumpAction;
-    public Animator anim;
-    public float allowPlayerRotation = 1f;
-    [Range(0, 1f)] public float StartAnimTime = 0.3f;
-    [Range(0, 1f)] public float StopAnimTime = 0.15f;
-    private float lastYPosition;
-
-
-    private void Start()
+    public void SaveData(ref SaveData data)
     {
-        // var d = SaveManager.Instance.SaveData;
-        // LoadData(ref d);
-        lastYPosition = transform.position.y;
-        controller = gameObject.GetComponent<CharacterController>();
-        anim = this.GetComponent<Animator>();
-        // anim.applyRootMotion = false;
-        // bindingManage = gameObject.GetComponent<PlayerBindingManage>();
-        var actions = gameObject.GetComponent<PlayerInput>().actions;
-        if (_charecterType == CharacterType.Robot)
-        {
-            actions.FindActionMap("Robot").Enable();
-            actions.FindActionMap("Robota").Disable();
-        }
-        else
-        {
-            actions.FindActionMap("Robot").Disable();
-            actions.FindActionMap("Robota").Enable();
-        }
-
-        moveAction = actions.FindAction("Move");
-        jumpAction = actions.FindAction("Jump");
-        // print("found " + moveAction.bindings[0].name + " to " + gameObject.name);
-        mover = GetComponent<SpeedersInteraction>();
-        // scaler = GetComponent<ScalerInteraction>();
+        var psd = SaveManager.Instance.GetCharacterData(_charecterType);
+        psd.Position = transform.position;
+        psd.Yaw = transform.rotation.eulerAngles.y;
     }
 
-    void Update()
+    public void LoadData(ref SaveData data)
     {
-        lastYPosition = transform.position.y;
+        var psd = SaveManager.Instance.GetCharacterData(_charecterType);
+        var controller = GetComponent<CharacterController>();
 
-        // Check if grounded
-        groundedPlayer = controller.isGrounded;
-        if (groundedPlayer && playerVelocity.y < 0)
-        {
-            playerVelocity.y = 0f;
-        }
-
-        if (!canMove)
-        {
-            // Apply gravity only, no input
-            playerVelocity.y += gravityValue * Time.deltaTime;
-            controller.Move(playerVelocity * Time.deltaTime);
-
-            anim.SetFloat("Blend", 0f, StopAnimTime, Time.deltaTime);
-            return;
-        }
-
-        // Read input from new Input System
-        if (mover.IsBeingPushed) return; // Block input during movement
-
-        Vector2 moveValue = moveAction.ReadValue<Vector2>();
-        float inputX = moveValue.x;
-        float inputZ = moveValue.y;
-
-
-        // Move vector and motion
-
-        Vector3 move = new Vector3(moveValue.x, 0.0f, moveValue.y);
-
-// Get player intended movement
-        Vector3 moveInput = new Vector3(moveValue.x, 0.0f, moveValue.y) * playerSpeed;
-
-// Compete wind vs input
-        Vector3 finalMove = moveInput + externalForce;
-
-// If player moving against wind, reduce wind impact
-        if (moveInput != Vector3.zero && Vector3.Dot(moveInput.normalized, externalForce.normalized) < 0)
-        {
-            // If moving against wind, reduce wind effect
-            finalMove += externalForce * 0.5f; // Wind is only half as effective
-        }
-
-// Move the player
-        controller.Move(finalMove * Time.deltaTime);
-
-// Reset wind for next frame
-        externalForce = Vector3.zero;
-
-        // Rotate to direction of movement
-        if (move != Vector3.zero)
-        {
-            gameObject.transform.forward = move;
-
-            // Quaternion currentRotation = transform.rotation;
-            // Quaternion targetRotation = Quaternion.LookRotation(move);
-            // transform.rotation = Quaternion.Slerp(currentRotation, targetRotation, allowPlayerRotation);
-        }
-
-
-        // Jumping logic
-        // if (jumpAction.IsPressed() && groundedPlayer)
-        if (jumpAction.IsPressed() && groundedPlayer)
-        {
-            playerVelocity.y += Mathf.Sqrt(jumpHeight * -2.0f * gravityValue);
-            anim.SetBool(isFalling, false); // Reset fall state if jumping
-        }
-        else
-        {
-            if (!groundedPlayer && playerVelocity.y < -1f)
-            {
-                anim.SetBool(isFalling, true); // Falling down
-            }
-            else if (groundedPlayer)
-            {
-                anim.SetBool(isFalling, false); // Landed or idle
-            }
-        }
-
-
-        // Apply gravity
-        playerVelocity.y += gravityValue * Time.deltaTime;
-        controller.Move(playerVelocity * Time.deltaTime);
-
-        // animation
-        float speed = new Vector2(inputX, inputZ).sqrMagnitude;
-
-        if (speed > 0.1f)
-        {
-            anim.SetFloat("Blend", speed, StartAnimTime, Time.deltaTime);
-        }
-        else if (speed < allowPlayerRotation)
-        {
-            anim.SetFloat("Blend", speed, StopAnimTime, Time.deltaTime);
-        }
-
-        // float currentY = transform.position.y;
-        // float deltaY = currentY - lastYPosition;
-        //
-        // if (Mathf.Abs(deltaY) < 0.001f)
-        // {
-        //     anim.SetInteger(YMovement, 0); // Not moving vertically
-        // }
-        // else if (deltaY > 0f)
-        // {
-        // }
-        // else
-        // {
-        //     anim.SetInteger(YMovement, -1); // Moving down (falling)
-        // }
-        //
-        // lastYPosition = currentY;
+        controller.enabled = false; // Disable to avoid conflict
+        transform.position = psd.Position;
+        transform.rotation = Quaternion.Euler(0, psd.Yaw, 0);
+        controller.enabled = true; // Re-enable
     }
-
-    public void ApplyExternalForce(Vector3 force)
-    {
-        externalForce += force;
-    }
-
-    #endregion
 
 //
 //     #region Testing Other Input system
@@ -360,22 +208,153 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
         }
     }
 
+    #region Testing Other Input system
 
-    public void SaveData(ref SaveData data)
+    // public GameManagement GameManagement;
+    // public GameObject LevelSuccessParticles;
+    // public ParticleSystem LevelFailureParticles;
+    private CharacterController controller;
+    private Vector3 playerVelocity;
+    private bool groundedPlayer;
+    private readonly float playerSpeed = 5f;
+    private readonly float jumpHeight = 1.0f;
+    private readonly float gravityValue = -9.81f;
+    private InputAction moveAction, jumpAction;
+    public Animator anim;
+    public float allowPlayerRotation = 1f;
+    [Range(0, 1f)] public float StartAnimTime = 0.3f;
+    [Range(0, 1f)] public float StopAnimTime = 0.15f;
+    private float lastYPosition;
+
+
+    private void Start()
     {
-        var psd = SaveManager.Instance.GetCharacterData(_charecterType);
-        psd.Position = transform.position;
-        psd.Yaw = transform.rotation.eulerAngles.y;
+        // var d = SaveManager.Instance.SaveData;
+        // LoadData(ref d);
+        lastYPosition = transform.position.y;
+        controller = gameObject.GetComponent<CharacterController>();
+        anim = GetComponent<Animator>();
+        // anim.applyRootMotion = false;
+        // bindingManage = gameObject.GetComponent<PlayerBindingManage>();
+        var actions = gameObject.GetComponent<PlayerInput>().actions;
+        if (_charecterType == CharacterType.Robot)
+        {
+            actions.FindActionMap("Robot").Enable();
+            actions.FindActionMap("Robota").Disable();
+        }
+        else
+        {
+            actions.FindActionMap("Robot").Disable();
+            actions.FindActionMap("Robota").Enable();
+        }
+
+        moveAction = actions.FindAction("Move");
+        jumpAction = actions.FindAction("Jump");
+        // print("found " + moveAction.bindings[0].name + " to " + gameObject.name);
+        mover = GetComponent<SpeedersInteraction>();
+        // scaler = GetComponent<ScalerInteraction>();
     }
 
-    public void LoadData(ref SaveData data)
+    private void Update()
     {
-        var psd = SaveManager.Instance.GetCharacterData(_charecterType);
-        var controller = GetComponent<CharacterController>();
+        lastYPosition = transform.position.y;
 
-        controller.enabled = false; // Disable to avoid conflict
-        transform.position = psd.Position;
-        transform.rotation = Quaternion.Euler(0, psd.Yaw, 0);
-        controller.enabled = true; // Re-enable
+        // Check if grounded
+        groundedPlayer = controller.isGrounded;
+        if (groundedPlayer && playerVelocity.y < 0) playerVelocity.y = 0f;
+
+        if (!canMove)
+        {
+            // Apply gravity only, no input
+            playerVelocity.y += gravityValue * Time.deltaTime;
+            controller.Move(playerVelocity * Time.deltaTime);
+
+            anim.SetFloat("Blend", 0f, StopAnimTime, Time.deltaTime);
+            return;
+        }
+
+        // Read input from new Input System
+        if (mover.IsBeingPushed) return; // Block input during movement
+
+        var moveValue = moveAction.ReadValue<Vector2>();
+        var inputX = moveValue.x;
+        var inputZ = moveValue.y;
+
+
+        // Move vector and motion
+
+        var move = new Vector3(moveValue.x, 0.0f, moveValue.y);
+
+// Get player intended movement
+        var moveInput = new Vector3(moveValue.x, 0.0f, moveValue.y) * playerSpeed;
+
+// Compete wind vs input
+        var finalMove = moveInput + externalForce;
+
+// If player moving against wind, reduce wind impact
+        if (moveInput != Vector3.zero && Vector3.Dot(moveInput.normalized, externalForce.normalized) < 0)
+            // If moving against wind, reduce wind effect
+            finalMove += externalForce * 0.5f; // Wind is only half as effective
+
+        // Move the player
+        controller.Move(finalMove * Time.deltaTime);
+
+// Reset wind for next frame
+        externalForce = Vector3.zero;
+
+        // Rotate to direction of movement
+        if (move != Vector3.zero) gameObject.transform.forward = move;
+        // Quaternion currentRotation = transform.rotation;
+        // Quaternion targetRotation = Quaternion.LookRotation(move);
+        // transform.rotation = Quaternion.Slerp(currentRotation, targetRotation, allowPlayerRotation);
+        // Jumping logic
+        // if (jumpAction.IsPressed() && groundedPlayer)
+        if (jumpAction.IsPressed() && groundedPlayer)
+        {
+            playerVelocity.y += Mathf.Sqrt(jumpHeight * -2.0f * gravityValue);
+            anim.SetBool(isFalling, false); // Reset fall state if jumping
+        }
+        else
+        {
+            if (!groundedPlayer && playerVelocity.y < -1f)
+                anim.SetBool(isFalling, true); // Falling down
+            else if (groundedPlayer) anim.SetBool(isFalling, false); // Landed or idle
+        }
+
+
+        // Apply gravity
+        playerVelocity.y += gravityValue * Time.deltaTime;
+        controller.Move(playerVelocity * Time.deltaTime);
+
+        // animation
+        var speed = new Vector2(inputX, inputZ).sqrMagnitude;
+
+        if (speed > 0.1f)
+            anim.SetFloat("Blend", speed, StartAnimTime, Time.deltaTime);
+        else if (speed < allowPlayerRotation) anim.SetFloat("Blend", speed, StopAnimTime, Time.deltaTime);
+
+        // float currentY = transform.position.y;
+        // float deltaY = currentY - lastYPosition;
+        //
+        // if (Mathf.Abs(deltaY) < 0.001f)
+        // {
+        //     anim.SetInteger(YMovement, 0); // Not moving vertically
+        // }
+        // else if (deltaY > 0f)
+        // {
+        // }
+        // else
+        // {
+        //     anim.SetInteger(YMovement, -1); // Moving down (falling)
+        // }
+        //
+        // lastYPosition = currentY;
     }
+
+    public void ApplyExternalForce(Vector3 force)
+    {
+        externalForce += force;
+    }
+
+    #endregion
 }

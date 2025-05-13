@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class WinScreenManagerScript : MonoBehaviour
@@ -36,9 +35,9 @@ public class WinScreenManagerScript : MonoBehaviour
         yield return StartCoroutine(FadeCanvas(1f, 0f, fadeDuration));
     }
 
-    IEnumerator FadeCanvas(float from, float to, float duration)
+    private IEnumerator FadeCanvas(float from, float to, float duration)
     {
-        float elapsed = 0f;
+        var elapsed = 0f;
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
@@ -47,8 +46,7 @@ public class WinScreenManagerScript : MonoBehaviour
         }
 
         canvasGroup.alpha = to;
-        canvasGroup.interactable = (to > 0);
-        canvasGroup.blocksRaycasts = (to > 0);
+        canvasGroup.interactable = to > 0;
+        canvasGroup.blocksRaycasts = to > 0;
     }
 }
-

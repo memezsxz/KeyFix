@@ -5,33 +5,50 @@ using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 using UnityEngine.Assertions;
+using Object = UnityEngine.Object;
 
 namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl.DependencyGraph
 {
     internal class AH_DepGraphTreeviewWithModel : TreeViewWithTreeModel<AH_DepGraphElement>
     {
-        const float kRowHeights = 20f;
-        const float kToggleWidth = 18f;
-
-        // All columns
-        enum MyColumns
-        {
-            Icon,
-            Name
-        }
-
         public enum SortOption
         {
             AssetType,
             Name
         }
 
+        private const float kRowHeights = 20f;
+        private const float kToggleWidth = 18f;
+
         // Sort options per column
-        SortOption[] m_SortOptions =
+        private readonly SortOption[] m_SortOptions =
         {
             SortOption.AssetType,
             SortOption.Name
         };
+
+        public AH_DepGraphTreeviewWithModel(TreeViewState state, MultiColumnHeader multicolumnHeader,
+            TreeModel<AH_DepGraphElement> model) : base(state, multicolumnHeader, model)
+        {
+            Assert.AreEqual(m_SortOptions.Length, Enum.GetValues(typeof(MyColumns)).Length,
+                "Ensure number of sort options are in sync with number of MyColumns enum values");
+
+            // Custom setup
+            rowHeight = kRowHeights;
+            columnIndexForTreeFoldouts = 1;
+            showAlternatingRowBackgrounds = true;
+            showBorder = true;
+            customFoldoutYOffset =
+                (kRowHeights - EditorGUIUtility.singleLineHeight) *
+                0.5f; // center foldout in the row since we also center content. See RowGUI
+            extraSpaceBeforeIconAndLabel = kToggleWidth;
+            multicolumnHeader.sortingChanged += OnSortingChanged;
+            //IF we want to start expanded one level
+            if (model.root.hasChildren)
+                SetExpanded(model.root.children[0].id, true);
+
+            Reload();
+        }
 
         public static void TreeToList(TreeViewItem root, IList<TreeViewItem> result)
         {
@@ -45,42 +62,19 @@ namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl.DependencyGraph
             if (root.children == null)
                 return;
 
-            Stack<TreeViewItem> stack = new Stack<TreeViewItem>();
-            for (int i = root.children.Count - 1; i >= 0; i--)
+            var stack = new Stack<TreeViewItem>();
+            for (var i = root.children.Count - 1; i >= 0; i--)
                 stack.Push(root.children[i]);
 
             while (stack.Count > 0)
             {
-                TreeViewItem current = stack.Pop();
+                var current = stack.Pop();
                 result.Add(current);
 
                 if (current.hasChildren && current.children[0] != null)
-                {
-                    for (int i = current.children.Count - 1; i >= 0; i--)
-                    {
+                    for (var i = current.children.Count - 1; i >= 0; i--)
                         stack.Push(current.children[i]);
-                    }
-                }
             }
-        }
-
-        public AH_DepGraphTreeviewWithModel(TreeViewState state, MultiColumnHeader multicolumnHeader, TreeModel<AH_DepGraphElement> model) : base(state, multicolumnHeader, model)
-        {
-            Assert.AreEqual(m_SortOptions.Length, Enum.GetValues(typeof(MyColumns)).Length, "Ensure number of sort options are in sync with number of MyColumns enum values");
-
-            // Custom setup
-            rowHeight = kRowHeights;
-            columnIndexForTreeFoldouts = 1;
-            showAlternatingRowBackgrounds = true;
-            showBorder = true;
-            customFoldoutYOffset = (kRowHeights - EditorGUIUtility.singleLineHeight) * 0.5f; // center foldout in the row since we also center content. See RowGUI
-            extraSpaceBeforeIconAndLabel = kToggleWidth;
-            multicolumnHeader.sortingChanged += OnSortingChanged;
-            //IF we want to start expanded one level
-            if (model.root.hasChildren)
-                SetExpanded(model.root.children[0].id, true);
-
-            Reload();
         }
 
         protected override void SingleClickedItem(int id)
@@ -95,11 +89,11 @@ namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl.DependencyGraph
             base.DoubleClickedItem(id);
 
             var clickedObject = getObjectFromID(id);
-            Selection.activeObject = clickedObject;           
+            Selection.activeObject = clickedObject;
         }
 
-        private UnityEngine.Object getObjectFromID(int id)
-        {          
+        private Object getObjectFromID(int id)
+        {
             var refGraphElement = FindItem(id, rootItem) as TreeViewItem<AH_DepGraphElement>;
             return AssetDatabase.LoadMainAssetAtPath(refGraphElement.data.RelativePath);
         }
@@ -107,7 +101,8 @@ namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl.DependencyGraph
         protected override bool RequiresSorting()
         {
             //Show as list if base requires sorting OR if we chose sortedList
-            return base.RequiresSorting() || ((AH_DepGraphHeader)multiColumnHeader).mode == AH_DepGraphHeader.Mode.SortedList;
+            return base.RequiresSorting() ||
+                   ((AH_DepGraphHeader)multiColumnHeader).mode == AH_DepGraphHeader.Mode.SortedList;
         }
 
         // Note we We only build the visible rows, only the backend has the full tree information. 
@@ -119,21 +114,19 @@ namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl.DependencyGraph
             return rows;
         }
 
-        void OnSortingChanged(MultiColumnHeader multiColumnHeader)
+        private void OnSortingChanged(MultiColumnHeader multiColumnHeader)
         {
             ModelChanged();
             SortIfNeeded(rootItem, GetRows());
         }
 
-        void SortIfNeeded(TreeViewItem root, IList<TreeViewItem> rows)
+        private void SortIfNeeded(TreeViewItem root, IList<TreeViewItem> rows)
         {
             if (rows.Count <= 1)
                 return;
 
-            if (multiColumnHeader.sortedColumnIndex == -1)
-            {
-                return; // No column to sort for (just use the order the data are in)
-            }
+            if (multiColumnHeader.sortedColumnIndex ==
+                -1) return; // No column to sort for (just use the order the data are in)
 
             SortByMultipleColumns();
             TreeToList(root, rows);
@@ -141,7 +134,7 @@ namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl.DependencyGraph
             Repaint();
         }
 
-        void SortByMultipleColumns()
+        private void SortByMultipleColumns()
         {
             var sortedColumns = multiColumnHeader.state.sortedColumns;
 
@@ -150,10 +143,10 @@ namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl.DependencyGraph
 
             var myTypes = rootItem.children.Cast<TreeViewItem<AH_DepGraphElement>>();
             var orderedQuery = InitialOrder(myTypes, sortedColumns);
-            for (int i = 1; i < sortedColumns.Length; i++)
+            for (var i = 1; i < sortedColumns.Length; i++)
             {
-                SortOption sortOption = m_SortOptions[sortedColumns[i]];
-                bool ascending = multiColumnHeader.IsSortedAscending(sortedColumns[i]);
+                var sortOption = m_SortOptions[sortedColumns[i]];
+                var ascending = multiColumnHeader.IsSortedAscending(sortedColumns[i]);
 
                 switch (sortOption)
                 {
@@ -171,13 +164,15 @@ namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl.DependencyGraph
                         break;
                 }
             }
+
             rootItem.children = orderedQuery.Cast<TreeViewItem>().ToList();
         }
 
-        IOrderedEnumerable<TreeViewItem<AH_DepGraphElement>> InitialOrder(IEnumerable<TreeViewItem<AH_DepGraphElement>> myTypes, int[] history)
+        private IOrderedEnumerable<TreeViewItem<AH_DepGraphElement>> InitialOrder(
+            IEnumerable<TreeViewItem<AH_DepGraphElement>> myTypes, int[] history)
         {
-            SortOption sortOption = m_SortOptions[history[0]];
-            bool ascending = multiColumnHeader.IsSortedAscending(history[0]);
+            var sortOption = m_SortOptions[history[0]];
+            var ascending = multiColumnHeader.IsSortedAscending(history[0]);
             switch (sortOption)
             {
                 case SortOption.Name:
@@ -197,32 +192,31 @@ namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl.DependencyGraph
         {
             var item = (TreeViewItem<AH_DepGraphElement>)args.item;
 
-            for (int i = 0; i < args.GetNumVisibleColumns(); ++i)
-            {
+            for (var i = 0; i < args.GetNumVisibleColumns(); ++i)
                 CellGUI(args.GetCellRect(i), item, (MyColumns)args.GetColumn(i), ref args);
-            }
         }
 
-        void CellGUI(Rect cellRect, TreeViewItem<AH_DepGraphElement> item, MyColumns column, ref RowGUIArgs args)
+        private void CellGUI(Rect cellRect, TreeViewItem<AH_DepGraphElement> item, MyColumns column,
+            ref RowGUIArgs args)
         {
             // Center cell rect vertically (makes it easier to place controls, icons etc in the cells)
             CenterRectUsingSingleLineHeight(ref cellRect);
-            AH_DepGraphElement element = (AH_DepGraphElement)item.data;
+            var element = item.data;
 
             switch (column)
             {
                 case MyColumns.Icon:
-                    {
-                        if (item.data.AssetType != null)
-                            GUI.DrawTexture(cellRect, item.data.Icon, ScaleMode.ScaleToFit);
-                    }
+                {
+                    if (item.data.AssetType != null)
+                        GUI.DrawTexture(cellRect, item.data.Icon, ScaleMode.ScaleToFit);
+                }
                     break;
                 case MyColumns.Name:
-                    {
-                        Rect nameRect = cellRect;
-                        nameRect.x += GetContentIndent(item);
-                        DefaultGUI.Label(nameRect, item.data.AssetName, args.selected, args.focused);
-                    }
+                {
+                    var nameRect = cellRect;
+                    nameRect.x += GetContentIndent(item);
+                    DefaultGUI.Label(nameRect, item.data.AssetName, args.selected, args.focused);
+                }
                     break;
                 /*case MyColumns.Path:
                     {
@@ -269,37 +263,37 @@ namespace HeurekaGames.AssetHunterPRO.BaseTreeviewImpl.DependencyGraph
                 }
             };
 
-            Assert.AreEqual(columns.Length, Enum.GetValues(typeof(MyColumns)).Length, "Number of columns should match number of enum values: You probably forgot to update one of them.");
+            Assert.AreEqual(columns.Length, Enum.GetValues(typeof(MyColumns)).Length,
+                "Number of columns should match number of enum values: You probably forgot to update one of them.");
 
             var state = new MultiColumnHeaderState(columns);
             return state;
         }
+
+        // All columns
+        private enum MyColumns
+        {
+            Icon,
+            Name
+        }
     }
 
-    static class MyExtensionMethods
+    internal static class MyExtensionMethods
     {
-        public static IOrderedEnumerable<T> Order<T, TKey>(this IEnumerable<T> source, Func<T, TKey> selector, bool ascending)
+        public static IOrderedEnumerable<T> Order<T, TKey>(this IEnumerable<T> source, Func<T, TKey> selector,
+            bool ascending)
         {
-            if (ascending)
-            {
-                return source.OrderBy(selector);
-            }
-            else
-            {
-                return source.OrderByDescending(selector);
-            }
+            if (ascending) return source.OrderBy(selector);
+
+            return source.OrderByDescending(selector);
         }
 
-        public static IOrderedEnumerable<T> ThenBy<T, TKey>(this IOrderedEnumerable<T> source, Func<T, TKey> selector, bool ascending)
+        public static IOrderedEnumerable<T> ThenBy<T, TKey>(this IOrderedEnumerable<T> source, Func<T, TKey> selector,
+            bool ascending)
         {
-            if (ascending)
-            {
-                return source.ThenBy(selector);
-            }
-            else
-            {
-                return source.ThenByDescending(selector);
-            }
+            if (ascending) return source.ThenBy(selector);
+
+            return source.ThenByDescending(selector);
         }
     }
 }

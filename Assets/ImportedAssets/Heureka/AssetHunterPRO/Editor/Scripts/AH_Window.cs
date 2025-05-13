@@ -1,14 +1,13 @@
-﻿using UnityEngine;
-using UnityEditor;
-using System;
-using UnityEditor.IMGUI.Controls;
-using HeurekaGames.AssetHunterPRO.BaseTreeviewImpl.AssetTreeView;
-using HeurekaGames.AssetHunterPRO.BaseTreeviewImpl;
+﻿using System;
 using System.Collections.Generic;
-
+using System.IO;
+using HeurekaGames.AssetHunterPRO.BaseTreeviewImpl;
+using HeurekaGames.AssetHunterPRO.BaseTreeviewImpl.AssetTreeView;
+using UnityEditor;
+using UnityEditor.IMGUI.Controls;
+using UnityEngine;
 //Only avaliable in 2018
 #if UNITY_2018_1_OR_NEWER
-using UnityEditor.Build.Reporting;
 #endif
 
 namespace HeurekaGames.AssetHunterPRO
@@ -18,76 +17,52 @@ namespace HeurekaGames.AssetHunterPRO
         public const int WINDOWMENUITEMPRIO = 11;
         public const string VERSION = "2.2.7";
         private static AH_Window m_window;
-
-        [NonSerialized] bool m_Initialized;
-        [SerializeField] TreeViewState m_TreeViewState; // Serialized in the window layout file so it survives assembly reloading
-        [SerializeField] MultiColumnHeaderState m_MultiColumnHeaderState;
-        
-        SearchField m_SearchField;
-        private AH_TreeViewWithTreeModel m_TreeView;
-
-        [SerializeField] public AH_BuildInfoManager buildInfoManager;
-        public bool m_BuildLogLoaded { get; set; }
-
-        //Button guiContent
-        [SerializeField] GUIContent guiContentLoadBuildInfo;
-        [SerializeField] GUIContent guiContentSettings;
-        [SerializeField] GUIContent guiContentGenerateReferenceGraph;
-        [SerializeField] GUIContent guiContentDuplicates;
-        
-        //Only avaliable in 2018
-#if UNITY_2018_1_OR_NEWER
-        [SerializeField] GUIContent guiContentBuildReport;
-#endif
-        [SerializeField] GUIContent guiContentReadme;
-        [SerializeField] GUIContent guiContentDeleteAll;
-        [SerializeField] GUIContent guiContentRefresh;
-
-        //UI Rect
-        Vector2 uiStartPos = new Vector2(10, 50);
         public static float ButtonMaxHeight = 18;
 
-        //Add menu named "Asset Hunter" to the window menu  
-        [UnityEditor.MenuItem("Tools/Asset Hunter PRO/Asset Hunter PRO _%h", priority = WINDOWMENUITEMPRIO)]
-        [UnityEditor.MenuItem("Window/Heureka/Asset Hunter PRO/Asset Hunter PRO", priority = WINDOWMENUITEMPRIO)]
-        public static void OpenAssetHunter()
-        {
-            if (!m_window)
-                initializeWindow();
-        }
+        [SerializeField]
+        private TreeViewState m_TreeViewState; // Serialized in the window layout file so it survives assembly reloading
 
-        private static AH_Window initializeWindow()
-        {
-            //Open ReadMe
-            Heureka_PackageDataManagerEditor.SelectReadme();
+        [SerializeField] private MultiColumnHeaderState m_MultiColumnHeaderState;
 
-            m_window = EditorWindow.GetWindow<AH_Window>();
+        [SerializeField] public AH_BuildInfoManager buildInfoManager;
 
-            AH_TreeViewSelectionInfo.OnAssetDeleted += m_window.OnAssetDeleted;
+        //Button guiContent
+        [SerializeField] private GUIContent guiContentLoadBuildInfo;
+        [SerializeField] private GUIContent guiContentSettings;
+        [SerializeField] private GUIContent guiContentGenerateReferenceGraph;
+        [SerializeField] private GUIContent guiContentDuplicates;
+
+        //Only avaliable in 2018
 #if UNITY_2018_1_OR_NEWER
-            EditorApplication.projectChanged += m_window.OnProjectChanged;
-#elif UNITY_5_6_OR_NEWER
-            EditorApplication.projectWindowChanged += m_window.OnProjectChanged;
+        [SerializeField] private GUIContent guiContentBuildReport;
 #endif
+        [SerializeField] private GUIContent guiContentReadme;
+        [SerializeField] private GUIContent guiContentDeleteAll;
+        [SerializeField] private GUIContent guiContentRefresh;
 
-            if (m_window.buildInfoManager == null)
-                m_window.buildInfoManager = ScriptableObject.CreateInstance<AH_BuildInfoManager>();
+        [NonSerialized] private bool m_Initialized;
 
-            m_window.initializeGUIContent();
+        private SearchField m_SearchField;
+        private AH_TreeViewWithTreeModel m_TreeView;
 
-            //Subscribe to changes to list of ignored items
-            AH_SettingsManager.Instance.IgnoreListUpdatedEvent += m_window.OnIgnoreListUpdatedEvent;
+        //UI Rect
+        public bool m_BuildLogLoaded { get; set; }
 
-            return m_window;
-        }
-        
-        internal static AH_BuildInfoManager GetBuildInfoManager()
-        {
-            if (!m_window)
-                initializeWindow();
+        private Rect toolbarRect => new(UiStartPos.x,
+            UiStartPos.y + (AH_SettingsManager.Instance.HideButtonText ? 20 : 0), position.width - UiStartPos.x * 2,
+            20f);
 
-            return m_window.buildInfoManager;
-        }
+        private Rect multiColumnTreeViewRect => new(UiStartPos.x,
+            UiStartPos.y + 20 + (AH_SettingsManager.Instance.HideButtonText ? 20 : 0),
+            position.width - UiStartPos.x * 2,
+            position.height - 90 - (AH_SettingsManager.Instance.HideButtonText ? 20 : 0));
+
+        private Rect assetInfoRect => new(UiStartPos.x, position.height - 66f, position.width - UiStartPos.x * 2, 16f);
+
+        private Rect bottomToolbarRect =>
+            new(UiStartPos.x, position.height - 18, position.width - UiStartPos.x * 2, 16f);
+
+        public Vector2 UiStartPos { get; set; } = new(10, 50);
 
         private void OnEnable()
         {
@@ -98,14 +73,18 @@ namespace HeurekaGames.AssetHunterPRO
         {
             AH_SerializationHelper.NewBuildInfoCreated -= onBuildInfoCreated;
         }
-        
-        void OnInspectorUpdate()
+
+        private void OnDestroy()
         {
-            if (!m_window)
-                initializeWindow();
+            AH_TreeViewSelectionInfo.OnAssetDeleted -= m_window.OnAssetDeleted;
+#if UNITY_2018_1_OR_NEWER
+            EditorApplication.projectChanged -= m_window.OnProjectChanged;
+#elif UNITY_5_6_OR_NEWER
+            EditorApplication.projectWindowChanged -= m_window.OnProjectChanged;
+#endif
         }
 
-        void OnGUI()
+        private void OnGUI()
         {
             /*if (Application.isPlaying)
                 return;*/
@@ -119,7 +98,8 @@ namespace HeurekaGames.AssetHunterPRO
                 return;
             }
 
-            if (buildInfoManager.IsProjectClean() && ((AH_MultiColumnHeader)m_TreeView.multiColumnHeader).ShowMode == AH_MultiColumnHeader.AssetShowMode.Unused)
+            if (buildInfoManager.IsProjectClean() && ((AH_MultiColumnHeader)m_TreeView.multiColumnHeader).ShowMode ==
+                AH_MultiColumnHeader.AssetShowMode.Unused)
             {
                 Heureka_WindowStyler.DrawCenteredImage(m_window, AH_EditorData.Instance.AchievementIcon.Icon);
                 return;
@@ -131,7 +111,55 @@ namespace HeurekaGames.AssetHunterPRO
             doBottomToolBar(bottomToolbarRect);
         }
 
-        void OnProjectChanged()
+        private void OnInspectorUpdate()
+        {
+            if (!m_window)
+                initializeWindow();
+        }
+
+        //Add menu named "Asset Hunter" to the window menu  
+        [MenuItem("Tools/Asset Hunter PRO/Asset Hunter PRO _%h", priority = WINDOWMENUITEMPRIO)]
+        [MenuItem("Window/Heureka/Asset Hunter PRO/Asset Hunter PRO", priority = WINDOWMENUITEMPRIO)]
+        public static void OpenAssetHunter()
+        {
+            if (!m_window)
+                initializeWindow();
+        }
+
+        private static AH_Window initializeWindow()
+        {
+            //Open ReadMe
+            Heureka_PackageDataManagerEditor.SelectReadme();
+
+            m_window = GetWindow<AH_Window>();
+
+            AH_TreeViewSelectionInfo.OnAssetDeleted += m_window.OnAssetDeleted;
+#if UNITY_2018_1_OR_NEWER
+            EditorApplication.projectChanged += m_window.OnProjectChanged;
+#elif UNITY_5_6_OR_NEWER
+            EditorApplication.projectWindowChanged += m_window.OnProjectChanged;
+#endif
+
+            if (m_window.buildInfoManager == null)
+                m_window.buildInfoManager = CreateInstance<AH_BuildInfoManager>();
+
+            m_window.initializeGUIContent();
+
+            //Subscribe to changes to list of ignored items
+            AH_SettingsManager.Instance.IgnoreListUpdatedEvent += m_window.OnIgnoreListUpdatedEvent;
+
+            return m_window;
+        }
+
+        internal static AH_BuildInfoManager GetBuildInfoManager()
+        {
+            if (!m_window)
+                initializeWindow();
+
+            return m_window.buildInfoManager;
+        }
+
+        private void OnProjectChanged()
         {
             buildInfoManager.ProjectDirty = true;
         }
@@ -140,20 +168,18 @@ namespace HeurekaGames.AssetHunterPRO
         private void OnAssetDeleted()
         {
             //TODO need to improve the deletion of empty folder. Currently leaves meta file behind, causing warnings
-            if (EditorUtility.DisplayDialog("Delete empty folders", "Do you want to delete any empty folders?", "Yes", "No"))
-            {
-                deleteEmptyFolders();
-            }
+            if (EditorUtility.DisplayDialog("Delete empty folders", "Do you want to delete any empty folders?", "Yes",
+                    "No")) deleteEmptyFolders();
 
             //This might be called excessively
             if (AH_SettingsManager.Instance.AutoRefreshLog)
+            {
                 RefreshBuildLog();
+            }
             else
-            { 
-                 if (EditorUtility.DisplayDialog("Refresh Asset Hunter Log", "Do you want to refresh the loaded log", "Yes", "No"))
-                {
-                    RefreshBuildLog();
-                }
+            {
+                if (EditorUtility.DisplayDialog("Refresh Asset Hunter Log", "Do you want to refresh the loaded log",
+                        "Yes", "No")) RefreshBuildLog();
             }
         }
 
@@ -170,7 +196,7 @@ namespace HeurekaGames.AssetHunterPRO
             }
         }
 
-        void InitIfNeeded()
+        private void InitIfNeeded()
         {
             //We dont need to do stuff when in play mode
             if (buildInfoManager && buildInfoManager.HasSelection && !m_Initialized)
@@ -179,8 +205,9 @@ namespace HeurekaGames.AssetHunterPRO
                 if (m_TreeViewState == null)
                     m_TreeViewState = new TreeViewState();
 
-                bool firstInit = m_MultiColumnHeaderState == null;
-                var headerState = AH_TreeViewWithTreeModel.CreateDefaultMultiColumnHeaderState(multiColumnTreeViewRect.width);
+                var firstInit = m_MultiColumnHeaderState == null;
+                var headerState =
+                    AH_TreeViewWithTreeModel.CreateDefaultMultiColumnHeaderState(multiColumnTreeViewRect.width);
                 if (MultiColumnHeaderState.CanOverwriteSerializedFields(m_MultiColumnHeaderState, headerState))
                     MultiColumnHeaderState.OverwriteSerializedFields(m_MultiColumnHeaderState, headerState);
                 m_MultiColumnHeaderState = headerState;
@@ -207,13 +234,13 @@ namespace HeurekaGames.AssetHunterPRO
 
         private void deleteEmptyFolders()
         {
-            List<String> emptyfolders = new List<string>();
+            var emptyfolders = new List<string>();
             checkEmptyFolder(Application.dataPath, emptyfolders);
 
             if (emptyfolders.Count > 0)
             {
 #if UNITY_2020_1_OR_NEWER
-                List<string> failedPaths = new List<string>();
+                var failedPaths = new List<string>();
                 AssetDatabase.DeleteAssets(emptyfolders.ToArray(), failedPaths);
 #else
             foreach (var folder in emptyfolders)
@@ -232,10 +259,10 @@ namespace HeurekaGames.AssetHunterPRO
             if (dataPath.EndsWith(".git", StringComparison.InvariantCultureIgnoreCase))
                 return false;
 
-            string[] files = System.IO.Directory.GetFiles(dataPath);
-            bool hasValidAsset = false;
+            var files = Directory.GetFiles(dataPath);
+            var hasValidAsset = false;
 
-            for (int i = 0; i < files.Length; i++)
+            for (var i = 0; i < files.Length; i++)
             {
                 string relativePath;
                 string assetID;
@@ -249,46 +276,49 @@ namespace HeurekaGames.AssetHunterPRO
                 }
             }
 
-            string[] folders = System.IO.Directory.GetDirectories(dataPath);
-            bool hasFolderWithContents = false;
+            var folders = Directory.GetDirectories(dataPath);
+            var hasFolderWithContents = false;
 
-            for (int i = 0; i < folders.Length; i++)
+            for (var i = 0; i < folders.Length; i++)
             {
-                bool folderIsEmpty = checkEmptyFolder(folders[i], emptyfolders);
+                var folderIsEmpty = checkEmptyFolder(folders[i], emptyfolders);
                 if (!folderIsEmpty)
-                {
                     hasFolderWithContents = true;
-                }
                 else
-                {
                     emptyfolders.Add(FileUtil.GetProjectRelativePath(folders[i]));
-                }
             }
 
-            return (!hasValidAsset && !hasFolderWithContents);
+            return !hasValidAsset && !hasFolderWithContents;
         }
 
         private void initializeGUIContent()
         {
             titleContent = new GUIContent("Asset Hunter", AH_EditorData.Instance.WindowPaneIcon.Icon);
 
-            guiContentLoadBuildInfo = new GUIContent("Load", AH_EditorData.Instance.LoadLogIcon.Icon, "Load info from a previous build");
+            guiContentLoadBuildInfo = new GUIContent("Load", AH_EditorData.Instance.LoadLogIcon.Icon,
+                "Load info from a previous build");
             guiContentSettings = new GUIContent("Settings", AH_EditorData.Instance.Settings.Icon, "Open settings");
-            guiContentGenerateReferenceGraph = new GUIContent("Dependencies", AH_EditorData.Instance.RefFromIcon.Icon, "See asset dependency graph");
-            guiContentDuplicates = new GUIContent("Duplicates", AH_EditorData.Instance.DuplicateIcon.Icon, "Find duplicate assets");
+            guiContentGenerateReferenceGraph = new GUIContent("Dependencies", AH_EditorData.Instance.RefFromIcon.Icon,
+                "See asset dependency graph");
+            guiContentDuplicates = new GUIContent("Duplicates", AH_EditorData.Instance.DuplicateIcon.Icon,
+                "Find duplicate assets");
 
             //Only avaliable in 2018
 #if UNITY_2018_1_OR_NEWER
-            guiContentBuildReport = new GUIContent("Report", AH_EditorData.Instance.ReportIcon.Icon, "Build report overview (Build size information)");
+            guiContentBuildReport = new GUIContent("Report", AH_EditorData.Instance.ReportIcon.Icon,
+                "Build report overview (Build size information)");
 #endif
-            guiContentReadme = new GUIContent("Info", AH_EditorData.Instance.HelpIcon.Icon, "Open the readme file for all installed Heureka Games products");
-            guiContentDeleteAll = new GUIContent("Clean ALL", AH_EditorData.Instance.DeleteIcon.Icon, "Delete ALL unused assets in project ({0}) Remember to manually exclude relevant assets in the settings window");
+            guiContentReadme = new GUIContent("Info", AH_EditorData.Instance.HelpIcon.Icon,
+                "Open the readme file for all installed Heureka Games products");
+            guiContentDeleteAll = new GUIContent("Clean ALL", AH_EditorData.Instance.DeleteIcon.Icon,
+                "Delete ALL unused assets in project ({0}) Remember to manually exclude relevant assets in the settings window");
             guiContentRefresh = new GUIContent(AH_EditorData.Instance.RefreshIcon.Icon, "Refresh data");
         }
 
         private void doNoBuildInfoLoaded()
         {
-            Heureka_WindowStyler.DrawCenteredMessage(m_window, AH_EditorData.Instance.WindowHeaderIcon.Icon, 380f, 110f, "Buildinfo not yet loaded" + Environment.NewLine + "Load existing / create new build");
+            Heureka_WindowStyler.DrawCenteredMessage(m_window, AH_EditorData.Instance.WindowHeaderIcon.Icon, 380f, 110f,
+                "Buildinfo not yet loaded" + Environment.NewLine + "Load existing / create new build");
         }
 
         private void doHeader()
@@ -296,15 +326,16 @@ namespace HeurekaGames.AssetHunterPRO
             Heureka_WindowStyler.DrawGlobalHeader(Heureka_WindowStyler.clr_Pink, "ASSET HUNTER PRO", VERSION);
             EditorGUILayout.BeginHorizontal();
 
-            bool infoLoaded = (buildInfoManager != null && buildInfoManager.HasSelection);
+            var infoLoaded = buildInfoManager != null && buildInfoManager.HasSelection;
             if (infoLoaded)
             {
-                GUIContent RefreshGUIContent = new GUIContent(guiContentRefresh);
-                Color origColor = GUI.color;
+                var RefreshGUIContent = new GUIContent(guiContentRefresh);
+                var origColor = GUI.color;
                 if (buildInfoManager.ProjectDirty)
                 {
                     GUI.color = Heureka_WindowStyler.clr_Red;
-                    RefreshGUIContent.tooltip = String.Format("{0}{1}", RefreshGUIContent.tooltip, " (Project has changed which means that treeview is out of date)");
+                    RefreshGUIContent.tooltip = string.Format("{0}{1}", RefreshGUIContent.tooltip,
+                        " (Project has changed which means that treeview is out of date)");
                 }
 
                 if (doSelectionButton(RefreshGUIContent))
@@ -333,18 +364,21 @@ namespace HeurekaGames.AssetHunterPRO
 
             if (infoLoaded && m_TreeView.GetCombinedUnusedSize() > 0)
             {
-                string sizeAsString = AH_Utils.GetSizeAsString(m_TreeView.GetCombinedUnusedSize());
+                var sizeAsString = AH_Utils.GetSizeAsString(m_TreeView.GetCombinedUnusedSize());
 
-                GUIContent instancedGUIContent = new GUIContent(guiContentDeleteAll);
+                var instancedGUIContent = new GUIContent(guiContentDeleteAll);
                 instancedGUIContent.tooltip = string.Format(instancedGUIContent.tooltip, sizeAsString);
                 if (AH_SettingsManager.Instance.HideButtonText)
                     instancedGUIContent.text = null;
 
                 GUIStyle btnStyle = "button";
-                GUIStyle newStyle = new GUIStyle(btnStyle);
+                var newStyle = new GUIStyle(btnStyle);
                 newStyle.normal.textColor = Heureka_WindowStyler.clr_Pink;
 
-                m_TreeView.DrawDeleteAllButton(instancedGUIContent, newStyle, GUILayout.MaxHeight(AH_SettingsManager.Instance.HideButtonText ? ButtonMaxHeight * 2f : ButtonMaxHeight));
+                m_TreeView.DrawDeleteAllButton(instancedGUIContent, newStyle,
+                    GUILayout.MaxHeight(AH_SettingsManager.Instance.HideButtonText
+                        ? ButtonMaxHeight * 2f
+                        : ButtonMaxHeight));
             }
 
             GUILayout.FlexibleSpace();
@@ -386,45 +420,41 @@ namespace HeurekaGames.AssetHunterPRO
             {
                 GUIStyle style = "miniButton";
 
-                if (GUILayout.Button("Expand All", style))
-                {
-                    m_TreeView.ExpandAll();
-                }
+                if (GUILayout.Button("Expand All", style)) m_TreeView.ExpandAll();
 
-                if (GUILayout.Button("Collapse All", style))
-                {
-                    m_TreeView.CollapseAll();
-                }
+                if (GUILayout.Button("Collapse All", style)) m_TreeView.CollapseAll();
 
-                GUILayout.Label("Build: " + buildInfoManager.GetSelectedBuildDate() + " (" + buildInfoManager.GetSelectedBuildTarget() + ")");
+                GUILayout.Label("Build: " + buildInfoManager.GetSelectedBuildDate() + " (" +
+                                buildInfoManager.GetSelectedBuildTarget() + ")");
                 GUILayout.FlexibleSpace();
-                GUILayout.Label(buildInfoManager.TreeView != null ? AssetDatabase.GetAssetPath(buildInfoManager.TreeView) : string.Empty);
+                GUILayout.Label(buildInfoManager.TreeView != null
+                    ? AssetDatabase.GetAssetPath(buildInfoManager.TreeView)
+                    : string.Empty);
                 GUILayout.FlexibleSpace();
 
-                if (((AH_MultiColumnHeader)m_TreeView.multiColumnHeader).mode == AH_MultiColumnHeader.Mode.SortedList || !string.IsNullOrEmpty(m_TreeView.searchString))
-                {
+                if (((AH_MultiColumnHeader)m_TreeView.multiColumnHeader).mode == AH_MultiColumnHeader.Mode.SortedList ||
+                    !string.IsNullOrEmpty(m_TreeView.searchString))
                     if (GUILayout.Button("Return to Treeview", style))
-                    {
                         m_TreeView.ShowTreeMode();
-                    }
-                }
 
-                GUIContent exportContent = new GUIContent("Export list", "Export all the assets in the list above to a json file");
-                if (GUILayout.Button(exportContent, style))
-                {
-                    AH_ElementList.DumpCurrentListToFile(m_TreeView);
-                }
+                var exportContent =
+                    new GUIContent("Export list", "Export all the assets in the list above to a json file");
+                if (GUILayout.Button(exportContent, style)) AH_ElementList.DumpCurrentListToFile(m_TreeView);
             }
+
             GUILayout.EndArea();
         }
 
         private bool doSelectionButton(GUIContent content)
         {
-            GUIContent btnContent = new GUIContent(content);
+            var btnContent = new GUIContent(content);
             if (AH_SettingsManager.Instance.HideButtonText)
                 btnContent.text = null;
 
-            return GUILayout.Button(btnContent, GUILayout.MaxHeight(AH_SettingsManager.Instance.HideButtonText ? ButtonMaxHeight * 2f : ButtonMaxHeight));
+            return GUILayout.Button(btnContent,
+                GUILayout.MaxHeight(AH_SettingsManager.Instance.HideButtonText
+                    ? ButtonMaxHeight * 2f
+                    : ButtonMaxHeight));
         }
 
         private void OnIgnoreListUpdatedEvent()
@@ -446,55 +476,13 @@ namespace HeurekaGames.AssetHunterPRO
 
         private void openBuildInfoSelector()
         {
-            string fileSelected = EditorUtility.OpenFilePanel("", AH_SerializationHelper.GetBuildInfoFolder(), AH_SerializationHelper.BuildInfoExtension);
+            var fileSelected = EditorUtility.OpenFilePanel("", AH_SerializationHelper.GetBuildInfoFolder(),
+                AH_SerializationHelper.BuildInfoExtension);
             if (!string.IsNullOrEmpty(fileSelected))
             {
                 m_Initialized = false;
                 buildInfoManager.SelectBuildInfo(fileSelected);
             }
-        }
-
-        Rect toolbarRect
-        {
-            get { return new Rect(UiStartPos.x, UiStartPos.y + (AH_SettingsManager.Instance.HideButtonText ? 20 : 0), position.width - (UiStartPos.x * 2), 20f); }
-        }
-
-        Rect multiColumnTreeViewRect
-        {
-            get { return new Rect(UiStartPos.x, UiStartPos.y + 20 + (AH_SettingsManager.Instance.HideButtonText ? 20 : 0), position.width - (UiStartPos.x * 2), position.height - 90 - (AH_SettingsManager.Instance.HideButtonText ? 20 : 0)); }
-        }
-
-        Rect assetInfoRect
-        {
-            get { return new Rect(UiStartPos.x, position.height - 66f, position.width - (UiStartPos.x * 2), 16f); }
-        }
-
-        Rect bottomToolbarRect
-        {
-            get { return new Rect(UiStartPos.x, position.height - 18, position.width - (UiStartPos.x * 2), 16f); }
-        }
-
-        public Vector2 UiStartPos
-        {
-            get
-            {
-                return uiStartPos;
-            }
-
-            set
-            {
-                uiStartPos = value;
-            }
-        }
-
-        private void OnDestroy()
-        {
-            AH_TreeViewSelectionInfo.OnAssetDeleted -= m_window.OnAssetDeleted;
-#if UNITY_2018_1_OR_NEWER
-            EditorApplication.projectChanged -= m_window.OnProjectChanged;
-#elif UNITY_5_6_OR_NEWER
-            EditorApplication.projectWindowChanged -= m_window.OnProjectChanged;
-#endif
         }
     }
 }

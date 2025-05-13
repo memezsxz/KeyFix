@@ -6,30 +6,31 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public class SpeedersInteraction : MonoBehaviour
 {
-    [Header("Push Settings")]
-    [SerializeField] private float pushSpeed = 8f;
+    [Header("Push Settings")] [SerializeField]
+    private float pushSpeed = 8f;
+
     [SerializeField] private float stoppingDistance = 0.05f;
     [SerializeField] private float downwardNudge = 0.01f;
 
-    [Header("Animation")]
-    [SerializeField] private string blendParam = "Blend"; // In case animation uses different naming
+    [Header("Animation")] [SerializeField]
+    private string blendParam = "Blend"; // In case animation uses different naming
+
+    private Animator anim;
 
     private CharacterController controller;
-    private Animator anim;
     private Coroutine moveToPositionRoutine;
-    private bool isBeingPushed = false;
 
-    public bool IsBeingPushed => isBeingPushed;
-
-    // Optional hooks (public events)
-    public event Action OnPushStart;
-    public event Action OnPushEnd;
+    public bool IsBeingPushed { get; private set; }
 
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
         anim = GetComponent<Animator>();
     }
+
+    // Optional hooks (public events)
+    public event Action OnPushStart;
+    public event Action OnPushEnd;
 
     public void MoveTowards(Vector3 position)
     {
@@ -42,7 +43,7 @@ public class SpeedersInteraction : MonoBehaviour
     // workes perfectly
     private IEnumerator MoveToTarget(Vector3 targetPosition)
     {
-        isBeingPushed = true;
+        IsBeingPushed = true;
         OnPushStart?.Invoke();
 
         if (anim != null && !string.IsNullOrEmpty(blendParam))
@@ -50,13 +51,13 @@ public class SpeedersInteraction : MonoBehaviour
 
         while (true)
         {
-            Vector3 toTarget = targetPosition - transform.position;
-            float dist = toTarget.magnitude;
+            var toTarget = targetPosition - transform.position;
+            var dist = toTarget.magnitude;
 
             if (dist <= stoppingDistance)
                 break;
 
-            Vector3 step = toTarget.normalized * pushSpeed * Time.deltaTime;
+            var step = toTarget.normalized * pushSpeed * Time.deltaTime;
 
             // Clamp movement to avoid jittering overshoots
             if (step.magnitude > dist)
@@ -75,7 +76,7 @@ public class SpeedersInteraction : MonoBehaviour
         yield return new WaitForFixedUpdate();
         controller.Move(Vector3.down * downwardNudge);
 
-        isBeingPushed = false;
+        IsBeingPushed = false;
         OnPushEnd?.Invoke();
     }
 

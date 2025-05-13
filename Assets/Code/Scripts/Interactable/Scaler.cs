@@ -14,8 +14,8 @@ namespace Code.Scripts.Interactable
         }
 
         [SerializeField] private ScaleType scaleType;
-        private bool hasTriggered = false;
-        private float timeInSeconds = 2;
+        private bool hasTriggered;
+        private readonly float timeInSeconds = 2;
 
         private void OnTriggerEnter(Collider other)
         {
@@ -27,7 +27,7 @@ namespace Code.Scripts.Interactable
 
             if (controller != null && scaler != null)
             {
-                bool alreadyAtTarget = scaleType switch
+                var alreadyAtTarget = scaleType switch
                 {
                     ScaleType.Shrink => scaler.IsAlreadyShrunk(),
                     ScaleType.Stretch => scaler.IsAlreadyStretched(),
@@ -51,6 +51,11 @@ namespace Code.Scripts.Interactable
             }
         }
 
+        private void OnTriggerExit(Collider other)
+        {
+            if (other.CompareTag("Player")) hasTriggered = false;
+        }
+
         private IEnumerator MoveAndThenScale(Transform player, CharacterController controller, ScalerInteraction scaler,
             Action<float, Action> performScale, float moveDuration)
         {
@@ -63,9 +68,9 @@ namespace Code.Scripts.Interactable
         private IEnumerator MoveToCenterOverTime(Transform player, CharacterController controller, float duration)
 
         {
-            Vector3 startPos = player.position;
-            Vector3 targetPos = transform.position;
-            float elapsed = 0f;
+            var startPos = player.position;
+            var targetPos = transform.position;
+            var elapsed = 0f;
 
             while (elapsed < duration)
             {
@@ -79,14 +84,6 @@ namespace Code.Scripts.Interactable
             controller.enabled = false;
             player.position = targetPos;
             controller.enabled = true;
-        }
-
-        private void OnTriggerExit(Collider other)
-        {
-            if (other.CompareTag("Player"))
-            {
-                hasTriggered = false;
-            }
         }
     }
 }

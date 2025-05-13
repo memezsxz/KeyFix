@@ -1,10 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Code.Scripts.Managers;
 using UnityEngine;
-using UnityEngine.Audio;
-using UnityEngine.SceneManagement;
 
 public class PauseManager : MonoBehaviour
 {
@@ -28,7 +23,7 @@ public class PauseManager : MonoBehaviour
         // music.ignoreListenerPause = true;
     }
 
-    void Update()
+    private void Update()
     {
         print("Pause Menu");
 

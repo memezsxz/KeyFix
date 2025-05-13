@@ -1,18 +1,17 @@
-using System.Collections;
-using UnityEngine;
 using Code.Scripts.Managers;
+using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer))]
 public class Lazar : MonoBehaviour
 {
-    private LineRenderer lr;
-    private bool isActive = true;
-    private float timer = 0f;
-    private float nextToggleTime;
     [SerializeField] private Vector3 fireDirection = Vector3.left;
-    [SerializeField, Range(0.5f, 5f)] private float minToggleTime = 0.5f;
+    [SerializeField] [Range(0.5f, 5f)] private float minToggleTime = 0.5f;
 
-    [SerializeField, Range(0.5f, 5f)] private float maxToggleTime = 1f;
+    [SerializeField] [Range(0.5f, 5f)] private float maxToggleTime = 1f;
+    private bool isActive = true;
+    private LineRenderer lr;
+    private float nextToggleTime;
+    private float timer;
 
     private void Start()
     {

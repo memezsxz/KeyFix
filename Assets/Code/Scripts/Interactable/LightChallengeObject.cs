@@ -5,10 +5,10 @@ namespace Code.Scripts.Interactable
 {
     public class LightChallengeObject : InteractableBase
     {
-        bool isActive = false;
         [SerializeField] private GameObject challengePrefab;
-        GameObject challengeInstance;
-        ShapeChecker shapeChecker;
+        private GameObject challengeInstance;
+        private bool isActive;
+        private ShapeChecker shapeChecker;
 
         public override void Interact()
         {

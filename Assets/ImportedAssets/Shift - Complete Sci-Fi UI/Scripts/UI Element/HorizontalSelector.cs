@@ -1,53 +1,46 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
-using TMPro;
 
 namespace Michsky.UI.Shift
 {
     public class HorizontalSelector : MonoBehaviour
     {
-        [Header("Settings")]
-        public int defaultIndex = 0;
+        [Header("Settings")] public int defaultIndex;
+
         public bool invokeAtStart;
         public bool invertAnimation;
         public bool loopSelection;
-        [HideInInspector] public int index = 0;
-		
-	    [Header("Saving")]
-        public bool saveValue;
+        [HideInInspector] public int index;
+
+        [Header("Saving")] public bool saveValue;
+
         public string selectorTag = "Tag Text";
 
-        [Header("Indicators")]
-        public bool enableIndicators = true;
+        [Header("Indicators")] public bool enableIndicators = true;
+
         public Transform indicatorParent;
         public GameObject indicatorObject;
 
-        [Header("Items")]
-        public List<Item> itemList = new List<Item>();
+        [Header("Items")] public List<Item> itemList = new();
+
+        private TextMeshProUGUI labeHelper;
 
         private TextMeshProUGUI label;
-        private TextMeshProUGUI labeHelper;
+        private string newItemTitle;
         private Animator selectorAnimator;
-        string newItemTitle;
 
-        [System.Serializable]
-        public class Item
-        {
-            public string itemTitle = "Item Title";
-            public UnityEvent onValueChanged = new UnityEvent();
-        }
-
-        void Start()
+        private void Start()
         {
             selectorAnimator = gameObject.GetComponent<Animator>();
             label = transform.Find("Text").GetComponent<TextMeshProUGUI>();
             labeHelper = transform.Find("Text Helper").GetComponent<TextMeshProUGUI>();
 
-            if (saveValue == true)
+            if (saveValue)
             {
-                if (PlayerPrefs.HasKey(selectorTag + "HSelectorValue") == true)
+                if (PlayerPrefs.HasKey(selectorTag + "HSelectorValue"))
                     defaultIndex = PlayerPrefs.GetInt(selectorTag + "HSelectorValue");
                 else
                     PlayerPrefs.SetInt(selectorTag + "HSelectorValue", defaultIndex);
@@ -57,14 +50,14 @@ namespace Michsky.UI.Shift
             labeHelper.text = label.text;
             index = defaultIndex;
 
-            if(enableIndicators == true)
+            if (enableIndicators)
             {
                 foreach (Transform child in indicatorParent)
                     Destroy(child.gameObject);
 
-                for (int i = 0; i < itemList.Count; ++i)
+                for (var i = 0; i < itemList.Count; ++i)
                 {
-                    GameObject go = Instantiate(indicatorObject, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+                    var go = Instantiate(indicatorObject, new Vector3(0, 0, 0), Quaternion.identity);
                     go.transform.SetParent(indicatorParent, false);
                     go.name = itemList[i].itemTitle;
 
@@ -92,7 +85,7 @@ namespace Michsky.UI.Shift
                 Destroy(indicatorParent);
             }
 
-            if (invokeAtStart == true)
+            if (invokeAtStart)
                 itemList[index].onValueChanged.Invoke();
         }
 
@@ -112,19 +105,24 @@ namespace Michsky.UI.Shift
 
                     label.text = itemList[index].itemTitle;
 
-                    try { itemList[index].onValueChanged.Invoke(); }
+                    try
+                    {
+                        itemList[index].onValueChanged.Invoke();
+                    }
 
-                    catch { }
+                    catch
+                    {
+                    }
 
                     selectorAnimator.Play(null);
                     selectorAnimator.StopPlayback();
 
-                    if (invertAnimation == true)
+                    if (invertAnimation)
                         selectorAnimator.Play("Forward");
                     else
                         selectorAnimator.Play("Previous");
 
-                    if (saveValue == true)
+                    if (saveValue)
                         PlayerPrefs.SetInt(selectorTag + "HSelectorValue", index);
                 }
             }
@@ -141,29 +139,33 @@ namespace Michsky.UI.Shift
 
                 label.text = itemList[index].itemTitle;
 
-                try { itemList[index].onValueChanged.Invoke(); }
-                catch { }
+                try
+                {
+                    itemList[index].onValueChanged.Invoke();
+                }
+                catch
+                {
+                }
 
                 selectorAnimator.Play(null);
                 selectorAnimator.StopPlayback();
 
-                if (invertAnimation == true)
+                if (invertAnimation)
                     selectorAnimator.Play("Forward");
                 else
                     selectorAnimator.Play("Previous");
 
-                if (saveValue == true)
+                if (saveValue)
                     PlayerPrefs.SetInt(selectorTag + "HSelectorValue", index);
             }
 
-            if (saveValue == true)
+            if (saveValue)
                 PlayerPrefs.SetInt(selectorTag + "HSelectorValue", index);
 
-            if (enableIndicators == true)
-            {
-                for (int i = 0; i < itemList.Count; ++i)
+            if (enableIndicators)
+                for (var i = 0; i < itemList.Count; ++i)
                 {
-                    GameObject go = indicatorParent.GetChild(i).gameObject;
+                    var go = indicatorParent.GetChild(i).gameObject;
 
                     Transform onObj;
                     onObj = go.transform.Find("On");
@@ -182,7 +184,6 @@ namespace Michsky.UI.Shift
                         offObj.gameObject.SetActive(true);
                     }
                 }
-            }
         }
 
         public void ForwardClick()
@@ -193,25 +194,30 @@ namespace Michsky.UI.Shift
                 {
                     labeHelper.text = label.text;
 
-                    if ((index + 1) >= itemList.Count)
+                    if (index + 1 >= itemList.Count)
                         index = 0;
                     else
                         index++;
 
                     label.text = itemList[index].itemTitle;
 
-                    try { itemList[index].onValueChanged.Invoke(); }
-                    catch { }
+                    try
+                    {
+                        itemList[index].onValueChanged.Invoke();
+                    }
+                    catch
+                    {
+                    }
 
                     selectorAnimator.Play(null);
                     selectorAnimator.StopPlayback();
 
-                    if (invertAnimation == true)
+                    if (invertAnimation)
                         selectorAnimator.Play("Previous");
                     else
                         selectorAnimator.Play("Forward");
 
-                    if (saveValue == true)
+                    if (saveValue)
                         PlayerPrefs.SetInt(selectorTag + "HSelectorValue", index);
                 }
             }
@@ -220,36 +226,40 @@ namespace Michsky.UI.Shift
             {
                 labeHelper.text = label.text;
 
-                if ((index + 1) >= itemList.Count)
+                if (index + 1 >= itemList.Count)
                     index = 0;
                 else
                     index++;
 
                 label.text = itemList[index].itemTitle;
 
-                try { itemList[index].onValueChanged.Invoke(); }
-                catch { }
+                try
+                {
+                    itemList[index].onValueChanged.Invoke();
+                }
+                catch
+                {
+                }
 
                 selectorAnimator.Play(null);
                 selectorAnimator.StopPlayback();
 
-                if (invertAnimation == true)
+                if (invertAnimation)
                     selectorAnimator.Play("Previous");
                 else
                     selectorAnimator.Play("Forward");
 
-                if (saveValue == true)
+                if (saveValue)
                     PlayerPrefs.SetInt(selectorTag + "HSelectorValue", index);
             }
 
-            if (saveValue == true)
+            if (saveValue)
                 PlayerPrefs.SetInt(selectorTag + "HSelectorValue", index);
 
-            if (enableIndicators == true)
-            {
-                for (int i = 0; i < itemList.Count; ++i)
+            if (enableIndicators)
+                for (var i = 0; i < itemList.Count; ++i)
                 {
-                    GameObject go = indicatorParent.GetChild(i).gameObject;
+                    var go = indicatorParent.GetChild(i).gameObject;
 
                     Transform onObj;
                     onObj = go.transform.Find("On");
@@ -268,12 +278,11 @@ namespace Michsky.UI.Shift
                         offObj.gameObject.SetActive(true);
                     }
                 }
-            }
         }
 
         public void CreateNewItem(string title)
         {
-            Item item = new Item();
+            var item = new Item();
             newItemTitle = title;
             item.itemTitle = newItemTitle;
             itemList.Add(item);
@@ -283,14 +292,14 @@ namespace Michsky.UI.Shift
         {
             label.text = itemList[index].itemTitle;
 
-            if (enableIndicators == true)
+            if (enableIndicators)
             {
                 foreach (Transform child in indicatorParent)
                     Destroy(child.gameObject);
 
-                for (int i = 0; i < itemList.Count; ++i)
+                for (var i = 0; i < itemList.Count; ++i)
                 {
-                    GameObject go = Instantiate(indicatorObject, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+                    var go = Instantiate(indicatorObject, new Vector3(0, 0, 0), Quaternion.identity);
                     go.transform.SetParent(indicatorParent, false);
                     go.name = itemList[i].itemTitle;
 
@@ -312,6 +321,13 @@ namespace Michsky.UI.Shift
                     }
                 }
             }
+        }
+
+        [Serializable]
+        public class Item
+        {
+            public string itemTitle = "Item Title";
+            public UnityEvent onValueChanged = new();
         }
     }
 }

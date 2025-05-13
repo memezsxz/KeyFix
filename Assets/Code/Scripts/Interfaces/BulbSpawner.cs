@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BulbSpawner : MonoBehaviour
@@ -8,11 +6,8 @@ public class BulbSpawner : MonoBehaviour
     public int rows = 6;
     public int columns = 6;
 
-    void Start()
+    private void Start()
     {
-        for (int i = 0; i < rows * columns; i++)
-        {
-            Instantiate(bulbPrefab, transform);
-        }
+        for (var i = 0; i < rows * columns; i++) Instantiate(bulbPrefab, transform);
     }
 }

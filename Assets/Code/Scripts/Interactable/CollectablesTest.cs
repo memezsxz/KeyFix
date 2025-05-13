@@ -1,4 +1,3 @@
-using System;
 using Code.Scripts.Managers;
 using UnityEngine;
 
@@ -6,24 +5,24 @@ namespace Code.Scripts.Interactable
 {
     public class CollectablesTest : MonoBehaviour
     {
-        [SerializeField] AudioClip _collectSound;
+        [SerializeField] private AudioClip _collectSound;
         private Vector3 _rotationSpeed; // degrees per second
 
-        bool didTriggerCollect = false;
+        private bool didTriggerCollect;
 
         private void Start()
         {
-            float remaining = 165f;
-            float x = UnityEngine.Random.Range(0f, remaining);
+            var remaining = 165f;
+            var x = Random.Range(0f, remaining);
             remaining -= x;
-            float y = UnityEngine.Random.Range(0f, remaining);
-            float z = remaining - y;
+            var y = Random.Range(0f, remaining);
+            var z = remaining - y;
 
             // Shuffle the values randomly
-            float[] values = new[] { x, y, z };
-            for (int i = 0; i < 3; i++)
+            var values = new[] { x, y, z };
+            for (var i = 0; i < 3; i++)
             {
-                int j = UnityEngine.Random.Range(i, 3);
+                var j = Random.Range(i, 3);
                 (values[i], values[j]) = (values[j], values[i]);
             }
 

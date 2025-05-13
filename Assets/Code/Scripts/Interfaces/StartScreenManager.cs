@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class StartScreenManager : MonoBehaviour
 {
@@ -11,9 +8,9 @@ public class StartScreenManager : MonoBehaviour
     public AudioClip BacgroundMusicClip; // Assign this in Inspector
 
 
-    private bool hasPressedSpace = false;
+    private bool hasPressedSpace;
 
-    void Start()
+    private void Start()
     {
         // Show the press screen and hide the main menu
         if (GameStateTracker.returningFromGame)
@@ -22,18 +19,18 @@ public class StartScreenManager : MonoBehaviour
             mainMenuCanvas.SetActive(true);
             GameStateTracker.returningFromGame = false; // reset
         }
-        
+
         SoundManager.Instance.PlayMusic(BacgroundMusicClip);
     }
 
-    void Update()
+    private void Update()
     {
         if (!hasPressedSpace && Input.GetKeyDown(KeyCode.Escape))
         {
             hasPressedSpace = true;
             pressScreenCanvas.SetActive(false);
 
-        SoundManager.Instance.PlaySound(ButtonClickedClip);
+            SoundManager.Instance.PlaySound(ButtonClickedClip);
 
             if (mainMenuCanvas != null)
                 mainMenuCanvas.SetActive(true);

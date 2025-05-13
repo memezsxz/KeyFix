@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 
 namespace HeurekaGames
 {
-    [System.Serializable]
+    [Serializable]
     public class Heureka_PackageData : ScriptableObject
     {
         public Texture Icon;
@@ -15,10 +13,10 @@ namespace HeurekaGames
         public string Subheader;
         public string AssetIdentifier;
         public string Description;
-        public List<PackageLinks> Links = new List<PackageLinks>();
+        public List<PackageLinks> Links = new();
     }
 
-    [System.Serializable]
+    [Serializable]
     public struct PackageLinks
     {
         public bool ActiveLink;
@@ -29,14 +27,14 @@ namespace HeurekaGames
         {
             this.Name = Name;
             this.Link = Link;
-            this.ActiveLink = true;
+            ActiveLink = true;
         }
 
         public PackageLinks(string Name, string Link, bool LinkActive)
         {
             this.Name = Name;
             this.Link = Link;
-            this.ActiveLink = LinkActive;
+            ActiveLink = LinkActive;
         }
     }
 }

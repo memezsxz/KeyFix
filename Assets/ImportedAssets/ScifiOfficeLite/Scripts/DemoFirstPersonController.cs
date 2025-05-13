@@ -1,43 +1,48 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace ScifiOffice {
-    public class DemoFirstPersonController : MonoBehaviour {
-
-        Rigidbody rb;
-        CapsuleCollider col;
-        bool isCrouching;
+namespace ScifiOffice
+{
+    public class DemoFirstPersonController : MonoBehaviour
+    {
+        public enum ControlType
+        {
+            android,
+            keyboard,
+            keyboardMouse
+        }
 
         public Transform playerBody;
-
-        public enum ControlType { android, keyboard, keyboardMouse };
         public ControlType controlType;
 
-        [Header("Movement")]
-        public float speed = 3f;
+        [Header("Movement")] public float speed = 3f;
+
         public float accelerationRate = 12f, crouchFactor = 0.5f, decelerationFactor = 1f;
         public float mouseSensitivity = 50f;
 
-        float xRot = 0f;
-        float horizontalMovement;
-        float verticalMovement;
+        [Header("HUD")] public GameObject canvas;
 
-        [Header("HUD")]
-        public GameObject canvas;      
+        private CapsuleCollider col;
+        private float horizontalMovement;
+        private bool isCrouching;
+
+        private Rigidbody rb;
+        private float verticalMovement;
+
+        private float xRot;
 
 
-        private void Start() {
+        private void Start()
+        {
             rb = playerBody.GetComponent<Rigidbody>();
             col = playerBody.GetComponent<CapsuleCollider>();
-            
-            if(controlType == ControlType.keyboardMouse)
+
+            if (controlType == ControlType.keyboardMouse)
                 Cursor.lockState = CursorLockMode.Locked;
         }
 
         // Update is called once per frame
-        void Update() {
-            
+        private void Update()
+        {
             Walk();
             Look();
 
@@ -65,16 +70,15 @@ namespace ScifiOffice {
                 Crouch();
                 canvas.SetActive(false);
             }
-
-
-
         }
 
-        public void Look() {
+        public void Look()
+        {
             float mouseX = 0;
             float mouseY = 0;
 
-            switch(controlType) {
+            switch (controlType)
+            {
                 case ControlType.android:
                     mouseX = horizontalMovement * Time.deltaTime * mouseSensitivity;
                     break;
@@ -101,18 +105,21 @@ namespace ScifiOffice {
             playerBody.Rotate(Vector3.up * mouseX);
         }
 
-        void Walk() {
+        private void Walk()
+        {
             Vector3 displacement;
             float maxSpeed = speed, maxAcc = accelerationRate;
 
             // Lower the limits if we are crouching.
-            if (isCrouching) {
+            if (isCrouching)
+            {
                 maxSpeed *= crouchFactor;
                 maxAcc *= crouchFactor;
             }
 
             //Find displacement based on controlType.
-            switch(controlType) {
+            switch (controlType)
+            {
                 case ControlType.android:
                     //Move forward and back only. Horizontal turns.
                     displacement = playerBody.transform.forward * verticalMovement;
@@ -126,35 +133,40 @@ namespace ScifiOffice {
                 case ControlType.keyboardMouse:
                 default:
                     //Move in 4 directions, this is the default control
-                    displacement = playerBody.transform.forward * Input.GetAxis("Vertical") + playerBody.transform.right * Input.GetAxis("Horizontal");
+                    displacement = playerBody.transform.forward * Input.GetAxis("Vertical") +
+                                   playerBody.transform.right * Input.GetAxis("Horizontal");
                     break;
             }
 
-            float len = displacement.magnitude;
-            if(len > 0) {
+            var len = displacement.magnitude;
+            if (len > 0)
+            {
                 rb.velocity += displacement / len * Time.deltaTime * maxAcc;
 
                 // Clamp velocity to the maximum speed.
-                if(rb.velocity.magnitude > maxSpeed) {
-                    rb.velocity = rb.velocity.normalized * speed;
-                }
-            } else {
+                if (rb.velocity.magnitude > maxSpeed) rb.velocity = rb.velocity.normalized * speed;
+            }
+            else
+            {
                 // If no buttons are pressed, decelerate.
                 len = rb.velocity.magnitude;
-                float decelRate = accelerationRate * decelerationFactor * Time.deltaTime;
-                if(len < decelRate) rb.velocity = Vector3.zero;
-                else {
+                var decelRate = accelerationRate * decelerationFactor * Time.deltaTime;
+                if (len < decelRate) rb.velocity = Vector3.zero;
+                else
                     rb.velocity -= rb.velocity.normalized * decelRate;
-                }
             }
         }
 
-        void Crouch() {
+        private void Crouch()
+        {
             //Crouch when the couch key is being pressed
-            if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.LeftShift)) {
+            if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.LeftShift))
+            {
                 col.height = .5f;
-                isCrouching = true; 
-            } else {
+                isCrouching = true;
+            }
+            else
+            {
                 //Otherwise, player stop crouching
                 col.height = 2;
                 //if (Input.GetKey(KeyCode.LeftShift)) {
@@ -169,7 +181,7 @@ namespace ScifiOffice {
         public void MobileCrouch()
         {
             //If player is currently crouching, stop crouching and vice versa
-            if(isCrouching)
+            if (isCrouching)
             {
                 col.height = 2;
                 isCrouching = false;
@@ -184,13 +196,12 @@ namespace ScifiOffice {
         //setting movement for android build
         public void MobileWalk(int direction)
         {
-            
-            if(direction * direction == 1)
+            if (direction * direction == 1)
             {
                 //Moving left and right
                 horizontalMovement = direction;
             }
-            else if(direction == 3)
+            else if (direction == 3)
             {
                 //When none of the button is pressed, stop moving
                 horizontalMovement = 0;
@@ -201,10 +212,6 @@ namespace ScifiOffice {
                 //Moving forward and back
                 verticalMovement = direction - 1;
             }
-            
-            
         }
-
-
     }
 }

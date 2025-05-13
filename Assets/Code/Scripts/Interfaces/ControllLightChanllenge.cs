@@ -1,16 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ControllLightChanllenge : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject challengeScene;
+    [SerializeField] private GameObject challengeScene;
 
 
-    public void showChallenge() {
+    public void showChallenge()
+    {
         challengeScene.SetActive(true);
     }
-
-
 }

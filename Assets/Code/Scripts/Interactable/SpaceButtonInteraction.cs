@@ -1,19 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SpaceButtonInteraction : InteractableBase
 {
-    private MeshRenderer meshRenderer;
-    private bool isInteractable = true;
-    private bool hasClickedOnce = false;
-
-    [SerializeField] private bool isFirstButton = false;
-    [SerializeField] private bool isLastButton = false;
+    [SerializeField] private bool isFirstButton;
+    [SerializeField] private bool isLastButton;
 
     [SerializeField] private Material redMaterial;
     [SerializeField] private Material greenMaterial;
     [SerializeField] private Material grayMaterial;
+    private bool hasClickedOnce;
+    private bool isInteractable = true;
+    private MeshRenderer meshRenderer;
 
     private void Start()
     {
@@ -41,7 +38,6 @@ public class SpaceButtonInteraction : InteractableBase
             SpaceManager.Instance.ActivateNextCorridor();
             SetGray();
             isInteractable = false;
-
         }
         else
         {

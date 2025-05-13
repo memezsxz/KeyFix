@@ -1,9 +1,6 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class CameraEnemyLock : MonoBehaviour
 {
@@ -16,6 +13,12 @@ public class CameraEnemyLock : MonoBehaviour
     private void Start()
     {
         if (!playerTransform) playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+    }
+
+    private void Update()
+    {
+        // Optional: continuously update enemies in range
+        BuildTargetGroup();
     }
 
     private void OnEnable()
@@ -31,9 +34,9 @@ public class CameraEnemyLock : MonoBehaviour
         var enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
         // adding the player
-        List<CinemachineTargetGroup.Target> targets = new List<CinemachineTargetGroup.Target>
+        var targets = new List<CinemachineTargetGroup.Target>
         {
-            new CinemachineTargetGroup.Target
+            new()
             {
                 target = playerTransform,
                 weight = playerWeight,
@@ -56,11 +59,5 @@ public class CameraEnemyLock : MonoBehaviour
 
         targetGroup.m_Targets = targets.ToArray();
         // Debug.Log(targets.Count);
-    }
-    
-    private void Update()
-    {
-        // Optional: continuously update enemies in range
-        BuildTargetGroup();
     }
 }

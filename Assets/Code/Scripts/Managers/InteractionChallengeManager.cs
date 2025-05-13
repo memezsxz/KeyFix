@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -7,10 +6,10 @@ namespace Code.Scripts.Managers
 {
     public class InteractionChallengeManager : Singleton<InteractionChallengeManager>, IDataPersistence
     {
-        [SerializeField] TextMeshProUGUI scoreText;
-        private int currentScore = 0;
+        [SerializeField] private TextMeshProUGUI scoreText;
 
-        [SerializeField] List<GameObject> interactables;
+        [SerializeField] private List<GameObject> interactables;
+        private int currentScore;
 
         private void Start()
         {
@@ -24,42 +23,6 @@ namespace Code.Scripts.Managers
             EnableNextItem();
         }
 
-        private void EnableNextItem()
-        {
-            int defaultLayer = LayerMask.NameToLayer("Default");
-            int interactableLayer = LayerMask.NameToLayer("Interactable");
-
-            interactables.ForEach(i => SetLayerRecursively(i, defaultLayer));
-            SetLayerRecursively(interactables[currentScore], interactableLayer);
-        }
-
-        private void SetLayerRecursively(GameObject obj, int newLayer)
-        {
-            if (obj == null) return;
-
-            obj.layer = newLayer;
-
-            foreach (Transform child in obj.transform)
-            {
-                SetLayerRecursively(child.gameObject, newLayer);
-            }
-        }
-
-        public void IncrementScore()
-        {
-            currentScore++;
-            UpdateUI();
-
-            if (currentScore >= interactables.Count)
-            {
-                GameManager.Instance.ChangeState(GameManager.GameState.Victory);
-            }
-            else
-            {
-                EnableNextItem();
-            }
-        }
-
         public void SaveData(ref SaveData data)
         {
             data.Progress.CollectablesCount = currentScore;
@@ -71,6 +34,35 @@ namespace Code.Scripts.Managers
             currentScore = data.Progress.CollectablesCount;
             UpdateUI();
             EnableNextItem();
+        }
+
+        private void EnableNextItem()
+        {
+            var defaultLayer = LayerMask.NameToLayer("Default");
+            var interactableLayer = LayerMask.NameToLayer("Interactable");
+
+            interactables.ForEach(i => SetLayerRecursively(i, defaultLayer));
+            SetLayerRecursively(interactables[currentScore], interactableLayer);
+        }
+
+        private void SetLayerRecursively(GameObject obj, int newLayer)
+        {
+            if (obj == null) return;
+
+            obj.layer = newLayer;
+
+            foreach (Transform child in obj.transform) SetLayerRecursively(child.gameObject, newLayer);
+        }
+
+        public void IncrementScore()
+        {
+            currentScore++;
+            UpdateUI();
+
+            if (currentScore >= interactables.Count)
+                GameManager.Instance.ChangeState(GameManager.GameState.Victory);
+            else
+                EnableNextItem();
         }
 
         private void UpdateUI()

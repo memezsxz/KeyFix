@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using Code.Scripts.Managers;
 using UnityEngine;
 
-
 public class MazeController : Singleton<MazeController>
 {
     [SerializeField] protected List<Light> _lights;
     [SerializeField] protected List<WallEntry> entries;
+    private int currentIndex;
 
     public List<Light> Lights => _lights;
-    private int currentIndex = 0;
 
     private void Start()
     {
@@ -46,10 +45,7 @@ public class MazeController : Singleton<MazeController>
             entry.board.ToggleCanvas(isActive);
         }
 
-        if (entry.walls != null)
-        {
-            entry.walls.SetActive(isActive);
-        }
+        if (entry.walls != null) entry.walls.SetActive(isActive);
     }
 }
 
