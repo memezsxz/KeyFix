@@ -11,7 +11,7 @@ public class CameraChange : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player")) areaCam.SetActive(true);
+        CameraSwitchManager.Instance?.SetActiveCamera(areaCam);
     }
 
     private void OnTriggerExit(Collider other)

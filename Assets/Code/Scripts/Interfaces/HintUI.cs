@@ -9,7 +9,20 @@ public class HintUI : MonoBehaviour
 
     private void LateUpdate()
     {
-        transform.forward = Camera.main.transform.forward;
+
+        if (CameraSwitchManager.Instance)
+        {
+            Camera cam =  CameraSwitchManager.Instance.ActiveCamera.GetComponent<Camera>();
+            Vector3 cameraForward = cam.transform.forward;
+            cameraForward.y = 0; // Remove vertical component
+            cameraForward.Normalize(); // Ensure it's a valid direction
+            transform.forward = cameraForward;
+
+        }
+        else
+        {
+            transform.forward = Camera.main.transform.forward;
+        }
     }
 
     // Show hint for a duration
