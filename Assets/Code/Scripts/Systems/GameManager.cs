@@ -11,8 +11,6 @@ namespace Code.Scripts.Managers
 {
     public class GameManager : Singleton<GameManager>, IDataPersistence
     {
-
-
         #region Fields & Properties
 
         public Scenes CurrentScene { get; private set; }
@@ -32,7 +30,7 @@ namespace Code.Scripts.Managers
         [SerializeField] private LoadingManager loadingScript;
         [SerializeField] private LevelCompleteController victoryController;
         [SerializeField] private LevelTitle levelTitleScript;
-[SerializeField] private AudioClip levelBackgroundMusic;
+        [SerializeField] private AudioClip levelBackgroundMusic;
 
         private static readonly Dictionary<Scenes, string> SceneNameMap = new()
         {
@@ -48,6 +46,12 @@ namespace Code.Scripts.Managers
             { Scenes.INCIDENT, "Incident_Cutscene" },
             { Scenes.GAME_VICTORY_CUTSCENE, "Game_Victory_Cutscene" }
         };
+        
+        [SerializeField]
+        private List<SceneAudioPair> levelMusicList;
+
+        private Dictionary<Scenes, AudioClip> levelMusicMap;
+
 
         private bool shouldLoadSaveDataAfterSceneLoad;
 
@@ -84,10 +88,13 @@ namespace Code.Scripts.Managers
         }
 
         #endregion
+
         #region Unity Methods
 
         private void Start()
         {
+            levelMusicMap = levelMusicList.ToDictionary(pair => pair.scene, pair => pair.clip);
+
             DebugController.Instance?.AddDebugCommand(new DebugCommand("gm_test", "testing from the game manager", "",
                 () => Debug.Log("working in game manager")));
 
@@ -145,6 +152,7 @@ namespace Code.Scripts.Managers
                         GameManager.Instance.ChangeState(GameManager.GameState.CutScene);
                         return;
                     }
+
                     ChangeState(GameState.Victory);
                 }));
             DebugController.Instance?.AddDebugCommand(new DebugCommand("current_state",
@@ -507,7 +515,9 @@ namespace Code.Scripts.Managers
         {
             if (SoundManager.Instance.IsMusicPlaying) SoundManager.Instance.StopMusic();
             if (SoundManager.Instance.IsSoundPlaying) SoundManager.Instance.StopSound();
-            SoundManager.Instance.PlayMusic(levelBackgroundMusic);
+
+            if (levelMusicMap.TryGetValue(CurrentScene, out var sound)) SoundManager.Instance.PlayMusic(sound);
+            
             pauseMenuCanvas.SetActive(false);
             TogglePlayerMovement(true);
             Time.timeScale = 1f;
@@ -695,4 +705,12 @@ namespace Code.Scripts.Managers
             HandleSceneLoad(Scenes.Main_Menu);
         }
     }
+    
+    [System.Serializable]
+    public class SceneAudioPair
+    {
+        public GameManager.Scenes scene;
+        public AudioClip clip;
+    }
+
 }

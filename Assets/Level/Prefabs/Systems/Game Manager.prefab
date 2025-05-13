@@ -58,6 +58,9 @@ MonoBehaviour:
   victoryController: {fileID: 3389156086452475353}
   levelTitleScript: {fileID: 3047764984869020891}
   levelBackgroundMusic: {fileID: 8300000, guid: 9cda224e8f453a641841bbcbe92f5e39, type: 3}
+  levelMusicList:
+  - scene: 7
+    clip: {fileID: 8300000, guid: 9cda224e8f453a641841bbcbe92f5e39, type: 3}
 --- !u!1 &3342684439203912129
 GameObject:
   m_ObjectHideFlags: 0
