@@ -13,9 +13,9 @@ public class SpaceManager : Singleton<SpaceManager>
     [SerializeField] private Collider shrinker;
     [SerializeField] private Collider stretcher;
 
-    [SerializeField] private DoorInteract doorInteract;
+    // [SerializeField] private DoorInteract doorInteract;
 
-    [SerializeField] private GameObject door;
+    // [SerializeField] private GameObject door;
     private int currentCorridorIndex = -1;
     private bool isCorridorActive;
 
