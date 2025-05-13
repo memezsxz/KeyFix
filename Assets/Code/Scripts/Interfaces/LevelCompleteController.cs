@@ -18,9 +18,15 @@ public class LevelCompleteController : MonoBehaviour
     private readonly float fadeOutDuration = 1f;
 
 
+    void OnEnable()
+    {
+        ResetAnimationState();
+    }
     //useed to show the complete level scene 
     public void ShowCompleteScene()
     {
+        ResetAnimationState(); // Ensure clean state
+        LogAnimatorState();
         scene.SetActive(true);
         StartCoroutine(PlayAfterDelay());
         StartCoroutine(PlayAnimation());
@@ -50,6 +56,25 @@ public class LevelCompleteController : MonoBehaviour
         yield return new WaitForSeconds(displayDuration);
         yield return GameManager.Instance.FadeCanvasGroup(canvasGroup, 1, 0, fadeOutDuration); // Fade Out
 
+
         GameManager.Instance.HandleSceneLoad(GameManager.Scenes.HALLWAYS, GameManager.GameState.Playing);
+    }
+
+    private void ResetAnimationState()
+    {
+        canvasGroup.alpha = 0f;
+        canvasGroup.interactable = true;
+        canvasGroup.blocksRaycasts = true;
+
+        animator.SetBool("start", false);
+        animator.SetBool("done", false);
+    }
+
+    private void LogAnimatorState()
+    {
+        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        Debug.Log("Current Animator State: " + stateInfo.fullPathHash);
+        Debug.Log("Start Bool: " + animator.GetBool("start"));
+        Debug.Log("Done Bool: " + animator.GetBool("done"));
     }
 }
