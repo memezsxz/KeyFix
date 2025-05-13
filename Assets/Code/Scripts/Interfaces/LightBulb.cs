@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 public class LightBulb : MonoBehaviour
 {
+    public AudioSource bulbSound;
     public GameObject offSprite;
     public GameObject onSprite;
     private Image bulbImage;
@@ -20,11 +21,13 @@ public class LightBulb : MonoBehaviour
         {
             offSprite.SetActive(false);
             onSprite.SetActive(true);
+            bulbSound.Play();
         }
         else
         {
             offSprite.SetActive(true);
             onSprite.SetActive(false);
+            bulbSound.Play();
         }
     }
 
