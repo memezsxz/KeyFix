@@ -30,8 +30,8 @@ public class PaperPrinterParticleSystem : MonoBehaviour
     /// <summary>
     /// Force with which paper is ejected (not currently used but reserved for future expansion).
     /// </summary>
-    [Header("Paper Physics")] [SerializeField]
-    private float launchForce = 1f;
+    // [Header("Paper Physics")] [SerializeField]
+    // private float launchForce = 1f;
 
     #endregion
 
