@@ -1,4 +1,3 @@
-using Code.Scripts.Managers;
 using TMPro;
 using UnityEngine;
 

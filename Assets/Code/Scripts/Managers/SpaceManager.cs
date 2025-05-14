@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Code.Scripts.Managers;
 using UnityEngine;
 
 public class SpaceManager : Singleton<SpaceManager>

@@ -1,4 +1,3 @@
-using Code.Scripts.Managers;
 
 public class DoorInteract : InteractableBase
 {

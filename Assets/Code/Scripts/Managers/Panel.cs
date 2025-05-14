@@ -1,7 +1,6 @@
 using UnityEngine;
 
-namespace Code.Scripts.Managers
-{
+
     public class Panel : MonoBehaviour
     {
         [SerializeField] private PressButton.PressedColor color;
@@ -31,4 +30,3 @@ namespace Code.Scripts.Managers
             }
         }
     }
-}

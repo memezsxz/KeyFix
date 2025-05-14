@@ -1,6 +1,4 @@
-using Code.Scripts.Managers;
 using UnityEngine;
-using static Code.Scripts.Managers.GameManager;
 
 public class GameOverManager : MonoBehaviour
 {
@@ -20,7 +18,7 @@ public class GameOverManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         GameStateTracker.returningFromGame = true;
-        GameManager.Instance.HandleSceneLoad(Scenes.Main_Menu);
+        GameManager.Instance.HandleSceneLoad(GameManager.Scenes.Main_Menu);
     }
 
     public void Retry()

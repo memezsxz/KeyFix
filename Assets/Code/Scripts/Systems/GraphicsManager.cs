@@ -74,6 +74,8 @@ public class GraphicsManager : Singleton<GraphicsManager>, IDataPersistence
         Screen.SetResolution(res.width, res.height, data.Graphics.Fullscreen);
         ResolutionIndex = index;
 
+        Screen.fullScreen = data.Graphics.Fullscreen;
+        
         // Debug.Log("loaded quality: " + data.Graphics.QualityName);
         // Debug.Log("loaded res: " + Screen.resolutions[ResolutionIndex].width + " x " +
         //           Screen.resolutions[ResolutionIndex].height);

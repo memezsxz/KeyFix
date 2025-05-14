@@ -3,181 +3,177 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Code.Scripts.Managers
+public class ColorCoordinator : Singleton<ColorCoordinator>
 {
-    public class ColorCoordinator : Singleton<ColorCoordinator>
-    {
-        [SerializeField] private List<PressButton> buttons = new();
-        [SerializeField] private List<Panel> panels = new();
+    [SerializeField] private List<PressButton> buttons = new();
+    [SerializeField] private List<Panel> panels = new();
 
-        private void Start()
+    private void Start()
+    {
+        DebugController.Instance?.AddDebugCommand(new DebugCommand("switch_button_colors", "changes button colors",
+            "switch_button_colors", () => SwitchButtonsColors()));
+        DebugController.Instance?.AddDebugCommand(new DebugCommand("switch_panel_colors", "changes panel colors",
+            "switch_panel_colors", () => SwitchPanelColors()));
+        StartCoroutine(DelayedInit());
+    }
+
+    public void CheckButtonMatch()
+    {
+        if (panels.Count == 0)
         {
-            DebugController.Instance?.AddDebugCommand(new DebugCommand("switch_button_colors", "changes button colors",
-                "switch_button_colors", () => SwitchButtonsColors()));
-            DebugController.Instance?.AddDebugCommand(new DebugCommand("switch_panel_colors", "changes panel colors",
-                "switch_panel_colors", () => SwitchPanelColors()));
-            StartCoroutine(DelayedInit());
+            // Debug.Log("All panels solved! Victory!");
+            GameManager.Instance.ChangeState(GameManager.GameState.Victory);
+            return;
         }
 
-        public void CheckButtonMatch()
+        var pressedButtons = buttons.FindAll(b => b.IsPressed);
+
+        if (pressedButtons.Count != 2)
+            return;
+
+        var sameColor = pressedButtons[0].AssignedColor == pressedButtons[1].AssignedColor;
+        var panelColor = panels[0]?.AssignedColor;
+
+        if (sameColor && pressedButtons[0].AssignedColor == panelColor)
         {
+            // Debug.Log("Panel match successful!");
+
+            panels[0].gameObject.SetActive(false);
+            panels.RemoveAt(0);
+
             if (panels.Count == 0)
-            {
                 // Debug.Log("All panels solved! Victory!");
                 GameManager.Instance.ChangeState(GameManager.GameState.Victory);
-                return;
-            }
+            // Optional: highlight next panel
+            // Debug.Log("Proceed to next panel.");
+        }
+    }
 
-            var pressedButtons = buttons.FindAll(b => b.IsPressed);
+    private IEnumerator DelayedInit()
+    {
+        yield return null; // Wait 1 frame
 
-            if (pressedButtons.Count != 2)
-                return;
+        SwitchPanelColors();
+        SwitchButtonsColors();
+    }
 
-            var sameColor = pressedButtons[0].AssignedColor == pressedButtons[1].AssignedColor;
-            var panelColor = panels[0]?.AssignedColor;
-
-            if (sameColor && pressedButtons[0].AssignedColor == panelColor)
-            {
-                // Debug.Log("Panel match successful!");
-
-                panels[0].gameObject.SetActive(false);
-                panels.RemoveAt(0);
-
-                if (panels.Count == 0)
-                    // Debug.Log("All panels solved! Victory!");
-                    GameManager.Instance.ChangeState(GameManager.GameState.Victory);
-                // Optional: highlight next panel
-                // Debug.Log("Proceed to next panel.");
-            }
+    private void SwitchButtonsColors()
+    {
+        if (buttons.Count < 6)
+        {
+            Debug.LogWarning("Not enough buttons to assign colors (need at least 6).");
+            return;
         }
 
-        private IEnumerator DelayedInit()
+        // Ensure exactly 2 of each color
+        List<PressButton.PressedColor> colorPool = new()
         {
-            yield return null; // Wait 1 frame
+            PressButton.PressedColor.Blue,
+            PressButton.PressedColor.Blue,
+            PressButton.PressedColor.Red,
+            PressButton.PressedColor.Red,
+            PressButton.PressedColor.Green,
+            PressButton.PressedColor.Green
+        };
 
-            SwitchPanelColors();
-            SwitchButtonsColors();
+        // Shuffle the color assignments
+        for (var i = 0; i < colorPool.Count; i++)
+        {
+            var rnd = Random.Range(i, colorPool.Count);
+            (colorPool[i], colorPool[rnd]) = (colorPool[rnd], colorPool[i]);
         }
 
-        private void SwitchButtonsColors()
+        // Assign to buttons in order
+        for (var i = 0; i < 6; i++) buttons[i].ChangeColor(colorPool[i]);
+    }
+
+    // private void SwitchPanelColors()
+    // {
+    //     if (panels.Count < 3)
+    //     {
+    //         Debug.LogWarning("Not enough panels to assign at least one of each color.");
+    //         return;
+    //     }
+    //
+    //     // Ensure at least one of each color
+    //     List<PressButton.PressedColor> requiredColors = new()
+    //     {
+    //         PressButton.PressedColor.Red,
+    //         PressButton.PressedColor.Green,
+    //         PressButton.PressedColor.Blue
+    //     };
+    //
+    //     // Fill the remaining with random colors
+    //     while (requiredColors.Count < panels.Count)
+    //         requiredColors.Add((PressButton.PressedColor)Random.Range(0, 3));
+    //
+    //     // Shuffle the colors only, not the panels
+    //     for (var i = 0; i < requiredColors.Count; i++)
+    //     {
+    //         var rnd = Random.Range(i, requiredColors.Count);
+    //         (requiredColors[i], requiredColors[rnd]) = (requiredColors[rnd], requiredColors[i]);
+    //     }
+    //
+    //     // Assign colors in order to the panels list (no shuffling)
+    //     for (var i = 0; i < panels.Count; i++) panels[i].ChangeColor(requiredColors[i]);
+    // }
+
+
+    private void SwitchPanelColors()
+    {
+        if (panels.Count < 3)
         {
-            if (buttons.Count < 6)
-            {
-                Debug.LogWarning("Not enough buttons to assign colors (need at least 6).");
-                return;
-            }
-
-            // Ensure exactly 2 of each color
-            List<PressButton.PressedColor> colorPool = new()
-            {
-                PressButton.PressedColor.Blue,
-                PressButton.PressedColor.Blue,
-                PressButton.PressedColor.Red,
-                PressButton.PressedColor.Red,
-                PressButton.PressedColor.Green,
-                PressButton.PressedColor.Green
-            };
-
-            // Shuffle the color assignments
-            for (var i = 0; i < colorPool.Count; i++)
-            {
-                var rnd = Random.Range(i, colorPool.Count);
-                (colorPool[i], colorPool[rnd]) = (colorPool[rnd], colorPool[i]);
-            }
-
-            // Assign to buttons in order
-            for (var i = 0; i < 6; i++) buttons[i].ChangeColor(colorPool[i]);
+            Debug.LogWarning("Not enough panels to assign at least one of each color.");
+            return;
         }
 
-        // private void SwitchPanelColors()
-        // {
-        //     if (panels.Count < 3)
-        //     {
-        //         Debug.LogWarning("Not enough panels to assign at least one of each color.");
-        //         return;
-        //     }
-        //
-        //     // Ensure at least one of each color
-        //     List<PressButton.PressedColor> requiredColors = new()
-        //     {
-        //         PressButton.PressedColor.Red,
-        //         PressButton.PressedColor.Green,
-        //         PressButton.PressedColor.Blue
-        //     };
-        //
-        //     // Fill the remaining with random colors
-        //     while (requiredColors.Count < panels.Count)
-        //         requiredColors.Add((PressButton.PressedColor)Random.Range(0, 3));
-        //
-        //     // Shuffle the colors only, not the panels
-        //     for (var i = 0; i < requiredColors.Count; i++)
-        //     {
-        //         var rnd = Random.Range(i, requiredColors.Count);
-        //         (requiredColors[i], requiredColors[rnd]) = (requiredColors[rnd], requiredColors[i]);
-        //     }
-        //
-        //     // Assign colors in order to the panels list (no shuffling)
-        //     for (var i = 0; i < panels.Count; i++) panels[i].ChangeColor(requiredColors[i]);
-        // }
-        
-        
-        private void SwitchPanelColors()
+        // Ensure at least one of each color
+        List<PressButton.PressedColor> requiredColors = new()
         {
-            if (panels.Count < 3)
+            PressButton.PressedColor.Red,
+            PressButton.PressedColor.Green,
+            PressButton.PressedColor.Blue
+        };
+
+        // Fill remaining with random colors
+        while (requiredColors.Count < panels.Count)
+            requiredColors.Add((PressButton.PressedColor)Random.Range(0, 3));
+
+        // Shuffle while avoiding two adjacent same-color panels
+        List<PressButton.PressedColor> shuffledColors;
+        int maxTries = 50;
+        do
+        {
+            shuffledColors = new List<PressButton.PressedColor>(requiredColors);
+            for (int i = 0; i < shuffledColors.Count; i++)
             {
-                Debug.LogWarning("Not enough panels to assign at least one of each color.");
-                return;
+                int rnd = Random.Range(i, shuffledColors.Count);
+                (shuffledColors[i], shuffledColors[rnd]) = (shuffledColors[rnd], shuffledColors[i]);
             }
 
-            // Ensure at least one of each color
-            List<PressButton.PressedColor> requiredColors = new()
+            // Break if no adjacent duplicates
+            bool hasAdjacentSameColor = false;
+            for (int i = 1; i < shuffledColors.Count; i++)
             {
-                PressButton.PressedColor.Red,
-                PressButton.PressedColor.Green,
-                PressButton.PressedColor.Blue
-            };
-
-            // Fill remaining with random colors
-            while (requiredColors.Count < panels.Count)
-                requiredColors.Add((PressButton.PressedColor)Random.Range(0, 3));
-
-            // Shuffle while avoiding two adjacent same-color panels
-            List<PressButton.PressedColor> shuffledColors;
-            int maxTries = 50;
-            do
-            {
-                shuffledColors = new List<PressButton.PressedColor>(requiredColors);
-                for (int i = 0; i < shuffledColors.Count; i++)
+                if (shuffledColors[i] == shuffledColors[i - 1])
                 {
-                    int rnd = Random.Range(i, shuffledColors.Count);
-                    (shuffledColors[i], shuffledColors[rnd]) = (shuffledColors[rnd], shuffledColors[i]);
-                }
-
-                // Break if no adjacent duplicates
-                bool hasAdjacentSameColor = false;
-                for (int i = 1; i < shuffledColors.Count; i++)
-                {
-                    if (shuffledColors[i] == shuffledColors[i - 1])
-                    {
-                        hasAdjacentSameColor = true;
-                        break;
-                    }
-                }
-
-                if (!hasAdjacentSameColor)
+                    hasAdjacentSameColor = true;
                     break;
-
-                maxTries--;
-            } while (maxTries > 0);
-
-            if (maxTries == 0)
-            {
-                Debug.LogWarning("Could not find a non-repeating sequence after multiple attempts.");
+                }
             }
 
-            for (int i = 0; i < panels.Count; i++)
-                panels[i].ChangeColor(shuffledColors[i]);
+            if (!hasAdjacentSameColor)
+                break;
+
+            maxTries--;
+        } while (maxTries > 0);
+
+        if (maxTries == 0)
+        {
+            Debug.LogWarning("Could not find a non-repeating sequence after multiple attempts.");
         }
 
+        for (int i = 0; i < panels.Count; i++)
+            panels[i].ChangeColor(shuffledColors[i]);
     }
 }

@@ -1,10 +1,7 @@
 using System;
 using System.Collections;
-using Code.Scripts.Managers;
 using UnityEngine;
 
-namespace Code.Scripts.Interactable
-{
     public class Scaler : MonoBehaviour
     {
         public enum ScaleType
@@ -96,4 +93,3 @@ namespace Code.Scripts.Interactable
             controller.enabled = true;
         }
     }
-}

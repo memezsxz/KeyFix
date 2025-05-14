@@ -1,8 +1,6 @@
-using Code.Scripts.Managers;
 using UnityEngine;
 
-namespace Code.Scripts.Interactable
-{
+
     public class Door : InteractableBase
     {
         public enum DoorType
@@ -47,4 +45,3 @@ namespace Code.Scripts.Interactable
             GameManager.Instance.MovePlayerTo(pos, transform.rotation);
         }
     }
-}

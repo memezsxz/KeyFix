@@ -1,4 +1,3 @@
-using Code.Scripts.Managers;
 using UnityEngine;
 
 namespace Code.Scripts.Interactable

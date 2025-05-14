@@ -1,5 +1,4 @@
 using System;
-using Code.Scripts.Managers;
 using UnityEngine;
 
 public class PressButton : MonoBehaviour

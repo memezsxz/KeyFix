@@ -1,8 +1,6 @@
-using Code.Scripts.Managers;
 using UnityEngine;
 
-namespace Code.Scripts.Interactable
-{
+
     public class LightChallengeObject : InteractableBase
     {
         [SerializeField] private GameObject challengePrefab;
@@ -43,4 +41,3 @@ namespace Code.Scripts.Interactable
             InteractionChallengeManager.Instance.IncrementScore();
         }
     }
-}

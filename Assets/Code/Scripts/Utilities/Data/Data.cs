@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Code.Scripts.Managers;
 using UnityEngine;
 
 [Serializable]

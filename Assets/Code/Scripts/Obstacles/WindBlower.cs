@@ -1,8 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Code.Scripts.Obstacles
-{
+
     public class WindBlower : MonoBehaviour
     {
         [SerializeField] private Vector3 windDirection = Vector3.forward;
@@ -62,4 +61,3 @@ namespace Code.Scripts.Obstacles
                 }
         }
     }
-}

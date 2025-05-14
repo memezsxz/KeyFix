@@ -2,8 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-namespace Code.Scripts.Managers
-{
+
     public class InteractionChallengeManager : Singleton<InteractionChallengeManager>, IDataPersistence
     {
         [SerializeField] private TextMeshProUGUI scoreText;
@@ -70,4 +69,3 @@ namespace Code.Scripts.Managers
             scoreText.text = $"{currentScore} / {interactables.Count}";
         }
     }
-}

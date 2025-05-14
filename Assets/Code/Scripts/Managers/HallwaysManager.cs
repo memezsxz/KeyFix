@@ -6,8 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Code.Scripts.Managers
-{
+
     public class HallwaysManager : Singleton<HallwaysManager>, IDataPersistence
     {
         [FormerlySerializedAs("doorInteract")] [SerializeField]
@@ -73,4 +72,3 @@ namespace Code.Scripts.Managers
             collectablesText.text = value.ToString();
         }
     }
-}

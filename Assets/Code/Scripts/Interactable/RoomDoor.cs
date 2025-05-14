@@ -1,7 +1,4 @@
-using Code.Scripts.Managers;
 
-namespace Code.Scripts.Interactable
-{
     public class RoomDoor : InteractableBase
     {
         private bool didInteract;
@@ -17,4 +14,3 @@ namespace Code.Scripts.Interactable
             GameManager.Instance.HandleSceneLoad(GameManager.Scenes.HALLWAYS, GameManager.GameState.Playing);
         }
     }
-}

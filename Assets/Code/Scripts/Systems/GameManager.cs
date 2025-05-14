@@ -7,8 +7,7 @@ using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Code.Scripts.Managers
-{
+
     public class GameManager : Singleton<GameManager>, IDataPersistence
     {
         #region Fields & Properties
@@ -720,4 +719,3 @@ namespace Code.Scripts.Managers
         public AudioClip clip;
     }
 
-}
