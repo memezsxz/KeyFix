@@ -15,98 +15,26 @@ EditorBuildSettings:
     path: Assets/Level/Scenes/Arrow_Keys.unity
     guid: b4bb8fc9f7fbd484b8a943fdcb1ab8c4
   - enabled: 1
-    path: Assets/Level/Scenes/_Cutscenes/ESC_Key.unity
-    guid: 3008ca30455504f6ab968377dad236ee
-  - enabled: 1
     path: Assets/Level/Scenes/G_Key.unity
     guid: 13b17d50f4659425fb1aefbfdaab62ed
   - enabled: 1
     path: Assets/Level/Scenes/Hallways.unity
     guid: 4a646d6d547914204a07b7b3d30630e9
   - enabled: 1
-    path: Assets/Level/Scenes/_Cutscenes/Incident_Cutscene.unity
-    guid: e4cde8c1f3c223847856bdb36c97a6c0
-  - enabled: 1
-    path: Assets/Level/Scenes/ObjectInteractionTestLevel.unity
-    guid: fb1fa6db3a4dbb3478f66a136451ede2
-  - enabled: 1
     path: Assets/Level/Scenes/P_Key.unity
     guid: 9cda990d4c7734675b38c1cdbccf18a6
   - enabled: 1
-    path: Assets/Level/Scenes/SampleScene.unity
-    guid: ee9d74e0e8188475c87ab2c6598ae1ca
-  - enabled: 1
-    path: Assets/Level/Scenes/Space_Key.unity
-    guid: 4d33688e8d98941598a6ff6cf33bca2c
-  - enabled: 1
-    path: Assets/Level/Scenes/_TestScenes/Fatima_PauseMenu.unity
-    guid: a9b408b42766b6c47a4437e2a1813ce3
-  - enabled: 1
-    path: Assets/Level/Scenes/_TestScenes/HintsScene.unity
-    guid: 2c32e43e4b81e9c41a119ea29c34ca1b
-  - enabled: 1
-    path: Assets/Level/Scenes/_TestScenes/LevelComplete.unity
-    guid: 0ce3aafdf3c61554280653ef6a202ce1
-  - enabled: 1
-    path: Assets/Level/Scenes/_TestScenes/LevelTitle.unity
-    guid: 815e5ece084a90445809a37b2bd9c3e1
-  - enabled: 1
-    path: Assets/Level/Scenes/_TestScenes/Light_puzzel.unity
-    guid: 4a9b6f4a6cddcca4087b15c512020bf1
-  - enabled: 1
-    path: Assets/Level/Scenes/_TestScenes/LoadingScreen 1.unity
-    guid: 6df0dc6ed4f5e0a43a51e028264a7d7d
-  - enabled: 1
-    path: Assets/Level/Scenes/_TestScenes/martam p room.unity
-    guid: 993c2a163cf7e4b429bb601646a1e73f
-  - enabled: 1
-    path: Assets/Level/Scenes/_TestScenes/maryam arrow test.unity
-    guid: def676e75870043008df08a90f03b53c
-  - enabled: 1
-    path: Assets/Level/Scenes/_TestScenes/maryam city test.unity
-    guid: 4edf1e370e9274c2e9282fc3ce606f8f
-  - enabled: 1
-    path: Assets/Level/Scenes/_TestScenes/maryam co op.unity
-    guid: ab2f8f7dfabd44d98bac5f2f5c58f4bc
-  - enabled: 1
-    path: Assets/Level/Scenes/_TestScenes/maryam doors test.unity
-    guid: d0603bdfaf6f647e894f576b41ac91b8
-  - enabled: 0
-    path: Assets/Level/Scenes/_Cutscenes/A_Cutscene.unity
-    guid: 7bd7f4b6d60ce4f96aa200c22acaa8f2
+    path: Assets/Level/Scenes/_Cutscenes/ESC_Key.unity
+    guid: 3008ca30455504f6ab968377dad236ee
   - enabled: 1
     path: Assets/Level/Scenes/_Cutscenes/Game_Victory_Cutscene.unity
-    guid: 331b1bca3c8cb47f8ab8ca98581af1cb
+    guid: 25ae029e6aea845408daefb8307b731b
   - enabled: 1
     path: Assets/Level/Scenes/_Cutscenes/Incident_Cutscene.unity
     guid: e4cde8c1f3c223847856bdb36c97a6c0
-  - enabled: 0
-    path: Assets/Level/Scenes/_Cutscenes/P_Cutscene.unity
-    guid: 274588af670b24e35a967de468e52b95
-  - enabled: 0
-    path: Assets/Level/Scenes/_Cutscenes/Space_Cutscene.unity
-    guid: 33fac191b22a2426dae337f9fefb776f
-  - enabled: 0
-    path: Assets/Level/Scenes/_Cutscenes/W_Cutscene.unity
-    guid: daa373f412ab04ab1973bb6ed5317815
   - enabled: 1
-    path: Assets/Level/Scenes/_TestScenes/maryam g romm test.unity
-    guid: 70bb119b983f840b69b4384d64cec179
-  - enabled: 1
-    path: Assets/Level/Scenes/_TestScenes/maryam hallways test.unity
-    guid: a287b84b965a54131b9461ace9dfed30
-  - enabled: 1
-    path: Assets/Level/Scenes/_TestScenes/maryam signals test.unity
-    guid: 0fa9902ce949a4cbbbecde871772f471
-  - enabled: 1
-    path: Assets/Level/Scenes/_TestScenes/maryam space key test.unity
-    guid: afcca8be427ab4e7b996be030981dd83
-  - enabled: 1
-    path: Assets/Level/Scenes/_TestScenes/maryam w key.unity
-    guid: eaa433c616d9b405eaee17d7e64cea78
-  - enabled: 1
-    path: Assets/Level/Scenes/Hallways.unity
-    guid: 4a646d6d547914204a07b7b3d30630e9
+    path: Assets/Level/Scenes/Space_Key.unity
+    guid: 4d33688e8d98941598a6ff6cf33bca2c
   - enabled: 1
     path: Assets/Level/Scenes/W_Key.unity
     guid: 2f35ca614fa6bb74bbeae38d7c6fdca1
