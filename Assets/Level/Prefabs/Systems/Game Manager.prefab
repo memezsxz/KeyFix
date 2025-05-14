@@ -57,6 +57,7 @@ MonoBehaviour:
   loadingScript: {fileID: 7511939755263157279}
   victoryController: {fileID: 3389156086452475353}
   levelTitleScript: {fileID: 3047764984869020891}
+  pauseScript: {fileID: 3757335959870645931}
   levelMusicList:
   - scene: 3
     clip: {fileID: 8300000, guid: 025649aa9c1252c478113a81685d5a71, type: 3}
@@ -730,6 +731,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1014584963891733154, guid: 4bb1ebb71f119164ba80f3dadfd4773c, type: 3}
   m_PrefabInstance: {fileID: 4192915590110901494}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &3757335959870645931 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1014584964511289949, guid: 4bb1ebb71f119164ba80f3dadfd4773c, type: 3}
+  m_PrefabInstance: {fileID: 4192915590110901494}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25d0cf5c1f196904f91a442a58c81b61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &4552350986990237694
 PrefabInstance:
   m_ObjectHideFlags: 0

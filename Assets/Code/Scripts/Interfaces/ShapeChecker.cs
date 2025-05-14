@@ -34,12 +34,12 @@ public class ShapeChecker : MonoBehaviour
 
         if (match)
         {
-            Debug.Log("Shape matched!");
+            // Debug.Log("Shape matched!");
             StartCoroutine(ShowSuccessfulPanel());
         }
         else
         {
-            Debug.Log("Wrong shape!");
+            // Debug.Log("Wrong shape!");
             StartCoroutine(ShowFailedPanel());
         }
     }
