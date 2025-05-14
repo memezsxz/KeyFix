@@ -11,6 +11,9 @@ public class SettingsManager : MonoBehaviour
     // public AudioSource buttonClickSound;
     // public AudioSource musicSound;
 
+    [Header("Fullscreen")]
+    public Toggle fullscreenToggle;
+
     [Header("Volume")] public Slider musicSlider;
 
     public Slider sfxSlider;
@@ -40,11 +43,36 @@ public class SettingsManager : MonoBehaviour
         SetupResolutionSelector();
         SetupVolume();
         SetupGraphicsDropdown();
+        SetupFullscreenToggle();
     }
 
     private void OnEnable()
     {
         Start();
+    }
+
+
+    public void SetupFullscreenToggle()
+    {
+        // Default to fullscreen ON
+        if (!PlayerPrefs.HasKey("Fullscreen"))
+        {
+            Screen.fullScreen = true;
+            fullscreenToggle.isOn = true;
+            PlayerPrefs.SetInt("Fullscreen", 1);
+        }
+        else
+        {
+            bool isFullscreen = PlayerPrefs.GetInt("Fullscreen") == 1;
+            Screen.fullScreen = isFullscreen;
+            fullscreenToggle.isOn = isFullscreen;
+        }
+
+        fullscreenToggle.onValueChanged.AddListener(delegate
+        {
+            Screen.fullScreen = fullscreenToggle.isOn;
+            PlayerPrefs.SetInt("Fullscreen", fullscreenToggle.isOn ? 1 : 0);
+        });
     }
 
     #region Volume
@@ -77,6 +105,7 @@ public class SettingsManager : MonoBehaviour
         // int defaultQuality = 2; // You can change this to 1 or 0 based on what you want
         // QualitySettings.SetQualityLevel(defaultQuality);
         // PlayerPrefs.SetInt(QUALITY_PREF, defaultQuality);
+        PlayerPrefs.DeleteKey("Fullscreen");
 
         Start();
     }
