@@ -54,24 +54,12 @@ public class SettingsManager : MonoBehaviour
 
     public void SetupFullscreenToggle()
     {
-        // Default to fullscreen ON
-        if (!PlayerPrefs.HasKey("Fullscreen"))
-        {
-            Screen.fullScreen = true;
-            fullscreenToggle.isOn = true;
-            PlayerPrefs.SetInt("Fullscreen", 1);
-        }
-        else
-        {
-            bool isFullscreen = PlayerPrefs.GetInt("Fullscreen") == 1;
-            Screen.fullScreen = isFullscreen;
-            fullscreenToggle.isOn = isFullscreen;
-        }
 
-        fullscreenToggle.onValueChanged.AddListener(delegate
+        fullscreenToggle.isOn = GraphicsManager.Instance.FullScreen;
+        
+        fullscreenToggle.onValueChanged.AddListener((value) =>
         {
-            Screen.fullScreen = fullscreenToggle.isOn;
-            PlayerPrefs.SetInt("Fullscreen", fullscreenToggle.isOn ? 1 : 0);
+            Screen.fullScreen = value;
         });
     }
 
@@ -96,17 +84,6 @@ public class SettingsManager : MonoBehaviour
     public void ResetSettings()
     {
         SaveManager.Instance.ResetSettings();
-        // PlayerPrefs.DeleteKey(MUSIC_PREF);
-        // PlayerPrefs.DeleteKey(SFX_PREF);
-        // PlayerPrefs.DeleteKey(QUALITY_PREF);
-        // PlayerPrefs.DeleteKey(RES_PREF);
-
-
-        // int defaultQuality = 2; // You can change this to 1 or 0 based on what you want
-        // QualitySettings.SetQualityLevel(defaultQuality);
-        // PlayerPrefs.SetInt(QUALITY_PREF, defaultQuality);
-        PlayerPrefs.DeleteKey("Fullscreen");
-
         Start();
     }
 

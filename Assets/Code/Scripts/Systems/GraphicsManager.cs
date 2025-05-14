@@ -10,6 +10,7 @@ public class GraphicsManager : Singleton<GraphicsManager>, IDataPersistence
     public int ResolutionIndex { get; private set; }
     public int QualityIndex { get; private set; }
 
+    public bool FullScreen { get; private set; }
     public void SaveData(ref SaveData data)
     {
         data.Graphics.QualityName = QualitySettings.names[QualitySettings.GetQualityLevel()];
@@ -26,34 +27,6 @@ public class GraphicsManager : Singleton<GraphicsManager>, IDataPersistence
 
     public void LoadData(ref SaveData data)
     {
-        // quality
-        // string qualityName = SaveManager.Instance.SaveData.Graphics.QualityName;
-        // int qualityIndex = System.Array.IndexOf(QualitySettings.names, qualityName);
-        //
-        // if (qualityIndex < 0) qualityIndex = QualitySettings.names.Length - 1;
-        //
-        // QualitySettings.SetQualityLevel(qualityIndex);
-        // QualityIndex = qualityIndex;
-        //
-        // // resolution
-        // Resolution targetResolution = new Resolution()
-        // {
-        //     height = data.Graphics.ResolutionHeight,
-        //     width = data.Graphics.ResolutionWidth
-        // };
-        //
-        // int resolutionIndex = Array.FindIndex(Screen.resolutions, r =>
-        //     r.width == targetResolution.width && r.height == targetResolution.height);
-        //
-        // if (resolutionIndex < 0) resolutionIndex = Screen.resolutions.Length - 1;
-        //
-        // ResolutionIndex = resolutionIndex;
-        // Screen.SetResolution(
-        //     Screen.resolutions[resolutionIndex].width,
-        //     Screen.resolutions[resolutionIndex].height,
-        //     data.Graphics.Fullscreen
-        // );
-
         // Quality
         var qualityName = data.Graphics.QualityName;
         var qualityIndex = Array.IndexOf(QualitySettings.names, qualityName);
@@ -75,7 +48,7 @@ public class GraphicsManager : Singleton<GraphicsManager>, IDataPersistence
         ResolutionIndex = index;
 
         Screen.fullScreen = data.Graphics.Fullscreen;
-        
+        FullScreen = data.Graphics.Fullscreen;
         // Debug.Log("loaded quality: " + data.Graphics.QualityName);
         // Debug.Log("loaded res: " + Screen.resolutions[ResolutionIndex].width + " x " +
         //           Screen.resolutions[ResolutionIndex].height);
