@@ -1,19 +1,36 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class CameraSwitchManager : Singleton<CameraSwitchManager>
 {
-    public GameObject ActiveCamera { get; private set; }
+    public GameObject ActiveCamera => _cameraStack.Count > 0 ? _cameraStack[^1] : null;
+    private readonly List<GameObject> _cameraStack = new();
 
-    public void SetActiveCamera(GameObject newCam)
+    public void EnterCameraZone(GameObject cam)
     {
-        if (ActiveCamera != null)
-            ActiveCamera.gameObject.SetActive(false);
+        if (!_cameraStack.Contains(cam))
+        {
+            if (_cameraStack.Count > 0)
+                _cameraStack[^1].SetActive(false);
 
-        ActiveCamera = newCam;
+            _cameraStack.Add(cam);
+            cam.SetActive(true);
+            Camera.SetupCurrent(cam.GetComponent<Camera>());
+        }
+    }
 
-        if (ActiveCamera != null)
-            ActiveCamera.gameObject.SetActive(true);
+    public void ExitCameraZone(GameObject cam)
+    {
+        if (_cameraStack.Remove(cam))
+        {
+            cam.SetActive(false);
+
+            if (_cameraStack.Count > 0)
+            {
+                var newTop = _cameraStack[^1];
+                newTop.SetActive(true);
+                Camera.SetupCurrent(newTop.GetComponent<Camera>());
+            }
+        }
     }
 }

@@ -30,7 +30,6 @@ namespace Code.Scripts.Managers
         [SerializeField] private LoadingManager loadingScript;
         [SerializeField] private LevelCompleteController victoryController;
         [SerializeField] private LevelTitle levelTitleScript;
-        [SerializeField] private AudioClip levelBackgroundMusic;
 
         private static readonly Dictionary<Scenes, string> SceneNameMap = new()
         {

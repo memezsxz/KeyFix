@@ -57,10 +57,17 @@ MonoBehaviour:
   loadingScript: {fileID: 7511939755263157279}
   victoryController: {fileID: 3389156086452475353}
   levelTitleScript: {fileID: 3047764984869020891}
-  levelBackgroundMusic: {fileID: 8300000, guid: 9cda224e8f453a641841bbcbe92f5e39, type: 3}
   levelMusicList:
+  - scene: 3
+    clip: {fileID: 8300000, guid: 025649aa9c1252c478113a81685d5a71, type: 3}
+  - scene: 4
+    clip: {fileID: 8300000, guid: 165fbc5b11cc7dd4690edad253264f89, type: 3}
   - scene: 7
     clip: {fileID: 8300000, guid: 9cda224e8f453a641841bbcbe92f5e39, type: 3}
+  - scene: 8
+    clip: {fileID: 8300000, guid: 69179a6eff8393a4496d0ad554c5cf99, type: 3}
+  - scene: 9
+    clip: {fileID: 8300000, guid: 1a349c1656ff73f4cbafe563b8e8ce55, type: 3}
 --- !u!1 &3342684439203912129
 GameObject:
   m_ObjectHideFlags: 0
