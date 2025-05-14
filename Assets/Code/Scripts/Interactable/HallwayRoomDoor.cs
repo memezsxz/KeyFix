@@ -1,7 +1,7 @@
 using UnityEngine;
 
 
-    public class Door : InteractableBase
+    public class HallwayRoomDoor : InteractableBase
     {
         public enum DoorType
         {

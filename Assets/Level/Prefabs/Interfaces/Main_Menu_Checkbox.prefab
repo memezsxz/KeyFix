@@ -164,7 +164,7 @@ GameObject:
   - component: {fileID: 6466375665196253619}
   - component: {fileID: 6572590581163104991}
   m_Layer: 5
-  m_Name: Checkbox
+  m_Name: Main_Menu_Checkbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

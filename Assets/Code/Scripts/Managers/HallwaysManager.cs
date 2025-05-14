@@ -10,14 +10,14 @@ using UnityEngine.Serialization;
     public class HallwaysManager : Singleton<HallwaysManager>, IDataPersistence
     {
         [FormerlySerializedAs("doorInteract")] [SerializeField]
-        private List<Door> doors = new();
+        private List<HallwayRoomDoor> doors = new();
 
         [SerializeField] private TextMeshProUGUI collectablesText;
 
         private void Start()
         { 
             GameObject.FindGameObjectsWithTag("Door").ToList()
-                .ForEach(gm => doors.Add(gm.GetComponentInChildren<Door>()));
+                .ForEach(gm => doors.Add(gm.GetComponentInChildren<HallwayRoomDoor>()));
             // Debug.Log("Doors found: " + doors.Count);
 
             doors.ForEach(d =>
@@ -59,7 +59,7 @@ using UnityEngine.Serialization;
             yield return null; // Wait 1 frame
             yield return new WaitUntil(() => GameManager.Instance.GetPlayerTransform() != null);
 
-            var door = doors.FirstOrDefault(d => d.Scene == scene && d.type == Door.DoorType.Exit);
+            var door = doors.FirstOrDefault(d => d.Scene == scene && d.type == HallwayRoomDoor.DoorType.Exit);
             if (door != null)
                 door.HandleExitDoor();
             // Debug.Log("Player moved to exit door of " + scene);

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Code.Scripts.Interactable
 {
-    public class CollectablesTest : MonoBehaviour
+    public class Collectables : MonoBehaviour
     {
         [SerializeField] private AudioClip _collectSound;
         private Vector3 _rotationSpeed; // degrees per second

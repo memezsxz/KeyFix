@@ -1,5 +1,5 @@
 
-public class DoorInteract : InteractableBase
+public class RoomToHallway : InteractableBase
 {
     public override void Interact()
     {
