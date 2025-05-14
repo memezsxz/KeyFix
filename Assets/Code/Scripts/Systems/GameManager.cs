@@ -30,6 +30,7 @@ namespace Code.Scripts.Managers
         [SerializeField] private LoadingManager loadingScript;
         [SerializeField] private LevelCompleteController victoryController;
         [SerializeField] private LevelTitle levelTitleScript;
+        [SerializeField] private PauseManager pauseScript;
 
         private static readonly Dictionary<Scenes, string> SceneNameMap = new()
         {
@@ -257,7 +258,7 @@ namespace Code.Scripts.Managers
         {
             // if (CurrentScene == Scenes.GAME_VICTORY_CUTSCENE)
 
-            print(CurrentScene);
+            // print(CurrentScene);
 
             if (CurrentScene == Scenes.G_KEY) SaveManager.Instance.SaveData.Progress.RepairedKeys.Add(CurrentScene);
 
@@ -275,8 +276,9 @@ namespace Code.Scripts.Managers
                 var previousScene = CurrentScene;
                 CurrentScene = nextScene;
 
+                
                 HandleSceneLoad(Scenes.HALLWAYS, previousScene == Scenes.G_KEY ? GameState.Playing : GameState.Initial);
-            }
+    }
             else
             {
                 DisableAllCanvases();
@@ -287,6 +289,7 @@ namespace Code.Scripts.Managers
                 print(SceneNameMap.GetValueOrDefault(nextScene));
                 SceneManager.LoadScene(SceneNameMap.GetValueOrDefault(nextScene));
                 CurrentScene = nextScene;
+                pauseScript.isTriggered = false;
                 ChangeState(GameState.Initial);
             }
         }
@@ -321,6 +324,7 @@ namespace Code.Scripts.Managers
             float fadeInDuration = 1;
 
             SoundManager.Instance.StopAllAudio();
+            TogglePlayerMovement(false);
             yield return new WaitForSeconds(0.3f);
 
             gameOverCanvas.SetActive(true);
@@ -408,6 +412,8 @@ namespace Code.Scripts.Managers
 
         public void HandleSceneLoad(Scenes newScene, GameState newState = GameState.Initial)
         {
+            pauseScript.isTriggered = false;
+
             if (new List<Scenes>
                     { Scenes.W_KEY, Scenes.A_KEY, Scenes.SPACE_KEY, Scenes.G_KEY, Scenes.ARROW_KEYS, Scenes.P_KEY }
                 .All(k => SaveManager.Instance.SaveData.Progress.RepairedKeys.Contains(k)))
@@ -599,7 +605,10 @@ namespace Code.Scripts.Managers
 
         public void TogglePlayerMovement(bool value)
         {
-            FindPlayer()?.GetComponent<PlayerMovement>().ToggleMovement(value);
+            foreach (var o in GameObject.FindGameObjectsWithTag("Player"))
+            {
+                o.GetComponent<PlayerMovement>().ToggleMovement(value);
+            }
         }
 
         public Transform GetPlayerTransform()
@@ -641,8 +650,7 @@ namespace Code.Scripts.Managers
         }
 
         #endregion
-
-
+        
         #region Level Title
 
         private bool ShouldShowLevelTitle(Scenes scene, GameState state)

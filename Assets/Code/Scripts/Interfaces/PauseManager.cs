@@ -23,15 +23,24 @@ public class PauseManager : MonoBehaviour
         // music.ignoreListenerPause = true;
     }
 
+public bool isTriggered = false;
     private void Update()
     {
         // print("Pause Menu");
 
         if (!Input.GetKeyDown(KeyCode.Escape)) return;
-        print("esc click");
-        if (!GameManager.Instance.CanPause()) return;
-        print("can pause/resume");
 
+        if ((GameManager.Instance.CurrentScene is GameManager.Scenes.INCIDENT or GameManager.Scenes.ESC_KEY) && !isTriggered)
+        {
+            isTriggered = true;
+            GameManager.Instance.ChangeState(GameManager.GameState.CutScene);
+            return;
+        }
+        
+        
+        if (!GameManager.Instance.CanPause()) return;
+
+        
         if (GameManager.Instance.State == GameManager.GameState.Paused)
         {
             print("Paused");
