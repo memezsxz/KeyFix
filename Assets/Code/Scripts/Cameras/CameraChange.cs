@@ -6,16 +6,22 @@ public class CameraChange : MonoBehaviour
 
     private void Start()
     {
-        areaCam = GetComponentInChildren<Camera>(true).gameObject;
+        areaCam = GetComponentInChildren<Camera>(true)?.gameObject;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        CameraSwitchManager.Instance?.SetActiveCamera(areaCam);
+        if (other.CompareTag("Player"))
+        {
+            CameraSwitchManager.Instance?.EnterCameraZone(areaCam);
+        }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player")) areaCam.SetActive(false);
+        if (other.CompareTag("Player"))
+        {
+            CameraSwitchManager.Instance?.ExitCameraZone(areaCam);
+        }
     }
 }
