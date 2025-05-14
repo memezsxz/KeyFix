@@ -210,8 +210,8 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 95455858}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 2.2263947}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -225,7 +225,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -501.13553, y: -349.62216}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!1 &367621840
@@ -520,17 +520,6 @@ RectTransform:
   m_AnchoredPosition: {x: -501.13553, y: -349.62216}
   m_SizeDelta: {x: 2016.6378, y: 1028.2462}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &905381033 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1358153480519567553, guid: f112981eb1ad25a4c84ee26d71d43ee5, type: 3}
-  m_PrefabInstance: {fileID: 1358153480740314327}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &935977969 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1432914967590031172, guid: e22f7547039c73f449a03411f3695518, type: 3}
@@ -1069,22 +1058,6 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 858439780}
-    - target: {fileID: 5561755611223154589, guid: f112981eb1ad25a4c84ee26d71d43ee5, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5561755611223154589, guid: f112981eb1ad25a4c84ee26d71d43ee5, type: 3}
-      propertyPath: musicSound
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5561755611223154589, guid: f112981eb1ad25a4c84ee26d71d43ee5, type: 3}
-      propertyPath: txt_resolution
-      value: 
-      objectReference: {fileID: 905381033}
-    - target: {fileID: 5561755611223154589, guid: f112981eb1ad25a4c84ee26d71d43ee5, type: 3}
-      propertyPath: buttonClickSound
-      value: 
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f112981eb1ad25a4c84ee26d71d43ee5, type: 3}
 --- !u!1001 &1432914966763187381
@@ -1387,10 +1360,6 @@ PrefabInstance:
     - target: {fileID: 3728798582720458046, guid: f4acd586097e46a4db9f20c78820b596, type: 3}
       propertyPath: m_Name
       value: MainPanel
-      objectReference: {fileID: 0}
-    - target: {fileID: 3728798582720458046, guid: f4acd586097e46a4db9f20c78820b596, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3728798582869979597, guid: f4acd586097e46a4db9f20c78820b596, type: 3}
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
