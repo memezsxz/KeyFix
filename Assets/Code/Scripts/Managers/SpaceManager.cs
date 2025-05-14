@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -9,11 +10,10 @@ public class SpaceManager : Singleton<SpaceManager>
 {
     #region Serialized Fields
 
-    [Header("Corridors in order")]
     /// <summary>
     /// Ordered list of corridors the player must progress through.
     /// </summary>
-    [SerializeField]
+    [Header("Corridors in order")] [SerializeField]
     private List<Corridor> corridors = new();
 
 
@@ -104,7 +104,7 @@ public class SpaceManager : Singleton<SpaceManager>
         currentCorridorIndex++;
 
         // Check if final corridor has been reached
-        if (currentCorridorIndex >= corridors.Count - 1)
+        if (currentCorridorIndex >= corridors.Count)
         {
             // Disable final button
             var lastButtonIndex = Mathf.Min(currentCorridorIndex, spaceButtons.Count - 1);
@@ -114,6 +114,11 @@ public class SpaceManager : Singleton<SpaceManager>
 
             GameManager.Instance.ChangeState(GameManager.GameState.Victory);
             return;
+        }
+
+        if (currentCorridorIndex >= corridors.Count - 1)
+        {
+            spaceButtons.First().SetActiveAgain();
         }
 
         // Activate the next corridor

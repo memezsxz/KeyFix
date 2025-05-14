@@ -82,6 +82,7 @@ public class SpaceButtonInteraction : InteractableBase
         if (isFirstButton)
         {
             // First button simply activates the first corridor
+            SpaceManager.Instance.DeactivateCurrentCorridor();
             SpaceManager.Instance.ActivateNextCorridor();
             SetGray();
             isInteractable = false;
@@ -147,6 +148,18 @@ public class SpaceButtonInteraction : InteractableBase
         isInteractable = false;
         gameObject.layer = LayerMask.NameToLayer("Default");
     }
+    
+    #endregion
+    
+    
+    #region External Methods
 
+    public void SetActiveAgain()
+    {
+        isInteractable = true;
+        gameObject.layer = LayerMask.NameToLayer("Interactable");
+        SetGreen();
+    }
+    
     #endregion
 }

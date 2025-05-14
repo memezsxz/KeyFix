@@ -62,7 +62,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hintUI: {fileID: 1964458415319716050}
   _scene: 4
-  isGKey: 0
   _doorType: 0
   forwardPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &4059648740118366909
@@ -125,7 +124,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4059648740585023033}
   m_LocalRotation: {x: 0.7071068, y: -0, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: 0.5}
+  m_LocalPosition: {x: 0, y: 0, z: 0.798}
   m_LocalScale: {x: 0.008999996, y: 0.008999999, z: 0.008999996}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -135,7 +134,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: -90, y: -90, z: 90}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 2}
+  m_AnchoredPosition: {x: -0, y: 2}
   m_SizeDelta: {x: 10, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &4059648740585023037

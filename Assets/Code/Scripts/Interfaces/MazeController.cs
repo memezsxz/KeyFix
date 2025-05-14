@@ -6,7 +6,7 @@ using UnityEngine;
 /// Manages the sequence of color-matching boards and wall gates in a puzzle maze.
 /// Progresses the player through entries and triggers victory upon completion.
 /// </summary>
-public class MazeController : Singleton<MazeController>
+public class MazeController : Singleton<MazeController>, IDataPersistence
 {
     #region Serialized Fields
 
@@ -76,7 +76,7 @@ public class MazeController : Singleton<MazeController>
         }
 
         // Activate the next puzzle entry
-        SetEntryActive(entries[currentIndex], true);
+        Start();
         GameManager.Instance.TogglePlayerMovement(true);
     }
 
@@ -100,6 +100,20 @@ public class MazeController : Singleton<MazeController>
         {
             entry.walls.SetActive(isActive);
         }
+    }
+
+    #endregion
+
+    #region MyRegion
+
+    public void SaveData(ref SaveData data)
+    {
+        data.Progress.ArrowRoomBoardIndex = currentIndex;
+    }
+
+    public void LoadData(ref SaveData data)
+    {
+        currentIndex = data.Progress.ArrowRoomBoardIndex;
     }
 
     #endregion

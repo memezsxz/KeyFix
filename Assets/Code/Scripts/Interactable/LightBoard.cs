@@ -46,7 +46,7 @@ public class LightBoard : InteractableBase
     {
         // Get the required BulbColorController and ensure the canvas starts hidden
         bulbColorController = gameObject.GetComponent<BulbColorController>();
-        if (canvas != null) canvas.SetActive(false);
+        if (canvas != null) canvas.SetActive(false); // Always hide the canvas initially
     }
 
     private void Start()
@@ -90,21 +90,6 @@ public class LightBoard : InteractableBase
             canvas.SetActive(false);
             GameManager.Instance.TogglePlayerMovement(true);
         }
-
-        isActive = canvas.gameObject.activeSelf;
-
-        // if the object is show hide it, otherwise show it
-        if (!isActive)
-        {
-            canvas.SetActive(true);
-            bulbColorController.ShowArrowChallenge();
-            GameManager.Instance.TogglePlayerMovement(false);
-        }
-        else
-        {
-            canvas.SetActive(false);
-            GameManager.Instance.TogglePlayerMovement(true);
-        }
     }
 
     /// <summary>
@@ -114,9 +99,10 @@ public class LightBoard : InteractableBase
     public void ToggleCanvas(bool value)
     {
         bulbColorController.enabled = value;
-
         // Do NOT enable the canvas based on BulbColorController directly
-        if (!value && canvas != null)
+        if (value) return;
+        // If we are disabling, make sure canvas is hidden too
+        if (canvas != null)
             canvas.SetActive(false);
     }
 

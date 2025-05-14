@@ -5,6 +5,7 @@ using System.Linq;
 using Code.Scripts.Units.Heroes;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
 
 /// <summary>
@@ -274,6 +275,13 @@ public class GameManager : Singleton<GameManager>, IDataPersistence
     /// </summary>
     private void HandleCutscene()
     {
+        SoundManager.Instance.StopAllAudio();
+
+        foreach (PlayableDirector pd in GameObject.FindObjectsOfType<PlayableDirector>())
+        {
+            pd.Stop();
+        }
+        
         if (CurrentScene == Scenes.G_KEY)
             SaveManager.Instance.SaveData.Progress.RepairedKeys.Add(CurrentScene);
 
