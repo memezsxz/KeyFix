@@ -6,28 +6,222 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(SpeedersInteraction))]
 [RequireComponent(typeof(ScalerInteraction))]
 [RequireComponent(typeof(Animator))]
-// [RequireComponent(typeof(PlayerBindingManage))]
 public class PlayerMovement : MonoBehaviour, IDataPersistence
 {
-    // TODO Maryam: should add require Animator to the script 
+    #region Fields and References
+
+    // Animation parameter hashes
     private static readonly int Vertical = Animator.StringToHash("vertical");
     private static readonly int Horizontal = Animator.StringToHash("horizontal");
     private static readonly int isFalling = Animator.StringToHash("isFalling");
 
-    [SerializeField]
-    private CharacterType _charecterType = CharacterType.Robot; // the type of character that is holding the script
+    [SerializeField] private CharacterType _charecterType = CharacterType.Robot;
 
-    // private ScalerInteraction scaler;
-    private bool canMove = true;
-
-    private Vector3 externalForce = Vector3.zero; // to receive wind push
-
-    // private PlayerBindingManage bindingManage;
+    private CharacterController controller;
     private SpeedersInteraction mover;
 
+    private Vector3 playerVelocity;
+    private Vector3 externalForce = Vector3.zero;
+
+    private bool groundedPlayer;
+    private bool canMove = true;
+
+    private InputAction moveAction, jumpAction;
+
+    [Header("Animation Settings")] public Animator anim;
+    public float allowPlayerRotation = 1f;
+    [Range(0, 1f)] public float StartAnimTime = 0.3f;
+    [Range(0, 1f)] public float StopAnimTime = 0.15f;
+
+    // Movement constants
+    private readonly float playerSpeed = 5f;
+    private readonly float jumpHeight = 1.0f;
+    private readonly float gravityValue = -9.81f;
+
+    private float lastYPosition;
+
+    #endregion
+
+    #region Properties
+
+    /// <summary>
+    /// Returns the character type (e.g., Robot or Robota) associated with this player.
+    /// </summary>
     public CharacterType CharecterType => _charecterType;
 
+    #endregion
 
+    #region Unity Lifecycle
+
+    private void Start()
+    {
+        lastYPosition = transform.position.y;
+        controller = GetComponent<CharacterController>();
+        anim = GetComponent<Animator>();
+        mover = GetComponent<SpeedersInteraction>();
+
+        var actions = GetComponent<PlayerInput>().actions;
+
+        // Enable correct input map based on character type
+        if (_charecterType == CharacterType.Robot)
+        {
+            actions.FindActionMap("Robot").Enable();
+            actions.FindActionMap("Robota").Disable();
+        }
+        else
+        {
+            actions.FindActionMap("Robot").Disable();
+            actions.FindActionMap("Robota").Enable();
+        }
+
+        moveAction = actions.FindAction("Move");
+        jumpAction = actions.FindAction("Jump");
+    }
+
+    private void Update()
+    {
+        lastYPosition = transform.position.y;
+        groundedPlayer = controller.isGrounded;
+
+        if (groundedPlayer && playerVelocity.y < 0f)
+            playerVelocity.y = 0f;
+
+        if (!canMove)
+        {
+            // Apply gravity only
+            playerVelocity.y += gravityValue * Time.deltaTime;
+            controller.Move(playerVelocity * Time.deltaTime);
+            anim.SetFloat("Blend", 0f, StopAnimTime, Time.deltaTime);
+            return;
+        }
+
+        if (mover.IsBeingPushed)
+            return;
+
+        HandleMovement();
+        HandleJumping();
+        HandleAnimation();
+    }
+
+    #endregion
+
+    #region Movement Logic
+
+    /// <summary>
+    /// Handles directional movement and wind force resistance.
+    /// </summary>
+    private void HandleMovement()
+    {
+        Vector2 moveValue = moveAction.ReadValue<Vector2>();
+        Vector3 move = new(moveValue.x, 0f, moveValue.y);
+        Vector3 moveInput = move * playerSpeed;
+
+        Vector3 finalMove = moveInput + externalForce;
+
+        // Reduce wind impact if player is pushing against it
+        if (moveInput != Vector3.zero && Vector3.Dot(moveInput.normalized, externalForce.normalized) < 0)
+        {
+            finalMove += externalForce * 0.5f;
+        }
+
+        controller.Move(finalMove * Time.deltaTime);
+        externalForce = Vector3.zero;
+
+        if (move != Vector3.zero)
+            transform.forward = move;
+    }
+
+    /// <summary>
+    /// Handles jumping and gravity.
+    /// </summary>
+    private void HandleJumping()
+    {
+        if (jumpAction.IsPressed() && groundedPlayer)
+        {
+            playerVelocity.y += Mathf.Sqrt(jumpHeight * -2f * gravityValue);
+            anim.SetBool(isFalling, false);
+        }
+        else
+        {
+            if (!groundedPlayer && playerVelocity.y < -1f)
+                anim.SetBool(isFalling, true);
+            else if (groundedPlayer)
+                anim.SetBool(isFalling, false);
+        }
+
+        playerVelocity.y += gravityValue * Time.deltaTime;
+        controller.Move(playerVelocity * Time.deltaTime);
+    }
+
+    /// <summary>
+    /// Updates blend animations based on movement speed.
+    /// </summary>
+    private void HandleAnimation()
+    {
+        Vector2 moveValue = moveAction.ReadValue<Vector2>();
+        float speed = moveValue.sqrMagnitude;
+
+        if (speed > 0.1f)
+            anim.SetFloat("Blend", speed, StartAnimTime, Time.deltaTime);
+        else if (speed < allowPlayerRotation)
+            anim.SetFloat("Blend", speed, StopAnimTime, Time.deltaTime);
+    }
+
+    #endregion
+
+    #region Interaction
+
+    /// <summary>
+    /// Enables or disables player movement input.
+    /// </summary>
+    /// <param name="value">True to allow movement, false to lock movement.</param>
+    public void ToggleMovement(bool value)
+    {
+        canMove = value;
+    }
+
+    /// <summary>
+    /// Applies an external force to the player, such as wind.
+    /// </summary>
+    /// <param name="force">The vector force to apply.</param>
+    public void ApplyExternalForce(Vector3 force)
+    {
+        externalForce += force;
+    }
+
+    #endregion
+
+    #region Input Override (Testing)
+
+    /// <summary>
+    /// Overrides the "up" binding in the input system. Used for testing.
+    /// </summary>
+    private void UpdatePlayerMovementBinding()
+    {
+        var moveAction = GetComponent<PlayerInput>().actions["Move"];
+
+        var upBinding = moveAction.bindings
+            .Select((binding, index) => new { binding, index })
+            .FirstOrDefault(b => b.binding.name == "up" && b.binding.isPartOfComposite);
+
+        if (upBinding != null)
+        {
+            moveAction.ApplyBindingOverride(upBinding.index, new InputBinding { overridePath = " " });
+            Debug.Log("Overrode 'W' key (up) with none");
+        }
+        else
+        {
+            Debug.LogWarning("Couldn't find the 'up' binding to override");
+        }
+    }
+
+    #endregion
+
+    #region Save/Load
+
+    /// <summary>
+    /// Saves the player's current position and Y-axis rotation.
+    /// </summary>
     public void SaveData(ref SaveData data)
     {
         var psd = SaveManager.Instance.GetCharacterData(_charecterType);
@@ -35,19 +229,25 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
         psd.Yaw = transform.rotation.eulerAngles.y;
     }
 
+    /// <summary>
+    /// Loads and applies the player's position and rotation from saved data.
+    /// </summary>
     public void LoadData(ref SaveData data)
     {
         var psd = SaveManager.Instance.GetCharacterData(_charecterType);
         var controller = GetComponent<CharacterController>();
 
-        controller.enabled = false; // Disable to avoid conflict
+        controller.enabled = false;
         transform.position = psd.Position;
         transform.rotation = Quaternion.Euler(0, psd.Yaw, 0);
-        controller.enabled = true; // Re-enable
+        controller.enabled = true;
     }
 
-//
-//     #region Testing Other Input system
+    #endregion
+
+
+    #region Other Movement
+
 //     public float Velocity = 5;
 //     [Space]
 //     private InputAction moveAction, jumpAction;
@@ -181,180 +381,6 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
 // 		}
 // 	}
 //
-//     #endregion
-
-
-    public void ToggleMovement(bool value)
-    {
-        canMove = value;
-    }
-
-    private void UpdatePlayerMovementBinding()
-    {
-        var moveAction = GetComponent<PlayerInput>().actions["Move"];
-
-        var upBinding = moveAction.bindings
-            .Select((binding, index) => new { binding, index })
-            .FirstOrDefault(b => b.binding.name == "up" && b.binding.isPartOfComposite);
-
-        if (upBinding != null)
-        {
-            moveAction.ApplyBindingOverride(upBinding.index, new InputBinding { overridePath = " " });
-            Debug.Log("Overrode 'W' key (up) with none");
-        }
-        else
-        {
-            Debug.LogWarning("Couldn't find the 'up' binding to override");
-        }
-    }
-
-    #region Testing Other Input system
-
-    // public GameManagement GameManagement;
-    // public GameObject LevelSuccessParticles;
-    // public ParticleSystem LevelFailureParticles;
-    private CharacterController controller;
-    private Vector3 playerVelocity;
-    private bool groundedPlayer;
-    private readonly float playerSpeed = 5f;
-    private readonly float jumpHeight = 1.0f;
-    private readonly float gravityValue = -9.81f;
-    private InputAction moveAction, jumpAction;
-    public Animator anim;
-    public float allowPlayerRotation = 1f;
-    [Range(0, 1f)] public float StartAnimTime = 0.3f;
-    [Range(0, 1f)] public float StopAnimTime = 0.15f;
-    private float lastYPosition;
-
-
-    private void Start()
-    {
-        // var d = SaveManager.Instance.SaveData;
-        // LoadData(ref d);
-        lastYPosition = transform.position.y;
-        controller = gameObject.GetComponent<CharacterController>();
-        anim = GetComponent<Animator>();
-        // anim.applyRootMotion = false;
-        // bindingManage = gameObject.GetComponent<PlayerBindingManage>();
-        var actions = gameObject.GetComponent<PlayerInput>().actions;
-        if (_charecterType == CharacterType.Robot)
-        {
-            actions.FindActionMap("Robot").Enable();
-            actions.FindActionMap("Robota").Disable();
-        }
-        else
-        {
-            actions.FindActionMap("Robot").Disable();
-            actions.FindActionMap("Robota").Enable();
-        }
-
-        moveAction = actions.FindAction("Move");
-        jumpAction = actions.FindAction("Jump");
-        // print("found " + moveAction.bindings[0].name + " to " + gameObject.name);
-        mover = GetComponent<SpeedersInteraction>();
-        // scaler = GetComponent<ScalerInteraction>();
-    }
-
-    private void Update()
-    {
-        lastYPosition = transform.position.y;
-
-        // Check if grounded
-        groundedPlayer = controller.isGrounded;
-        if (groundedPlayer && playerVelocity.y < 0) playerVelocity.y = 0f;
-
-        if (!canMove)
-        {
-            // Apply gravity only, no input
-            playerVelocity.y += gravityValue * Time.deltaTime;
-            controller.Move(playerVelocity * Time.deltaTime);
-
-            anim.SetFloat("Blend", 0f, StopAnimTime, Time.deltaTime);
-            return;
-        }
-
-        // Read input from new Input System
-        if (mover.IsBeingPushed) return; // Block input during movement
-
-        var moveValue = moveAction.ReadValue<Vector2>();
-        var inputX = moveValue.x;
-        var inputZ = moveValue.y;
-
-
-        // Move vector and motion
-
-        var move = new Vector3(moveValue.x, 0.0f, moveValue.y);
-
-// Get player intended movement
-        var moveInput = new Vector3(moveValue.x, 0.0f, moveValue.y) * playerSpeed;
-
-// Compete wind vs input
-        var finalMove = moveInput + externalForce;
-
-// If player moving against wind, reduce wind impact
-        if (moveInput != Vector3.zero && Vector3.Dot(moveInput.normalized, externalForce.normalized) < 0)
-            // If moving against wind, reduce wind effect
-            finalMove += externalForce * 0.5f; // Wind is only half as effective
-
-        // Move the player
-        controller.Move(finalMove * Time.deltaTime);
-
-// Reset wind for next frame
-        externalForce = Vector3.zero;
-
-        // Rotate to direction of movement
-        if (move != Vector3.zero) gameObject.transform.forward = move;
-        // Quaternion currentRotation = transform.rotation;
-        // Quaternion targetRotation = Quaternion.LookRotation(move);
-        // transform.rotation = Quaternion.Slerp(currentRotation, targetRotation, allowPlayerRotation);
-        // Jumping logic
-        // if (jumpAction.IsPressed() && groundedPlayer)
-        if (jumpAction.IsPressed() && groundedPlayer)
-        {
-            playerVelocity.y += Mathf.Sqrt(jumpHeight * -2.0f * gravityValue);
-            anim.SetBool(isFalling, false); // Reset fall state if jumping
-        }
-        else
-        {
-            if (!groundedPlayer && playerVelocity.y < -1f)
-                anim.SetBool(isFalling, true); // Falling down
-            else if (groundedPlayer) anim.SetBool(isFalling, false); // Landed or idle
-        }
-
-
-        // Apply gravity
-        playerVelocity.y += gravityValue * Time.deltaTime;
-        controller.Move(playerVelocity * Time.deltaTime);
-
-        // animation
-        var speed = new Vector2(inputX, inputZ).sqrMagnitude;
-
-        if (speed > 0.1f)
-            anim.SetFloat("Blend", speed, StartAnimTime, Time.deltaTime);
-        else if (speed < allowPlayerRotation) anim.SetFloat("Blend", speed, StopAnimTime, Time.deltaTime);
-
-        // float currentY = transform.position.y;
-        // float deltaY = currentY - lastYPosition;
-        //
-        // if (Mathf.Abs(deltaY) < 0.001f)
-        // {
-        //     anim.SetInteger(YMovement, 0); // Not moving vertically
-        // }
-        // else if (deltaY > 0f)
-        // {
-        // }
-        // else
-        // {
-        //     anim.SetInteger(YMovement, -1); // Moving down (falling)
-        // }
-        //
-        // lastYPosition = currentY;
-    }
-
-    public void ApplyExternalForce(Vector3 force)
-    {
-        externalForce += force;
-    }
 
     #endregion
 }

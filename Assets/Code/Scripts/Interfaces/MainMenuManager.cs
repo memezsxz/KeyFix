@@ -2,47 +2,74 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Controls main menu logic including navigation, settings, and transition to the game.
+/// </summary>
 public class MainMenuManager : MonoBehaviour
 {
-    //audio refrence
+    #region UI References
+
+    /// <summary>
+    /// Sound played on button click.
+    /// </summary>
     public AudioClip clickSound;
 
-
-    //buttons refrence
+    /// <summary>
+    /// The continue game button (enabled only if a save is found).
+    /// </summary>
     public Button continueGameButton;
 
-
-    //panels refrence
-    public GameObject settingsPanel;
+    [Header("Panels")] public GameObject settingsPanel;
     public GameObject instructionsPanel;
     public GameObject creditsPanel;
     public GameObject exitPanel;
 
+    /// <summary>
+    /// The main menu canvas group used for interaction control.
+    /// </summary>
     public CanvasGroup mainMenuGroup;
 
-    // public GameObject loadingScreen;
-    public GameObject mainScene;
 
+    /// <summary>
+    /// Reference to the main scene root object (e.g., 3D background).
+    /// </summary>
+    [Header("Settings reference")] public GameObject mainScene;
 
-    //script refrenc
-    // public SceneFader sceneFader;
-    // public LoadingManager loadingScript;
+    #endregion
+
+    #region Script References
+
+    /// <summary>
+    /// Reference to the settings manager used within the menu.
+    /// </summary>
     public SettingsManager settingsScript;
+
+    #endregion
+
+    #region Animation State
+
+    /// <summary>
+    /// Tracks original scales of buttons for hover animation.
+    /// </summary>
     private readonly Dictionary<GameObject, Vector3> originalScales = new();
 
+    #endregion
+
+    #region Unity Lifecycle
 
     private void Start()
     {
+        // Disable continue button if no save exists
         continueGameButton.interactable = !SaveManager.Instance.IsNewGame;
-
-
-        //this code must be set after the complete a level
-
-        //PlayerPrefs.SetInt("LastLevel", SceneManager.GetActiveScene().buildIndex);
     }
 
+    #endregion
 
-    //panels methods
+    #region Game Start Methods
+
+    /// <summary>
+    /// Starts a new game and loads the first scene.
+    /// </summary>
     public void StartNewGame()
     {
         SaveManager.Instance.StartNewGame();
@@ -51,25 +78,16 @@ public class MainMenuManager : MonoBehaviour
         mainScene.SetActive(false);
     }
 
-
+    /// <summary>
+    /// Continues from the last saved scene, if available.
+    /// </summary>
     public void ContinueGame()
     {
         if (!SaveManager.Instance.IsNewGame)
         {
             GameManager.Instance.LoadLastSavedLevel();
-            // GameManager.Instance.HandleSceneLoad(SaveManager.Instance.SaveData.Progress.CurrentScene);
-            // loadingScript.sceneToLoad = SaveManager.Instance.SaveData.Progress.CurrentScene;
-            // loadingScript.stateToLoadIn = GameManager.GameState.Playing;
-            // loadingScreen.SetActive(true);
-            // loadingScript.BeginLoading();
-
             PlayClickSound();
             mainScene.SetActive(false);
-            // Debug.Log("will be going to the last saved level: " + SaveManager.Instance.SaveData.Progress.CurrentScene);
-            // SceneManager.LoadScene("maryam city test");
-            // will be done with use of the game manager and scene manager
-            // int sceneToLoad = PlayerPrefs.GetInt("LastLevel");
-            // SceneManager.LoadScene(sceneToLoad);
         }
         else
         {
@@ -77,49 +95,63 @@ public class MainMenuManager : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Panel Control Methods
+
+    /// <summary>
+    /// Opens the settings panel and disables menu input.
+    /// </summary>
     public void OpenSettings()
     {
-        Debug.Log("Open Settings");
+        // Debug.Log("Open Settings");
         PlayClickSound();
         settingsPanel.SetActive(true);
         settingsScript.enabled = true;
-        mainMenuGroup.interactable = false;
-        mainMenuGroup.blocksRaycasts = false;
+        DisableMainMenuInput();
     }
 
+    /// <summary>
+    /// Opens the instructions panel and disables menu input.
+    /// </summary>
     public void OpenInstructions()
     {
-        Debug.Log("Open Instructions");
+        // Debug.Log("Open Instructions");
         PlayClickSound();
         instructionsPanel.SetActive(true);
-        mainMenuGroup.interactable = false;
-        mainMenuGroup.blocksRaycasts = false;
-        mainMenuGroup.interactable = false;
-        mainMenuGroup.blocksRaycasts = false;
+        DisableMainMenuInput();
     }
 
+    /// <summary>
+    /// Opens the credits panel and disables menu input.
+    /// </summary>
     public void OpenCredits()
     {
-        Debug.Log("Open Credits");
+        // Debug.Log("Open Credits");
         PlayClickSound();
         creditsPanel.SetActive(true);
-        mainMenuGroup.interactable = false;
-        mainMenuGroup.blocksRaycasts = false;
+        DisableMainMenuInput();
     }
 
+    /// <summary>
+    /// Opens the exit confirmation panel and disables menu input.
+    /// </summary>
     public void OpenExitPanel()
     {
-        Debug.Log("Open Exit");
+        // Debug.Log("Open Exit");
         PlayClickSound();
         exitPanel.SetActive(true);
-        mainMenuGroup.interactable = false;
-        mainMenuGroup.blocksRaycasts = false;
+        DisableMainMenuInput();
     }
 
+    /// <summary>
+    /// Closes all active panels and re-enables main menu input.
+    /// </summary>
     public void CloseAllPanels()
     {
         PlayClickSound();
-        if (settingsPanel.activeSelf)
+
+        if (settingsPanel.activeSelf) // save settings to file when the settings panel closes
         {
             settingsScript.enabled = false;
             SaveManager.Instance.SaveSettings();
@@ -129,40 +161,75 @@ public class MainMenuManager : MonoBehaviour
         instructionsPanel.SetActive(false);
         creditsPanel.SetActive(false);
         exitPanel.SetActive(false);
-        mainMenuGroup.interactable = true;
-        mainMenuGroup.blocksRaycasts = true;
+
+        EnableMainMenuInput();
     }
 
+    /// <summary>
+    /// Exits the game.
+    /// </summary>
     public void ExitGame()
     {
         Application.Quit();
         Debug.Log("Exit Game");
     }
 
+    #endregion
 
-    //Animation methods
+    #region UI Animation Methods
+
+    /// <summary>
+    /// Scales up the button when hovered.
+    /// </summary>
     public void OnHoverEnter(GameObject btn)
     {
         var button = btn.GetComponent<Button>();
         if (button != null && button.interactable)
         {
-            if (!originalScales.ContainsKey(btn)) originalScales[btn] = btn.transform.localScale;
+            if (!originalScales.ContainsKey(btn))
+                originalScales[btn] = btn.transform.localScale;
 
             PlayClickSound();
             btn.transform.localScale = originalScales[btn] * 1.1f;
         }
     }
 
+    /// <summary>
+    /// Resets button scale when hover exits.
+    /// </summary>
     public void OnHoverExit(GameObject btn)
     {
         if (originalScales.ContainsKey(btn))
             btn.transform.localScale = originalScales[btn];
     }
 
+    #endregion
 
-    //Audio methods
+    #region Sound
+
+    /// <summary>
+    /// Plays the configured UI click sound.
+    /// </summary>
     public void PlayClickSound()
     {
         SoundManager.Instance.PlaySound(clickSound);
     }
+
+    #endregion
+
+    #region Helpers
+
+    private void DisableMainMenuInput()
+    {
+        mainMenuGroup.interactable = false;
+        mainMenuGroup.blocksRaycasts = false;
+    }
+
+    private void EnableMainMenuInput()
+    {
+        mainMenuGroup.interactable = true;
+        mainMenuGroup.blocksRaycasts = true;
+    }
+
+    #endregion
 }

@@ -7,50 +7,73 @@ using UnityEngine;
 /// </summary>
 public class GraphicsManager : Singleton<GraphicsManager>, IDataPersistence
 {
+    /// <summary>
+    /// Index of the resolution currently applied.
+    /// </summary>
     public int ResolutionIndex { get; private set; }
+
+    /// <summary>
+    /// Index of the current quality level (e.g., Low, Medium, High).
+    /// </summary>
     public int QualityIndex { get; private set; }
 
+    /// <summary>
+    /// Whether the game is currently in fullscreen mode.
+    /// </summary>
     public bool FullScreen { get; private set; }
+
     public void SaveData(ref SaveData data)
     {
+        // Save current quality setting by name
         data.Graphics.QualityName = QualitySettings.names[QualitySettings.GetQualityLevel()];
+
+        // Save current screen resolution
         data.Graphics.ResolutionWidth = Screen.currentResolution.width;
         data.Graphics.ResolutionHeight = Screen.currentResolution.height;
+
+        // Save fullscreen setting
         data.Graphics.Fullscreen = Screen.fullScreen;
 
+        // Store the last used save slot
         PlayerPrefs.SetString(SaveManager.LAST_GAME_PREF, data.Meta.SaveName);
         PlayerPrefs.Save();
-
-        // Debug.Log("saved quality: " + data.Graphics.QualityName);
-        // Debug.Log("saved res: " + Screen.currentResolution.width + " x " + Screen.currentResolution.height);
     }
 
     public void LoadData(ref SaveData data)
     {
-        // Quality
+        // === Load Quality ===
         var qualityName = data.Graphics.QualityName;
+
+        // Get the index of the saved quality level
         var qualityIndex = Array.IndexOf(QualitySettings.names, qualityName);
+
+        // If not found, fallback to last available level
         qualityIndex = qualityIndex < 0 ? QualitySettings.names.Length - 1 : qualityIndex;
+
+        // Apply quality settings
         QualitySettings.SetQualityLevel(qualityIndex);
         QualityIndex = qualityIndex;
 
-        // Resolution
+        // === Load Resolution ===
         var saveData = data;
+
+        // Find the resolution index that matches the saved width and height
         var index = Array.FindIndex(Screen.resolutions, r =>
             r.width == saveData.Graphics.ResolutionWidth &&
             r.height == saveData.Graphics.ResolutionHeight);
 
+        // If not found, fallback to highest available resolution
         index = index < 0 ? Screen.resolutions.Length - 1 : index;
+
         // Debug.Log("ires index is : " + (index < 0 ? " not found" : "found"));
 
+        // Apply resolution and fullscreen setting
         var res = Screen.resolutions[index];
         Screen.SetResolution(res.width, res.height, data.Graphics.Fullscreen);
         ResolutionIndex = index;
 
+        // Apply fullscreen toggle
         Screen.fullScreen = data.Graphics.Fullscreen;
         FullScreen = data.Graphics.Fullscreen;
-        // Debug.Log("loaded quality: " + data.Graphics.QualityName);
-        // Debug.Log("loaded res: " + Screen.resolutions[ResolutionIndex].width + " x " +
-        //           Screen.resolutions[ResolutionIndex].height);
     }
 }

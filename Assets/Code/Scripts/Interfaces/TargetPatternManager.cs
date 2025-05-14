@@ -1,16 +1,45 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Displays a static grid representing a predefined target pattern of lights.
+/// Used as a reference for color-matching or memory puzzles.
+/// </summary>
 public class TargetPatternManager : MonoBehaviour
 {
+    /// <summary>
+    /// Prefab used to represent a single light pixel in the grid.
+    /// </summary>
     public GameObject targetPixelPrefab;
+
+    /// <summary>
+    /// Parent transform to contain all instantiated pixels.
+    /// </summary>
     public Transform targetGridParent;
+
+    /// <summary>
+    /// Width of the grid in number of cells.
+    /// </summary>
     public int gridSizeX = 10;
+
+    /// <summary>
+    /// Height of the grid in number of cells.
+    /// </summary>
     public int gridSizeY = 10;
+
+    /// <summary>
+    /// Color to use when the target pixel is "on".
+    /// </summary>
     public Color onColor = Color.yellow;
+
+    /// <summary>
+    /// Color to use when the target pixel is "off".
+    /// </summary>
     public Color offColor = Color.black;
 
-    // Example target pattern: 1 = light ON, 0 = light OFF
+    /// <summary>
+    /// Hardcoded pattern used to define which pixels should be "on" or "off".
+    /// </summary>
     private readonly int[,] targetPattern =
     {
         { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
@@ -30,18 +59,22 @@ public class TargetPatternManager : MonoBehaviour
         GenerateTargetPattern();
     }
 
+    /// <summary>
+    /// Instantiates the grid and applies color based on the target pattern array.
+    /// </summary>
     private void GenerateTargetPattern()
     {
         for (var y = 0; y < gridSizeY; y++)
-        for (var x = 0; x < gridSizeX; x++)
         {
-            var pixel = Instantiate(targetPixelPrefab, targetGridParent);
-            var img = pixel.GetComponent<Image>();
+            for (var x = 0; x < gridSizeX; x++)
+            {
+                // Create a new pixel and parent it under the grid
+                var pixel = Instantiate(targetPixelPrefab, targetGridParent);
 
-            if (targetPattern[y, x] == 1)
-                img.color = onColor; // Yellow for ON
-            else
-                img.color = offColor; // Black for OFF
+                // Set the pixel's color based on the value in the pattern
+                var img = pixel.GetComponent<Image>();
+                img.color = targetPattern[y, x] == 1 ? onColor : offColor;
+            }
         }
     }
 }

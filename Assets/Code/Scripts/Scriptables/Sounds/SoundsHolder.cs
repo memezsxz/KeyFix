@@ -2,10 +2,20 @@ using UnityEditor;
 using UnityEngine;
 using GUIContent = UnityEngine.GUIContent;
 
+/// <summary>
+/// Component used to play sounds via an assigned <see cref="SoundsList"/>.
+/// </summary>
 public class SoundsHolder : MonoBehaviour
 {
+    /// <summary>
+    /// Reference to the sound data asset containing the list of sound entries.
+    /// </summary>
     public SoundsList soundData;
 
+    /// <summary>
+    /// Plays a sound by index from the assigned sound list.
+    /// </summary>
+    /// <param name="index">The index of the sound entry.</param>
     public void PlaySound(int index)
     {
         if (index >= 0 && index < soundData.sounds.Length)
@@ -19,75 +29,14 @@ public class SoundsHolder : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Plays a sound by its name from the assigned sound list.
+    /// </summary>
+    /// <param name="soundName">The name of the sound to play.</param>
     public void PlaySound(string soundName)
     {
         var entry = soundData.GetSoundByName(soundName);
-        if (entry != null) SoundManager.Instance.PlaySound(entry.sound, entry.volume);
+        if (entry != null)
+            SoundManager.Instance.PlaySound(entry.sound, entry.volume);
     }
 }
-
-#if UNITY_EDITOR
-[CanEditMultipleObjects]
-[CustomEditor(typeof(SoundsHolder))]
-public class SoundsHolderEditor : Editor
-{
-    private SerializedProperty soundDataProp;
-
-    public override void OnInspectorGUI()
-    {
-        serializedObject.Update();
-
-        // Reference to SoundsSO
-        soundDataProp = serializedObject.FindProperty("soundData");
-        EditorGUILayout.PropertyField(soundDataProp);
-
-        var holder = (SoundsHolder)target;
-        var soundData = holder.soundData;
-
-        if (soundData == null)
-        {
-            EditorGUILayout.HelpBox("No SoundsList assigned.", MessageType.Warning);
-            serializedObject.ApplyModifiedProperties();
-            return;
-        }
-
-        // SerializedObject for SoundsSO
-        var soundSO = new SerializedObject(soundData);
-        var soundsProp = soundSO.FindProperty("sounds");
-
-        EditorGUILayout.Space();
-        EditorGUILayout.LabelField("🎵 SoundsSO Editor", EditorStyles.boldLabel);
-
-        // Display list size with Add/Remove buttons
-        EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.LabelField("Sound Entries", GUILayout.MaxWidth(100));
-        if (GUILayout.Button("+", GUILayout.Width(25))) soundsProp.InsertArrayElementAtIndex(soundsProp.arraySize);
-
-        if (GUILayout.Button("-", GUILayout.Width(25)) && soundsProp.arraySize > 0)
-            soundsProp.DeleteArrayElementAtIndex(soundsProp.arraySize - 1);
-
-        EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.Space();
-
-        // Display and allow editing of each sound entry
-        for (var i = 0; i < soundsProp.arraySize; i++)
-        {
-            var soundEntry = soundsProp.GetArrayElementAtIndex(i);
-            var nameProp = soundEntry.FindPropertyRelative("name");
-            var clipProp = soundEntry.FindPropertyRelative("sound");
-            var volProp = soundEntry.FindPropertyRelative("volume");
-
-            EditorGUILayout.BeginVertical("box");
-            EditorGUILayout.LabelField($"Sound {i}", EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(nameProp);
-            EditorGUILayout.PropertyField(clipProp);
-            EditorGUILayout.Slider(volProp, -0.001f, 1f, new GUIContent("Volume"));
-            EditorGUILayout.EndVertical();
-        }
-
-        soundSO.ApplyModifiedProperties();
-        serializedObject.ApplyModifiedProperties();
-    }
-}
-#endif

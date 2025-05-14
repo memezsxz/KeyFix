@@ -2,33 +2,73 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Manages asynchronous scene loading with a visual progress bar and optional minimum display duration.
+/// </summary>
 public class LoadingManager : MonoBehaviour
 {
+    #region Serialized Fields
+
+    /// <summary>
+    /// The scene to load when loading begins.
+    /// </summary>
     public GameManager.Scenes sceneToLoad;
+
+    /// <summary>
+    /// The game state to switch to after loading completes.
+    /// </summary>
     public GameManager.GameState stateToLoadIn = GameManager.GameState.Initial;
+
+    /// <summary>
+    /// Optional UI slider to visually display loading progress.
+    /// </summary>
     public Slider progressBar;
+
+    /// <summary>
+    /// Minimum time (in seconds) the loading screen should be displayed, even if loading is faster.
+    /// </summary>
     public float minLoadTime = 3f;
 
+    #endregion
+
+    #region Private Fields
+
+    /// <summary>
+    /// The current progress value used for smooth visual transitions.
+    /// </summary>
     private float loadingProgress;
 
+    #endregion
+
+    #region Public Methods
+
+    /// <summary>
+    /// Starts the asynchronous loading process with progress tracking and delay.
+    /// </summary>
     public void BeginLoading()
     {
         StartCoroutine(LoadAsyncWithDelay());
     }
 
+    #endregion
 
+    #region Private Methods
+
+    /// <summary>
+    /// Loads the scene asynchronously, waits for minimum time, and handles progress bar animation.
+    /// </summary>
     private IEnumerator LoadAsyncWithDelay()
     {
-        var timer = 0f;
+        float timer = 0f;
         var operation = GameManager.Instance.LoadLevelAsync(sceneToLoad, stateToLoadIn);
         operation.allowSceneActivation = false;
 
         while (!operation.isDone)
         {
-            // Calculate progress (from 0 to 1)
+            // Unity loads scenes to 0.9 and waits for allowSceneActivation
             var targetProgress = Mathf.Clamp01(operation.progress / 0.9f);
 
-            // Smoothly increase the visual progress bar
+            // Smoothly interpolate progress visually
             loadingProgress = Mathf.MoveTowards(loadingProgress, targetProgress, Time.deltaTime);
 
             if (progressBar != null)
@@ -36,9 +76,9 @@ public class LoadingManager : MonoBehaviour
 
             timer += Time.deltaTime;
 
+            // When loading is done and minimum time has passed, complete the bar and activate scene
             if (operation.progress >= 0.9f && timer >= minLoadTime)
             {
-                // Final smooth fill to 100%
                 while (loadingProgress < 1f)
                 {
                     loadingProgress = Mathf.MoveTowards(loadingProgress, 1f, Time.deltaTime);
@@ -48,14 +88,12 @@ public class LoadingManager : MonoBehaviour
                     yield return null;
                 }
 
-                // ✅ Allow the scene to become visible
+                // Activate the scene
                 operation.allowSceneActivation = true;
 
-
-                // ✅ Wait one frame to allow Unity to show the new scene
+                // Wait one frame before executing post-load logic
                 yield return null;
 
-                // ✅ THEN call post-load logic
                 GameManager.Instance.HandleSceneLoaded();
                 GameManager.Instance.ChangeState(stateToLoadIn);
             }
@@ -63,4 +101,6 @@ public class LoadingManager : MonoBehaviour
             yield return null;
         }
     }
+
+    #endregion
 }
