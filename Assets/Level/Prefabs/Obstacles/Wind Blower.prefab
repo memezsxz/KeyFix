@@ -114,3 +114,4 @@ MonoBehaviour:
   baseWindStrength: 10
   detectionRange: 10
   minimumWindResistance: 0.3
+  sound: {fileID: 8300000, guid: f07650ffaf22d477c9991da2869dec82, type: 3}

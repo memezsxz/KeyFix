@@ -987,6 +987,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 849ac64bafa947ff86b81d6b0649b0c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fireDirection: {x: -1, y: 0, z: 0}
+  minToggleTime: 0.5
+  sound: {fileID: 8300000, guid: f07650ffaf22d477c9991da2869dec82, type: 3}
+  maxToggleTime: 1
 --- !u!1 &7243322994177586741
 GameObject:
   m_ObjectHideFlags: 0

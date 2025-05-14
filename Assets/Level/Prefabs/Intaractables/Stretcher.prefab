@@ -147,6 +147,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scaleType: 1
+  shrinkerSound: {fileID: 8300000, guid: dc97ea49f6ac649399f70870fa63c613, type: 3}
+  stretcherSound: {fileID: 8300000, guid: ef3019ff4f0064059a9ac876d5110461, type: 3}
 --- !u!4 &4237894442619122629 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4483214362923644504, guid: 47dbe1308bedb47d980b1c3684a869f7, type: 3}

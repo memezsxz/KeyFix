@@ -14,8 +14,18 @@ namespace Code.Scripts.Interactable
         }
 
         [SerializeField] private ScaleType scaleType;
+        [SerializeField] private AudioClip shrinkerSound;
+        [SerializeField] private AudioClip stretcherSound;
+        
+        private AudioClip sound;
+        
         private bool hasTriggered;
         private readonly float timeInSeconds = 2;
+
+        private void Start()
+        {
+            sound = scaleType == ScaleType.Shrink ? shrinkerSound : stretcherSound;
+        }
 
         private void OnTriggerEnter(Collider other)
         {
@@ -46,7 +56,7 @@ namespace Code.Scripts.Interactable
                     ScaleType.Stretch => scaler.Stretch,
                     _ => null
                 };
-
+                SoundManager.Instance.PlaySound(sound);
                 StartCoroutine(MoveAndThenScale(other.transform, controller, scaler, performScale, 0.5f));
             }
         }
