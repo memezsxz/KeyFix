@@ -468,7 +468,7 @@ public class GameManager : Singleton<GameManager>, IDataPersistence
                 pbm.EnableBinding("Jump");
                 break;
         }
-
+        
         SaveManager.Instance.SaveData.Progress.RepairedKeys.Add(CurrentScene);
     }
 
