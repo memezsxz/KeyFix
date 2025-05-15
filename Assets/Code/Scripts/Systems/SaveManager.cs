@@ -47,11 +47,10 @@ public class SaveManager : Singleton<SaveManager>
         IsNewGame = PlayerPrefs.GetString(LAST_GAME_PREF) == null;
 
         SaveSlotName = PlayerPrefs.GetString(LAST_GAME_PREF, "Game1");
-        IsNewGame = !File.Exists(GetSavePath(SaveSlotName));
 
         // Auto-load last game
         LoadGame(SaveSlotName);
-
+        
         // Register debug command to manually trigger save
         DebugController.Instance?.AddDebugCommand(new DebugCommand("save_game", "saved the game", "",
             () => SaveGame()));
@@ -84,7 +83,6 @@ public class SaveManager : Singleton<SaveManager>
 
     #endregion
 
-
     #region Save/Load Public API
 
     /// <summary>
@@ -95,11 +93,10 @@ public class SaveManager : Singleton<SaveManager>
         FindAllDataHandlers();
         UpdateMetaData();
         _sessionStartTime = DateTime.Now;
-
+        
         foreach (var handler in _dataHandlers)
             handler.SaveData(ref _saveData);
-
-        IsNewGame = !File.Exists(GetSavePath(_saveData.Meta.SaveName));
+        
         WriteToFile();
     }
 
@@ -116,14 +113,14 @@ public class SaveManager : Singleton<SaveManager>
 
         if (!File.Exists(path))
         {
-            IsNewGame = true;
+            // IsNewGame = true;
             SaveData = CreateDefaultSave();
             SaveData.Meta.SaveName = slotName;
             SaveGame();
         }
         else
         {
-            IsNewGame = false;
+            // IsNewGame = false;
             using var stream = new FileStream(path, FileMode.Open);
             var data = (string)_formatter.Deserialize(stream);
 
@@ -160,12 +157,11 @@ public class SaveManager : Singleton<SaveManager>
     /// </summary>
     public void StartNewGame()
     {
-        IsNewGame = true;
-
         PlayerPrefs.SetString(LAST_GAME_PREF, SaveSlotName);
         PlayerPrefs.Save();
 
         SaveData = CreateDefaultSave();
+        SaveData.Progress.IsNewGame = false;
         SaveGame();
     }
 
