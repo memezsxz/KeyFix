@@ -86,6 +86,7 @@ public class HallwaysManager : Singleton<HallwaysManager>, IDataPersistence
         if (door != null)
         {
             door.HandleExitDoor();
+            SaveManager.Instance.SaveGame();
         }
         else
         {
