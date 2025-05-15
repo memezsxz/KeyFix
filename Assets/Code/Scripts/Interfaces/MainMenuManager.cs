@@ -60,7 +60,7 @@ public class MainMenuManager : MonoBehaviour
     private void Start()
     {
         // Disable continue button if no save exists
-        continueGameButton.interactable = !SaveManager.Instance.IsNewGame;
+        continueGameButton.interactable = !SaveManager.Instance.SaveData.Progress.IsNewGame;
     }
 
     #endregion
