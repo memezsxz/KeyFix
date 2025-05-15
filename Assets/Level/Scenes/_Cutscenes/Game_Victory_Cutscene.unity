@@ -129,6 +129,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 7533570157472180568, guid: 0aa01396f1c2ef74194408e58060c479, type: 3}
+      propertyPath: m_ClearFlags
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7533570157472180568, guid: 0aa01396f1c2ef74194408e58060c479, type: 3}
+      propertyPath: m_BackGroundColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7533570157472180568, guid: 0aa01396f1c2ef74194408e58060c479, type: 3}
+      propertyPath: m_BackGroundColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7533570157472180568, guid: 0aa01396f1c2ef74194408e58060c479, type: 3}
+      propertyPath: m_BackGroundColor.r
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7533570158312337316, guid: 0aa01396f1c2ef74194408e58060c479, type: 3}
       propertyPath: m_Name
       value: videoObject
