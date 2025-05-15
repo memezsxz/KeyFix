@@ -39,6 +39,8 @@ public class SettingsManager : MonoBehaviour
     /// </summary>
     [Header("Graphics")] public TMP_Dropdown graphicsDropdown;
 
+    [SerializeField] private TextMeshProUGUI graphicsText;
+
 
     /// <summary>
     /// Text label displaying current resolution.
@@ -49,6 +51,8 @@ public class SettingsManager : MonoBehaviour
     /// Dropdown used to select screen resolution.
     /// </summary>
     public TMP_Dropdown resolutionDropDown;
+
+    [SerializeField] private TextMeshProUGUI resolutionText;
 
     #endregion
 
@@ -160,6 +164,11 @@ public class SettingsManager : MonoBehaviour
         QualitySettings.SetQualityLevel(GraphicsManager.Instance.QualityIndex);
 
         initializingGraphicsDropdown = false;
+        if (Time.timeScale == 0)
+        {
+            graphicsDropdown.interactable = false;
+            graphicsText.color = Color.gray;
+        }
     }
 
     /// <summary>
@@ -182,6 +191,9 @@ public class SettingsManager : MonoBehaviour
     public void SetQuality()
     {
         QualitySettings.SetQualityLevel(qualityIndex);
+        print(QualitySettings.GetQualityLevel());
+    
+
         // Debug.Log("Graphics set to: " + QualitySettings.names[qualityIndex]);
     }
 
@@ -212,6 +224,11 @@ public class SettingsManager : MonoBehaviour
         resolutionDropDown.AddOptions(options);
         resolutionDropDown.value = savedIndex;
         resolutionDropDown.RefreshShownValue();
+        if (Time.timeScale == 0)
+        {
+            resolutionDropDown.interactable = false;
+            resolutionText.color = Color.gray;
+        }
     }
 
     /// <summary>
@@ -222,6 +239,7 @@ public class SettingsManager : MonoBehaviour
     {
         // Apply selected resolution at fullscreen
         var r = resolutionsList[index];
+        GraphicsManager.Instance.ResolutionIndex = index;
         Screen.SetResolution(r.width, r.height, Screen.fullScreen);
     }
 
