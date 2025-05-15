@@ -96,7 +96,7 @@ public class SoundManager : Singleton<SoundManager>, IDataPersistence
         if (clip == null) return;
 
         var finalVolume = volumeMultiplier < 0.001f || volumeMultiplier > 1f
-            ? MusicVolume
+            ? SoundVolume
             : volumeMultiplier;
 
         volumeMultiplier = Mathf.Clamp01(finalVolume);
