@@ -26,7 +26,7 @@ public class PauseManager : MonoBehaviour
     /// Canvas group controlling pause menu input.
     /// </summary>
     public CanvasGroup pauseMenuGroup;
-
+    
     #endregion
 
     #region Audio
@@ -175,6 +175,7 @@ public class PauseManager : MonoBehaviour
     /// </summary>
     public void CloseAllPanels()
     {
+        SoundManager.Instance.PlaySound(buttonSound);
         settingsPanel.SetActive(false);
         helpPanel.SetActive(false);
         pauseMenuGroup.interactable = true;
