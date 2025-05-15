@@ -14,7 +14,7 @@ public class ImplementationExample : MonoBehaviour
         _soundsHolder = GetComponent<SoundsHolder>();
 
         // Register a debug console command to trigger sound playback by index
-        DebugController.Instance.AddDebugCommand(new DebugCommand(
+        DebugController.Instance?.AddDebugCommand(new DebugCommand(
             "playSound",
             "Plays the sound with the provided index in the SoundsHolder",
             "playSound <int>",
