@@ -10,7 +10,7 @@ public class GraphicsManager : Singleton<GraphicsManager>, IDataPersistence
     /// <summary>
     /// Index of the resolution currently applied.
     /// </summary>
-    public int ResolutionIndex { get; private set; }
+    public int ResolutionIndex { get;  set; }
 
     /// <summary>
     /// Index of the current quality level (e.g., Low, Medium, High).
@@ -28,9 +28,10 @@ public class GraphicsManager : Singleton<GraphicsManager>, IDataPersistence
         data.Graphics.QualityName = QualitySettings.names[QualitySettings.GetQualityLevel()];
 
         // Save current screen resolution
-        data.Graphics.ResolutionWidth = Screen.currentResolution.width;
-        data.Graphics.ResolutionHeight = Screen.currentResolution.height;
-
+        var currentResolution = Screen.resolutions[ResolutionIndex];
+        data.Graphics.ResolutionWidth = currentResolution.width;
+        data.Graphics.ResolutionHeight = currentResolution.height;
+        
         // Save fullscreen setting
         data.Graphics.Fullscreen = Screen.fullScreen;
 

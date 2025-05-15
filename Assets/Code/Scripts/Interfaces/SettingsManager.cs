@@ -222,6 +222,7 @@ public class SettingsManager : MonoBehaviour
     {
         // Apply selected resolution at fullscreen
         var r = resolutionsList[index];
+        GraphicsManager.Instance.ResolutionIndex = index;
         Screen.SetResolution(r.width, r.height, Screen.fullScreen);
     }
 
